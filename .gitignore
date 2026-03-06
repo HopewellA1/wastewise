@@ -1,0 +1,18 @@
+# Logs
+logs/
+
+# Environment files
+*.env.*
+*.env2.*
+.env
+
+# macOS specific
+*.DS_Store*
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore virtual environment directory
+env/

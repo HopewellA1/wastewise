@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise Recycling</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4fff4;
+      color: #1f3d2b;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Navbar */
+    header {
+      background: linear-gradient(90deg, #1b8f4d, #38b66b);
+      padding: 18px 50px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #dfffe8;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 60px 50px;
+      background: linear-gradient(to right, #dff8e7, #bdf0cb);
+      flex-wrap: wrap;
+    }
+
+    .hero-text {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .hero-text h1 {
+      font-size: 55px;
+      color: #146c3f;
+      margin-bottom: 20px;
+    }
+
+    .hero-text p {
+      font-size: 19px;
+      margin-bottom: 25px;
+      max-width: 600px;
+      color: #2e5a3e;
+    }
+
+    .hero-buttons a {
+      display: inline-block;
+      padding: 14px 28px;
+      margin-right: 12px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn-green {
+      background: #1b8f4d;
+      color: white;
+    }
+
+    .btn-green:hover {
+      background: #136b39;
+    }
+
+    .btn-light {
+      background: white;
+      color: #1b8f4d;
+      border: 2px solid #1b8f4d;
+    }
+
+    .btn-light:hover {
+      background: #1b8f4d;
+      color: white;
+    }
+
+    .hero-image {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .hero-card {
+      background: white;
+      width: 380px;
+      padding: 35px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .hero-card .icon {
+      font-size: 80px;
+      margin-bottom: 15px;
+    }
+
+    .hero-card h3 {
+      color: #1b8f4d;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+
+    .hero-card p {
+      color: #446351;
+    }
+
+    /* Sections */
+    section {
+      padding: 70px 50px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 38px;
+      color: #146c3f;
+      margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      color: #4f6d5c;
+      font-size: 17px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 28px 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: 0.3s;
+      border-top: 5px solid #38b66b;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card .card-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      color: #1b8f4d;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #4d6657;
+    }
+
+    /* Impact */
+    .impact {
+      background: linear-gradient(90deg, #1b8f4d, #38b66b);
+      color: white;
+    }
+
+    .impact .section-title,
+    .impact .section-subtitle {
+      color: white;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.15);
+      padding: 30px 20px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .stat-box h3 {
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    /* CTA */
+    .cta {
+      background: #ecfff1;
+      text-align: center;
+    }
+
+    .cta h2 {
+      font-size: 36px;
+      color: #146c3f;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      font-size: 18px;
+      color: #466452;
+      max-width: 700px;
+      margin: 0 auto 25px;
+    }
+
+    /* Footer */
+    footer {
+      background: #123524;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav ul {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .hero-text h1 {
+        font-size: 38px;
+      }
+
+      .hero-buttons a {
+        display: block;
+        margin: 10px auto;
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav>
+      <div class="logo">♻ WasteWise</div>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#rewards">Rewards</a></li>
+        <li><a href="#impact">Impact</a></li>
+        <li><a href="{% url 'signup' %}">sign up</a></li>
+      </ul>
+    </nav>
+  </header>
+
+    {% block content %}
+    
+    {% endblock  %}
+  <footer>
+    <p>&copy; 2026 WasteWise | Recycling for a Better Future</p>
+  </footer>
+
+  <script>
+    function animateValue(id, end, speed) {
+      let start = 0;
+      let element = document.getElementById(id);
+
+      let counter = setInterval(() => {
+        start += Math.ceil(end / 100);
+
+        if (start >= end) {
+          start = end;
+          clearInterval(counter);
+        }
+
+        element.textContent = start.toLocaleString() + "+";
+      }, speed);
+    }
+
+    window.onload = function () {
+      animateValue("waste", 1200, 20);
+      animateValue("users", 350, 25);
+      animateValue("points", 2000, 15);
+    };
+  </script>
+
+</body>
+</html>

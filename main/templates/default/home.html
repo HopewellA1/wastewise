@@ -1,0 +1,119 @@
+{% extends "default/base.html" %}
+
+{% block content %}
+    
+
+  <section class="hero" id="home">
+    <div class="hero-text">
+      <h1>Recycle Today for a Greener Tomorrow</h1>
+      <p>
+        WasteWise is a recycling web app that helps users report recyclable waste,
+        earn rewards, and make a positive impact in their communities.
+      </p>
+      <div class="hero-buttons">
+        <a href="#how" class="btn-green">Get Started</a>
+        <a href="#rewards" class="btn-light">See Rewards</a>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <div class="hero-card">
+        <div class="icon">🌍</div>
+        <h3>Clean. Recycle. Earn.</h3>
+        <p>Take part in building a cleaner environment with smart recycling actions.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">
+      The system is simple and easy to use for everyone.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📝</div>
+        <h3>Report Waste</h3>
+        <p>Submit recyclable items through the app quickly and easily.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h3>Admin Approval</h3>
+        <p>Your contribution is reviewed and verified by the admin.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎁</div>
+        <h3>Earn Points</h3>
+        <p>You receive points for every approved recycling activity.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🏆</div>
+        <h3>Redeem Rewards</h3>
+        <p>Use your points to claim vouchers and eco-friendly rewards.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="rewards">
+        <h2 class="section-title">Rewards</h2>
+        <p class="section-subtitle">
+            Your recycling efforts are rewarded in exciting ways.
+        </p>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🛍</div>
+                <h3>Shopping Vouchers</h3>
+                <p>Redeem points for discounts and vouchers.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌱</div>
+                <h3>Eco Products</h3>
+                <p>Get reusable bottles, bags, and other green items.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌟</div>
+                <h3>Recognition</h3>
+                <p>Top recyclers can be recognized in the community.</p>
+            </div>
+        </div>
+  </section>
+
+    <section class="impact" id="impact">
+        <h2 class="section-title">Community Impact</h2>
+        <p class="section-subtitle">
+        Together, small actions create a big difference.
+        </p>
+
+        <div class="stats">
+        <div class="stat-box">
+            <h3 id="waste">0</h3>
+            <p>Kg Recycled</p>
+        </div>
+
+        <div class="stat-box">
+            <h3 id="users">0</h3>
+            <p>Active Users</p>
+        </div>
+
+        <div class="stat-box">
+            <h3 id="points">0</h3>
+            <p>Points Earned</p>
+        </div>
+        </div>
+    </section>
+
+  <section class="cta">
+    <h2>Join the Recycling Movement</h2>
+        <p>
+        Start using WasteWise today and be part of a cleaner, healthier, and greener future.
+        </p>
+    <a href="#" class="btn-green" style="padding:14px 28px; text-decoration:none; border-radius:8px; display:inline-block;">Join Now</a>
+  </section>
+{% endblock  %}
