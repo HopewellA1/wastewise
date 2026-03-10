@@ -1,1 +1,56 @@
-<h1>Sign Up</h1>
+{% extends "default/base.html" %}
+{% block content %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
+
+
+
+    <section class="hero">
+
+
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <b>
+                        Signup
+                    </b>
+                </h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/auth/signup" class="form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                    <div class="mb-3">
+                        <label >First Name</label>
+                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{new_user.first_name}}" required>
+                        
+                    </div>
+                    <div class="mb-3">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" class="form-control" placeholder="Last name" value="{{new_user.last_name}}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{new_user.email}}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="password2" class="form-control" placeholder="re-nter password" required>
+                    </div>
+                    <button class='btn btn-primary' type="submit">Submit</button>
+                </form>
+
+            </div>
+
+        </div>
+
+        
+    </section>
+
+
+{% endblock %}
