@@ -1,6 +1,11 @@
 from flask import Blueprint, render_template
 from flask_mail import Message
-#from main import mail
+from main import mail
+
+
+import smtplib
+from email.mime.text import MIMEText
+
 
 
 default = Blueprint("default", __name__)
@@ -8,16 +13,30 @@ default = Blueprint("default", __name__)
 @default.route("/")
 def home():
     
-    # msg = Message(
-    #     subject="Welcome",
-    #     recipients=["hopewellsitshaka@gmail.com"],
-    #     sender='hopewellsitshaka@gmail.com',
-        
-    # )
+    
+    # Gmail credentials
+    sender_email = "hopewellsitshaka@gmail.com"
+    receiver_email = "hopewellsitshaka@gmail.com"
+    app_password = "fvugjdhinugqhrna"
+    # Create the email
+    subject = "Welcome"
+    body = "Your account has been created."
 
-    # msg.body = "Your account has been created."
 
-    # mail.send(msg)
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
+    # Connect to Gmail SMTP and send email
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()  # enable TLS
+        server.login(sender_email, app_password)
+        server.sendmail(sender_email, receiver_email, msg.as_string())
+        server.quit()
+        print("Email sent successfully!")
+    except Exception as e:
+        print("Error sending email:", e)
     return render_template("default/home.html")
 
 @default.route("/about")

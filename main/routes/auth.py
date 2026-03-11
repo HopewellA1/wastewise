@@ -67,7 +67,7 @@ def logout():
     return redirect(url_for('default.home'))
     
     
-@auth.route("/account", methods=['GET', 'POST'])
+@auth.route("/account/<int:id>", methods=['GET', 'POST'])
 @login_required
 def account(id=None):
     
@@ -89,11 +89,38 @@ def account(id=None):
         user.email = request.form["email"]
         db.session.commit()
         
-        flash("Changes saved successfully!", "success")
+        flash("Changes saved successfully!", 'success')
         return redirect(url_for('/auth.account'))
         
-        
+@auth.route('/change_password/<int:id>',methods=['GET','POST'])
+@login_required
+def change_password(id):
     
+    user = User.query.get(int(id))
+    if request.method =='POST':
+        
+        old_password = request.form["old_password"]
+        new_password = request.form["new_password"]
+        new_password2 = request.form["new_password2"]
+        
+        if bcrypt.check_password_hash(user.password, old_password):
+            if new_password == new_password2:
+                user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                db.session.commit()
+                flash("Password updated successfully!", 'success')
+                return redirect(url_for('/auth.account',id=user.id))
+            else:
+                flash(f'new password do not match, try login.','danger')
+                return redirect(url_for('/auth.change_password', id=id))
+        else:
+            flash(f'Old password invalid, try login.','danger')
+            return redirect(url_for('/auth.change_password', id=id))
+    else:
+        return render_template('auth/change_password.html', user=user)
+
+
+            
+ 
 def createsuperuser():
     try:
         fname = input("Enter first name: ")

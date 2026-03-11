@@ -18,16 +18,16 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <ul class="collapse navbar-collapse" id="navbarNav">
-        <li><a href="{{url_for('default.home')}}">Home</a></li>
+        <li class="nav-item"><a href="{{url_for('default.home')}}" >Home</a></li>
         {% if current_user.is_authenticated %}
-          <li><a href="#how">How It Works</a></li>
-          <li><a href="#rewards">Rewards</a></li>
-          <li><a href="#impact">Impact</a></li>
-          <li><a href="{{url_for('/auth.account')}}">{{current_user.email}}</a></li>
-          <li><a href="{{url_for('/auth.logout')}}">Logout</a></li>
+          <li class="nav-item"><a href="#how">How It Works</a></li>
+          <li class="nav-item"><a href="#rewards">Rewards</a></li>
+          <li class="nav-item"><a href="#impact">Impact</a></li>
+          <li class="nav-item"><a href="{{url_for('/auth.account', id=current_user.id)}}">{{current_user.email}}</a></li>
+          <li class="nav-item"><a href="{{url_for('/auth.logout')}}">Logout</a></li>
         {% else %}
-          <li><a href="{{url_for('/auth.signup')}}">sign up</a></li>
-          <li><a href="{{url_for('/auth.login')}}">Login</a></li>
+          <li class="nav-item"><a href="{{url_for('/auth.signup')}}">sign up</a></li>
+          <li class="nav-item"><a href="{{url_for('/auth.login')}}">Login</a></li>
         {% endif %}
       </ul>
     </nav>
