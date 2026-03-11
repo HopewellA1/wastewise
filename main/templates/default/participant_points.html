@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" data-aos="fade-up">
+    <h2>Participant Points Dashboard</h2>
+    <p>View participant usernames, total points, and the rewards they have already received.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7" data-aos="fade-right">
+        <div class="custom-table-card">
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Total Points</th>
+                            <th>Rewards Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for participant in participants %}
+                        <tr>
+                            <td>{{ participant.username }}</td>
+                            <td>
+                                <span class="badge bg-primary">{{ participant.points }}</span>
+                            </td>
+                            <td>{{ participant.rewards }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5" data-aos="fade-left">
+        <div class="chart-card">
+            <h5 class="mb-3">Points Comparison</h5>
+            <canvas id="pointsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const pointsCtx = document.getElementById("pointsChart");
+
+    new Chart(pointsCtx, {
+        type: "bar",
+        data: {
+            labels: ["sarah_n", "john_p", "mbali_d", "thato_m"],
+            datasets: [{
+                label: "Points",
+                data: [120, 95, 88, 64],
+                backgroundColor: ["#05386b", "#5cdb95", "#379683", "#8ee4af"],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
