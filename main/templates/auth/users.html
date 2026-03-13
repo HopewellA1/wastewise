@@ -1,0 +1,43 @@
+{% extends "default/base.html" %}
+{% block content %}
+   
+    <section id="how">
+        <h2 class="section-title">Users</h2>
+        <p class="section-subtitle">
+            All users on the system
+        </p>
+
+        <div class="cards">
+            {% for user in users %}
+                <div style="padding:0.35">
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <img id="CardIconImage" src="{{ url_for('static', filename='images/default-profile-account.jpg') }}"/>
+                        </div>
+                        <div class="card-bady">
+                            <h3>{{user.first_name}}  {{user.last_name}}</h3>
+                            <p>{{user.email}}</p>
+                        </div>
+                        <div class="card-footer">
+                            
+                                    <a href="{{url_for('/auth.account', id=user.id)}}"> view/edit</a> | 
+                                    <a href="#"> delete</a>
+
+                                
+                        </div>
+
+                        
+                    </div>
+                </div>
+                            
+                
+            {% endfor %}
+        </div>
+    </section>
+
+
+
+
+
+{% endblock %}

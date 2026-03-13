@@ -20,9 +20,11 @@
       <ul class="collapse navbar-collapse" id="navbarNav">
         <li class="nav-item"><a href="{{url_for('default.home')}}" >Home</a></li>
         {% if current_user.is_authenticated %}
-          <li class="nav-item"><a href="#how">How It Works</a></li>
-          <li class="nav-item"><a href="#rewards">Rewards</a></li>
-          <li class="nav-item"><a href="#impact">Impact</a></li>
+          <!--<li class="nav-item"><a href="#how">How It Works</a></li>-->
+          <!--<li class="nav-item"><a href="#rewards">Rewards</a></li>-->
+          {% if current_user.is_superuser %}
+            <li class="nav-item"><a href="{{url_for('/auth.users')}}">Users</a></li>
+          {% endif %}
           <li class="nav-item"><a href="{{url_for('/auth.account', id=current_user.id)}}">{{current_user.email}}</a></li>
           <li class="nav-item"><a href="{{url_for('/auth.logout')}}">Logout</a></li>
         {% else %}

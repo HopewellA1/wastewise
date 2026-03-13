@@ -3,6 +3,8 @@ from main.models.auth import User
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
+from getpass import getpass
+
 auth = Blueprint("/auth", __name__, url_prefix="/auth")
 
 @auth.route("/signup", methods=['POST', 'GET'])
@@ -69,7 +71,7 @@ def logout():
     
 @auth.route("/account/<int:id>", methods=['GET', 'POST'])
 @login_required
-def account(id=None):
+def account(id):
     
     if id:
         user = User.query.get(int(id))
@@ -87,12 +89,24 @@ def account(id=None):
         user.first_name = request.form["first_name"]
         user.last_name = request.form["last_name"]
         user.email = request.form["email"]
+        
+        
+        
+        try:
+            user.is_staff  = "is_staff" in request.form
+            user.is_superuser = "is_superuser" in request.form
+        except:
+             pass
         db.session.commit()
         
         flash("Changes saved successfully!", 'success')
-        return redirect(url_for('/auth.account'))
         
-@auth.route('/change_password/<int:id>',methods=['GET','POST'])
+        if current_user.is_superuser:
+            return redirect(url_for('/auth.users'))
+        else:
+            return redirect(url_for('/auth.account', id=user.id))
+        
+@auth.route("/change_password/<int:id>",methods=['GET','POST'])
 @login_required
 def change_password(id):
     
@@ -119,8 +133,16 @@ def change_password(id):
         return render_template('auth/change_password.html', user=user)
 
 
-            
- 
+#Admin
+
+@auth.route("/users", methods=['GET'])
+@login_required
+def users():
+    
+    users = User.query.all()
+    return render_template('auth/users.html', users=users)
+
+
 def createsuperuser():
     try:
         fname = input("Enter first name: ")
@@ -149,15 +171,14 @@ def createsuperuser():
     
     
 def getValidatePassword():
-    password1 = input("Enter email new password: ")
-    password2 = input("Re-Enter email new password: ")
+    password1 = getpass("Enter email new password: ")
+    password2 = getpass("Re-Enter email new password: ")
     
     if password1 != password2:
         print("Password do not match!")
         print("_______________________")
         getValidatePassword()
     else:
-        print("password1: ", password1  )
         return password1
     
     

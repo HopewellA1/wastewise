@@ -6,6 +6,11 @@
 
 
         <div class="card">
+            {% if current_user.is_superuser: %}
+                <div id="back101" style="display: flex; justify-content: start; padding:0.5rem">
+                    <a style="text-decoration: none;" href="{{url_for('/auth.users')}}"><<< users</a>
+                </div>
+            {% endif %}
             <div class="card-header">
                 <h3>
                     <b>
@@ -14,7 +19,7 @@
                 </h1>
             </div>
             <div class="card-body">
-                <form method="POST" action="/auth/account" class="form">
+                <form method="POST" action="{{url_for('/auth.account', id=user.id)}}" class="form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
                     <div class="mb-3">
@@ -30,6 +35,17 @@
                         <label class="form-label">Email</label>
                         <input type="email" name="email" class="form-control" placeholder="Email" value="{{user.email}}" required>
                     </div>
+                    {% if current_user.is_superuser %}
+                        <div >
+                        
+                           <!--
+                            <b>|</b> 
+                            <input type="checkbox" value="true" name="is_staff" {% if user.is_staff %} checked {% endif %}>Is staff 
+                            <b>|</b> -->
+                            <input type="checkbox" name="is_superuser" {% if user.is_superuser %} checked {% endif %}> Is super user
+                        </div>
+                        <br/>
+                    {% endif %}
                     
                     <button class='btn btn-primary' type="submit">Save</button>
                 </form>

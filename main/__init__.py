@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 
 
+
 load_dotenv()
 
 db  = SQLAlchemy()
@@ -64,3 +65,13 @@ def create_app():
         db.create_all()
     
     return app
+
+
+
+def getEmailCreds():
+
+    print("Running")
+    return { 
+        'sender_email': os.getenv("EMAIL_USER"),
+        'app_password': os.getenv("EMAIL_PASS") #"fvugjdhinugqhrna"
+   }

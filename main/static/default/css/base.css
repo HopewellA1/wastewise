@@ -282,4 +282,16 @@
         margin: 10px auto;
         width: 200px;
       }
+
+      #CardIconImage{
+        width: 100%;
+        
+        border: solid;
+       
+      }
+      .card-icon{
+        display: flex;
+        justify-content: center;
+        padding: 0.3rem;
+      }
     }
