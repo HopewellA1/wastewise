@@ -133,6 +133,10 @@ def change_password(id):
         return render_template('auth/change_password.html', user=user)
 
 
+@auth.route('/reset_password')
+@login_required
+def reset_password():
+    pass
 #Admin
 
 @auth.route("/users", methods=['GET'])
