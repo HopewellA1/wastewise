@@ -1,74 +1,421 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise · Participant Points</title>
 
-{% block content %}
-<div class="page-header" data-aos="fade-up">
-    <h2>Participant Points Dashboard</h2>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --dark-navy:     #05386b;
+      --teal-dark:     #0a5a6e;
+      --teal-mid:      #1a8a6e;
+      --green-mid:     #2db87a;
+      --emerald:       #5cdb95;
+      --emerald-light: #a8ffce;
+
+      --card-bg:       rgba(255,255,255,0.09);
+      --card-border:   rgba(255,255,255,0.14);
+      --card-hover-bg: rgba(255,255,255,0.14);
+      --overlay-dark:  rgba(0,0,0,0.28);
+
+      --text-main:   #ffffff;
+      --text-muted:  rgba(255,255,255,0.55);
+      --text-faint:  rgba(255,255,255,0.32);
+      --btn-text:    #05386b;
+
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-wrap {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background: linear-gradient(155deg,
+        #05386b 0%,
+        #0a5a6e 22%,
+        #1a8a6e 55%,
+        #2db87a 78%,
+        #5cdb95 100%);
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      animation: float 20s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 520px; height: 520px; top: 50%;  left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 380px; height: 380px; top:  5%;  right: -100px; animation-delay: -7s; }
+    .blob-3 { width: 260px; height: 260px; top: 32%;  left: 42%;    animation-delay: -13s; }
+    @keyframes float {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(35px,25px) scale(1.08); }
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(5,56,107,.55);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 52px; height: 64px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; margin-right: auto;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; box-shadow: 0 0 18px rgba(92,219,149,.45);
+    }
+    .brand-name {
+      font-family: var(--font-head);
+      font-weight: 800; font-size: 1.15rem; color: var(--text-main);
+    }
+    .topbar-nav { display: flex; align-items: center; gap: 2px; }
+    .topbar-nav a {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: .82rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: background .18s, color .18s;
+    }
+    .topbar-nav a:hover { background: var(--card-hover-bg); color: var(--text-main); }
+    .topbar-nav a.active { color: var(--emerald); font-weight: 600; }
+    .admin-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(92,219,149,.18);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
+      font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 4px 13px; border-radius: 99px;
+    }
+    .admin-pill::before { content: '●'; font-size: .42rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
+    .btn-exit {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px; border-radius: 99px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-muted); font-size: .77rem; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: var(--text-main); }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .78rem; font-weight: 600; color: var(--emerald);
+      text-decoration: none; margin-bottom: 20px; opacity: .8;
+      transition: opacity .2s;
+    }
+    .back-link:hover { opacity: 1; color: var(--emerald); }
+
+    .page-header { margin-bottom: 36px; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+    .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── TABLE CARD — solid ── */
+    .table-card {
+      background: rgba(5,56,107,.4);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 56px rgba(5,56,107,.4);
+      height: 100%;
+    }
+
+    .custom-table { margin: 0; color: var(--text-main); }
+
+    .custom-table thead tr {
+      background: rgba(5,56,107,.85);
+      border-bottom: 2px solid rgba(255,255,255,.14);
+    }
+    .custom-table thead th {
+      font-size: .68rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--emerald); padding: 16px 24px;
+      border: none; white-space: nowrap;
+    }
+    .custom-table tbody tr {
+      background: rgba(5,56,107,.4);
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      transition: background .18s;
+    }
+    .custom-table tbody tr:nth-child(even) { background: rgba(10,90,110,.25); }
+    .custom-table tbody tr:last-child { border-bottom: none; }
+    .custom-table tbody tr:hover { background: rgba(45,184,122,.15) !important; }
+    .custom-table tbody td {
+      padding: 15px 24px; font-size: .85rem;
+      color: rgba(255,255,255,.8); border: none; vertical-align: middle;
+    }
+
+    .td-username { font-weight: 700; color: #fff; }
+
+    /* rank indicator */
+    .rank-1 { color: #fbbf24; }
+    .rank-2 { color: #94a3b8; }
+    .rank-3 { color: #cd7c4e; }
+
+    .pts-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(92,219,149,.13);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .76rem; font-weight: 700;
+    }
+
+    .rewards-text {
+      font-size: .8rem; color: var(--text-muted);
+    }
+
+    /* ── CHART CARD — solid ── */
+    .chart-card {
+      background: rgba(5,56,107,.45);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px 26px;
+      box-shadow: 0 16px 56px rgba(5,56,107,.4);
+      height: 100%;
+    }
+    .chart-card h5 {
+      font-family: var(--font-head);
+      font-size: 1rem; font-weight: 700;
+      color: var(--text-main); margin-bottom: 6px;
+    }
+    .chart-card .chart-sub {
+      font-size: .78rem; color: var(--text-faint); margin-bottom: 24px;
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--overlay-dark);
+      border-top: 1px solid var(--card-border);
+      overflow: hidden; height: 30px;
+      display: flex; align-items: center;
+    }
+    .ticker-inner {
+      display: flex; gap: 56px;
+      animation: tick 32s linear infinite; white-space: nowrap;
+    }
+    .ticker-inner span {
+      font-size: .59rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--emerald); font-weight: 700; opacity: .7;
+    }
+    .ticker-inner span::before { content: '↗ '; }
+    @keyframes tick {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 20px; }
+      .topbar-nav { display: none; }
+      .page { padding: 28px 16px 70px; }
+      .custom-table thead th,
+      .custom-table tbody td { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-wrap" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="wastewise-admin.html" class="topbar-brand">
+    <div class="brand-mark">♻️</div>
+    <span class="brand-name">WasteWise</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="wastewise-admin.html">Dashboard</a>
+    <a href="wastewise-submissions.html">Submissions</a>
+    <a href="wastewise-points.html" class="active">Participants</a>
+    <a href="wastewise-monitor-rewards.html">Rewards</a>
+    <a href="wastewise-overview.html">Overview</a>
+  </nav>
+  <span class="admin-pill">Admin</span>
+  <a href="wastewise-admin.html" class="btn-exit">🔒 Exit Admin</a>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+
+  <a href="admin_dashhboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+
+  <div class="page-header" data-aos="fade-up">
+    <h2>✨ Participant Points Dashboard</h2>
     <p>View participant usernames, total points, and the rewards they have already received.</p>
-</div>
+  </div>
 
-<div class="row g-4">
+  <div class="row g-4">
+
+    <!-- TABLE -->
     <div class="col-lg-7" data-aos="fade-right">
-        <div class="custom-table-card">
-            <div class="table-responsive">
-                <table class="table custom-table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Total Points</th>
-                            <th>Rewards Received</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for participant in participants %}
-                        <tr>
-                            <td>{{ participant.username }}</td>
-                            <td>
-                                <span class="badge bg-primary">{{ participant.points }}</span>
-                            </td>
-                            <td>{{ participant.rewards }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="table custom-table align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Total Points</th>
+                <th>Rewards Received</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank-1">🥇</span></td>
+                <td class="td-username">@sarah_n</td>
+                <td><span class="pts-badge">⭐ 120 pts</span></td>
+                <td class="rewards-text">Eco Bottle, Coffee Voucher</td>
+              </tr>
+              <tr>
+                <td><span class="rank-2">🥈</span></td>
+                <td class="td-username">@john_p</td>
+                <td><span class="pts-badge">⭐ 95 pts</span></td>
+                <td class="rewards-text">Reusable Bag</td>
+              </tr>
+              <tr>
+                <td><span class="rank-3">🥉</span></td>
+                <td class="td-username">@mbali_d</td>
+                <td><span class="pts-badge">⭐ 88 pts</span></td>
+                <td class="rewards-text">Movie Ticket</td>
+              </tr>
+              <tr>
+                <td style="color:var(--dim)">4</td>
+                <td class="td-username">@thato_m</td>
+                <td><span class="pts-badge">⭐ 64 pts</span></td>
+                <td class="rewards-text">—</td>
+              </tr>
+              <tr>
+                <td style="color:var(--dim)">5</td>
+                <td class="td-username">@lerato_k</td>
+                <td><span class="pts-badge">⭐ 58 pts</span></td>
+                <td class="rewards-text">Shopping Voucher</td>
+              </tr>
+              <tr>
+                <td style="color:var(--dim)">6</td>
+                <td class="td-username">@sipho_n</td>
+                <td><span class="pts-badge">⭐ 42 pts</span></td>
+                <td class="rewards-text">—</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
 
+    <!-- CHART -->
     <div class="col-lg-5" data-aos="fade-left">
-        <div class="chart-card">
-            <h5 class="mb-3">Points Comparison</h5>
-            <canvas id="pointsChart"></canvas>
-        </div>
+      <div class="chart-card">
+        <h5>Points Comparison</h5>
+        <p class="chart-sub">Top participants by total points earned</p>
+        <canvas id="pointsChart"></canvas>
+      </div>
     </div>
+
+  </div>
+</main>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-    const pointsCtx = document.getElementById("pointsChart");
+  AOS.init({ duration: 560, once: true, easing: 'ease-out-cubic' });
 
-    new Chart(pointsCtx, {
-        type: "bar",
-        data: {
-            labels: ["sarah_n", "john_p", "mbali_d", "thato_m"],
-            datasets: [{
-                label: "Points",
-                data: [120, 95, 88, 64],
-                backgroundColor: ["#05386b", "#5cdb95", "#379683", "#8ee4af"],
-                borderRadius: 10
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+  const ctx = document.getElementById('pointsChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['@sarah_n', '@john_p', '@mbali_d', '@thato_m', '@lerato_k', '@sipho_n'],
+      datasets: [{
+        label: 'Points',
+        data: [120, 95, 88, 64, 58, 42],
+        backgroundColor: [
+          'rgba(92,219,149,.85)',
+          'rgba(92,219,149,.70)',
+          'rgba(92,219,149,.58)',
+          'rgba(92,219,149,.45)',
+          'rgba(92,219,149,.33)',
+          'rgba(92,219,149,.22)',
+        ],
+        borderColor: 'rgba(92,219,149,.4)',
+        borderWidth: 1,
+        borderRadius: 10,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(5,56,107,.9)',
+          borderColor: 'rgba(255,255,255,.14)',
+          borderWidth: 1,
+          titleColor: '#5cdb95',
+          bodyColor: 'rgba(255,255,255,.75)',
+          padding: 12,
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} pts`
+          }
         }
-    });
+      },
+      scales: {
+        x: {
+          ticks: { color: 'rgba(255,255,255,.45)', font: { family: 'Outfit', size: 11 } },
+          grid:  { color: 'rgba(255,255,255,.04)' }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: 'rgba(255,255,255,.45)', font: { family: 'Outfit', size: 11 } },
+          grid:  { color: 'rgba(255,255,255,.06)' }
+        }
+      }
+    }
+  });
 </script>
-{% endblock %}
+</body>
+</html>

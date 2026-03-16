@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WasteWise · Monitor Rewards</title>
+  <title>WasteWise · Approved Submissions</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -120,10 +120,11 @@
     /* ── PAGE ── */
     .page {
       position: relative; z-index: 1;
-      max-width: 1000px; margin: 0 auto;
+      max-width: 1200px; margin: 0 auto;
       padding: 48px 32px 80px;
     }
 
+    /* ── PAGE HEADER ── */
     .back-link {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: .78rem; font-weight: 600; color: var(--emerald);
@@ -131,12 +132,14 @@
       transition: opacity .2s;
     }
     .back-link:hover { opacity: 1; color: var(--emerald); }
-
     .page-header { margin-bottom: 32px; }
-    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+    .page-header h2 {
+      font-family: var(--font-head);
+      font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;
+    }
     .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
 
-    /* ── TABLE CARD — solid ── */
+    /* ── TABLE CARD — solid, no transparency ── */
     .table-card {
       background: rgba(5,56,107,.4);
       border: 1px solid rgba(255,255,255,.14);
@@ -155,7 +158,7 @@
     .custom-table thead th {
       font-size: .68rem; font-weight: 700;
       letter-spacing: .1em; text-transform: uppercase;
-      color: var(--emerald); padding: 16px 24px;
+      color: var(--emerald); padding: 16px 20px;
       border: none; white-space: nowrap;
     }
     .custom-table tbody tr {
@@ -167,23 +170,38 @@
     .custom-table tbody tr:last-child { border-bottom: none; }
     .custom-table tbody tr:hover { background: rgba(45,184,122,.15) !important; }
     .custom-table tbody td {
-      padding: 15px 24px; font-size: .85rem;
+      padding: 15px 20px; font-size: .85rem;
       color: rgba(255,255,255,.8); border: none; vertical-align: middle;
     }
 
     /* username */
     .td-username { font-weight: 700; color: #fff; }
 
-    /* reward name */
-    .reward-pill {
-      display: inline-flex; align-items: center; gap: 6px;
+    /* waste pill */
+    .waste-pill {
+      display: inline-flex; align-items: center; gap: 5px;
       background: rgba(45,184,122,.18);
       border: 1px solid rgba(45,184,122,.35);
-      padding: 5px 13px; border-radius: 99px;
-      font-size: .78rem; font-weight: 600; color: var(--text-main);
+      padding: 4px 12px; border-radius: 99px;
+      font-size: .75rem; font-weight: 600; color: var(--text-main);
     }
 
-    /* points used */
+    /* quantity / date */
+    .td-qty  { font-weight: 600; color: #fff; }
+    .td-date { font-size: .8rem; color: var(--text-faint); white-space: nowrap; }
+
+    /* view image btn */
+    .btn-view-img {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(92,219,149,.15);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald); padding: 6px 14px; border-radius: 99px;
+      font-size: .74rem; font-weight: 600; cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .btn-view-img:hover { background: rgba(92,219,149,.28); color: #fff; }
+
+    /* points badge */
     .pts-badge {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(96,165,250,.15);
@@ -193,36 +211,30 @@
       font-size: .76rem; font-weight: 700;
     }
 
-    /* status badges */
-    .badge-pending {
+    /* status badge */
+    .status-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(251,191,36,.12);
-      border: 1px solid rgba(251,191,36,.35);
-      color: #fbbf24;
-      padding: 5px 13px; border-radius: 99px;
-      font-size: .74rem; font-weight: 700;
-    }
-    .badge-pending::before { content: '●'; font-size: .38rem; }
-
-    .badge-redeemed {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(92,219,149,.13);
+      background: rgba(92,219,149,.14);
       border: 1px solid rgba(92,219,149,.35);
       color: var(--emerald);
       padding: 5px 13px; border-radius: 99px;
       font-size: .74rem; font-weight: 700;
     }
-    .badge-redeemed::before { content: '●'; font-size: .38rem; }
+    .status-badge::before { content: '●'; font-size: .4rem; }
 
-    .badge-processing {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(139,92,246,.13);
-      border: 1px solid rgba(139,92,246,.35);
-      color: #a78bfa;
-      padding: 5px 13px; border-radius: 99px;
-      font-size: .74rem; font-weight: 700;
+    /* ── MODAL ── */
+    .modal-content.evidence-modal {
+      background: rgba(5,56,107,.85);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      color: var(--text-main);
     }
-    .badge-processing::before { content: '●'; font-size: .38rem; }
+    .modal-content.evidence-modal .modal-header {
+      border-bottom: 1px solid rgba(255,255,255,.14); padding: 18px 24px;
+    }
+    .modal-content.evidence-modal .modal-title { font-weight: 700; font-size: .95rem; }
+    .modal-content.evidence-modal .btn-close { filter: invert(1) brightness(1.5); }
+    .modal-content.evidence-modal .modal-body { padding: 24px; color: var(--text-muted); }
 
     /* ── TICKER ── */
     .ticker-wrap {
@@ -271,10 +283,10 @@
     <span class="brand-name">WasteWise</span>
   </a>
   <nav class="topbar-nav">
-    <a href="admin_dashhboard.html">Dashboard</a>
-    <a href="participant_submission.html">Submissions</a>
+    <a href="wastewise-admin.html">Dashboard</a>
+    <a href="wastewise-submissions.html" class="active">Submissions</a>
     <a href="wastewise-points.html">Participants</a>
-    <a href="wastewise-monitor-rewards.html" class="active">Rewards</a>
+    <a href="wastewise-monitor-rewards.html">Rewards</a>
     <a href="wastewise-overview.html">Overview</a>
   </nav>
   <span class="admin-pill">Admin</span>
@@ -287,21 +299,21 @@
   <a href="admin_dashhboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
 
   <div class="page-header" data-aos="fade-up">
-    <h2>🎁 Monitor Rewards</h2>
-    <p>Track reward redemptions and their current status.</p>
+    <h2>✅ Approved Submissions</h2>
+    <p>View all approved recycling records, the evidence accepted, and the points awarded.</p>
   </div>
 
-  <div style="margin-bottom:20px;" data-aos="fade-up">
-    <a href="wastewise-manage-rewards.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;transition:background .2s;">⚙️ Switch to Manage Rewards</a>
-  </div>
   <div class="table-card" data-aos="fade-up" data-aos-delay="80">
     <div class="table-responsive">
       <table class="table custom-table align-middle">
         <thead>
           <tr>
             <th>Username</th>
-            <th>Reward</th>
-            <th>Points Used</th>
+            <th>Waste Type</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Evidence</th>
+            <th>Points Earned</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -309,58 +321,102 @@
 
           <tr>
             <td class="td-username">@thabo_m</td>
-            <td><span class="reward-pill">🧴 Eco Bottle</span></td>
-            <td><span class="pts-badge">⭐ 50 pts</span></td>
-            <td><span class="badge-redeemed">Redeemed</span></td>
+            <td><span class="waste-pill">🥤 Plastic</span></td>
+            <td class="td-qty">2.4 kg</td>
+            <td class="td-date">12 Mar 2026</td>
+            <td>
+              <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal1">🔍 View Image</button>
+              <div class="modal fade" id="modal1" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content evidence-modal">
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body text-center"><p>Image will display here.</p></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td><span class="pts-badge">⭐ 120 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@lerato_k</td>
-            <td><span class="reward-pill">☕ Coffee Voucher</span></td>
-            <td><span class="pts-badge">⭐ 25 pts</span></td>
-            <td><span class="badge-pending">Pending</span></td>
+            <td><span class="waste-pill">📰 Paper</span></td>
+            <td class="td-qty">1.8 kg</td>
+            <td class="td-date">11 Mar 2026</td>
+            <td>
+              <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal2">🔍 View Image</button>
+              <div class="modal fade" id="modal2" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content evidence-modal">
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body text-center"><p>Image will display here.</p></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td><span class="pts-badge">⭐ 90 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@sipho_n</td>
-            <td><span class="reward-pill">🎟️ Shopping Voucher</span></td>
-            <td><span class="pts-badge">⭐ 100 pts</span></td>
-            <td><span class="badge-processing">Processing</span></td>
+            <td><span class="waste-pill">🥫 Metal</span></td>
+            <td class="td-qty">3.1 kg</td>
+            <td class="td-date">10 Mar 2026</td>
+            <td>
+              <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal3">🔍 View Image</button>
+              <div class="modal fade" id="modal3" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content evidence-modal">
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body text-center"><p>Image will display here.</p></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td><span class="pts-badge">⭐ 155 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@amahle_d</td>
-            <td><span class="reward-pill">🛍️ Reusable Bag</span></td>
-            <td><span class="pts-badge">⭐ 30 pts</span></td>
-            <td><span class="badge-redeemed">Redeemed</span></td>
+            <td><span class="waste-pill">🍶 Glass</span></td>
+            <td class="td-qty">0.9 kg</td>
+            <td class="td-date">09 Mar 2026</td>
+            <td>
+              <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal4">🔍 View Image</button>
+              <div class="modal fade" id="modal4" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content evidence-modal">
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body text-center"><p>Image will display here.</p></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td><span class="pts-badge">⭐ 45 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@nkosi_z</td>
-            <td><span class="reward-pill">🎬 Movie Ticket</span></td>
-            <td><span class="pts-badge">⭐ 80 pts</span></td>
-            <td><span class="badge-pending">Pending</span></td>
-          </tr>
-
-          <tr>
-            <td class="td-username">@zanele_p</td>
-            <td><span class="reward-pill">🌳 Tree Planting Certificate</span></td>
+            <td><span class="waste-pill">🔋 E-Waste</span></td>
+            <td class="td-qty">0.5 kg</td>
+            <td class="td-date">08 Mar 2026</td>
+            <td>
+              <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal5">🔍 View Image</button>
+              <div class="modal fade" id="modal5" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content evidence-modal">
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body text-center"><p>Image will display here.</p></div>
+                  </div>
+                </div>
+              </div>
+            </td>
             <td><span class="pts-badge">⭐ 200 pts</span></td>
-            <td><span class="badge-redeemed">Redeemed</span></td>
-          </tr>
-
-          <tr>
-            <td class="td-username">@mpho_r</td>
-            <td><span class="reward-pill">🎒 Eco Backpack</span></td>
-            <td><span class="pts-badge">⭐ 150 pts</span></td>
-            <td><span class="badge-processing">Processing</span></td>
-          </tr>
-
-          <tr>
-            <td class="td-username">@kagiso_t</td>
-            <td><span class="reward-pill">🍱 Eco Lunch Box</span></td>
-            <td><span class="pts-badge">⭐ 60 pts</span></td>
-            <td><span class="badge-redeemed">Redeemed</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
         </tbody>
