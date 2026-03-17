@@ -68,7 +68,7 @@
     /* ── TOPBAR ── */
     .topbar {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(5,56,107,.55);
+      background: #060f33 !important;
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--card-border);
       padding: 0 52px; height: 64px;
@@ -138,36 +138,40 @@
 
     /* ── TABLE CARD ── */
     .table-card {
-      background: rgba(5,56,107,.4);
-      border: 1px solid rgba(255,255,255,.14);
+      background: #0d6e6e !important;
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 16px 56px rgba(0,0,0,.6);
+      box-shadow: 0 16px 56px rgba(0,0,0,.3);
     }
 
-    .custom-table { margin: 0; color: var(--text-main); }
+    .custom-table { margin: 0; color: #fff; }
 
     .custom-table thead tr {
-      background: rgba(5,56,107,.85);
-      border-bottom: 2px solid rgba(255,255,255,.14);
+      background: #085858 !important;
+      border-bottom: 2px solid rgba(255,255,255,.2) !important;
     }
     .custom-table thead th {
+      font-family: var(--font-body);
       font-size: .68rem; font-weight: 700;
       letter-spacing: .1em; text-transform: uppercase;
-      color: var(--emerald); padding: 16px 20px;
-      border: none; white-space: nowrap;
+      color: #a8ffce !important; padding: 16px 20px;
+      border: none !important; white-space: nowrap;
+      background: #085858 !important;
     }
     .custom-table tbody tr {
-      background: rgba(5,56,107,.4);
-      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: #0d6e6e !important;
+      border-bottom: 1px solid rgba(255,255,255,.1) !important;
       transition: background .18s;
     }
-    .custom-table tbody tr:nth-child(even) { background: rgba(10,90,110,.25); }
-    .custom-table tbody tr:last-child { border-bottom: none; }
-    .custom-table tbody tr:hover { background: rgba(45,184,122,.15) !important; }
+    .custom-table tbody tr:nth-child(even) { background: #0f7a7a !important; }
+    .custom-table tbody tr:last-child { border-bottom: none !important; }
+    .custom-table tbody tr:hover { background: #118f8f !important; }
     .custom-table tbody td {
       padding: 14px 20px; font-size: .85rem;
-      color: rgba(255,255,255,.8); border: none; vertical-align: middle;
+      color: rgba(255,255,255,.9) !important;
+      border: none !important; vertical-align: middle;
+      background: inherit !important;
     }
 
     /* username */
@@ -182,7 +186,7 @@
     }
 
     .td-qty  { font-weight: 600; color: #fff; }
-    .td-date { font-size: .8rem; color: var(--text-faint); white-space: nowrap; }
+    .td-date { font-size: .8rem; color: rgba(255,255,255,.65); white-space: nowrap; }
 
     /* evidence */
     .btn-view-img {
@@ -299,11 +303,11 @@
     <span class="brand-name">WasteWise</span>
   </a>
   <nav class="topbar-nav">
-    <a href="wastewise-admin.html">Dashboard</a>
-    <a href="wastewise-submissions.html" class="active">Submissions</a>
-    <a href="wastewise-points.html">Participants</a>
-    <a href="wastewise-monitor-rewards.html">Rewards</a>
-    <a href="wastewise-overview.html">Overview</a>
+    <a href="admin_dashboard.html">Dashboard</a>
+    <a href="participant_submission.html" class="active">Submissions</a>
+    <a href="participant_points.html">Participants</a>
+    <a href="monitor_rewards.html">Rewards</a>
+    <a href="program_overview.html">Overview</a>
   </nav>
   <span class="admin-pill">Admin</span>
   <a href="wastewise-admin.html" class="btn-exit">🔒 Exit Admin</a>
@@ -312,7 +316,7 @@
 <!-- PAGE -->
 <main class="page">
 
-  <a href="admin_dashhboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+  <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
 
   <div class="page-header" data-aos="fade-up">
     <h2>📝 Participant Submissions</h2>

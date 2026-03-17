@@ -38,7 +38,7 @@
 
     body {
       font-family: var(--font-body);
-      color: var(--text-main);
+      color: rgba(255,255,255,.9);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -88,7 +88,7 @@
     }
     .brand-name {
       font-family: var(--font-head);
-      font-weight: 800; font-size: 1.15rem; color: var(--text-main);
+      font-weight: 800; font-size: 1.15rem; color: rgba(255,255,255,.9);
     }
     .topbar-nav { display: flex; align-items: center; gap: 2px; }
     .topbar-nav a {
@@ -96,7 +96,7 @@
       font-size: .82rem; font-weight: 500; color: var(--text-muted);
       text-decoration: none; transition: background .18s, color .18s;
     }
-    .topbar-nav a:hover { background: var(--card-hover-bg); color: var(--text-main); }
+    .topbar-nav a:hover { background: var(--card-hover-bg); color: rgba(255,255,255,.9); }
     .topbar-nav a.active { color: var(--emerald); font-weight: 600; }
     .admin-pill {
       display: inline-flex; align-items: center; gap: 6px;
@@ -116,7 +116,7 @@
       text-decoration: none; cursor: pointer;
       transition: background .2s, border-color .2s, color .2s;
     }
-    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: var(--text-main); }
+    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.9); }
 
     /* ── PAGE ── */
     .page {
@@ -134,42 +134,45 @@
     .back-link:hover { opacity: 1; color: var(--emerald); }
 
     .page-header { margin-bottom: 36px; }
-    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: rgba(255,255,255,.9); margin-bottom: 6px; }
     .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
 
-    /* ── TABLE CARD — solid ── */
+    /* ── TABLE CARD ── */
     .table-card {
-      background: rgba(5,56,107,.4);
-      border: 1px solid rgba(255,255,255,.14);
+      background: #0d6e6e !important;
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 16px 56px rgba(5,56,107,.4);
-      height: 100%;
+      box-shadow: 0 16px 56px rgba(0,0,0,.3);
     }
 
-    .custom-table { margin: 0; color: var(--text-main); }
+    .custom-table { margin: 0; color: #fff; }
 
     .custom-table thead tr {
-      background: rgba(5,56,107,.85);
-      border-bottom: 2px solid rgba(255,255,255,.14);
+      background: #085858 !important;
+      border-bottom: 2px solid rgba(255,255,255,.2) !important;
     }
     .custom-table thead th {
+      font-family: var(--font-body);
       font-size: .68rem; font-weight: 700;
       letter-spacing: .1em; text-transform: uppercase;
-      color: var(--emerald); padding: 16px 24px;
-      border: none; white-space: nowrap;
+      color: #a8ffce !important; padding: 16px 20px;
+      border: none !important; white-space: nowrap;
+      background: #085858 !important;
     }
     .custom-table tbody tr {
-      background: rgba(5,56,107,.4);
-      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: #0d6e6e !important;
+      border-bottom: 1px solid rgba(255,255,255,.1) !important;
       transition: background .18s;
     }
-    .custom-table tbody tr:nth-child(even) { background: rgba(10,90,110,.25); }
-    .custom-table tbody tr:last-child { border-bottom: none; }
-    .custom-table tbody tr:hover { background: rgba(45,184,122,.15) !important; }
+    .custom-table tbody tr:nth-child(even) { background: #0f7a7a !important; }
+    .custom-table tbody tr:last-child { border-bottom: none !important; }
+    .custom-table tbody tr:hover { background: #118f8f !important; }
     .custom-table tbody td {
-      padding: 15px 24px; font-size: .85rem;
-      color: rgba(255,255,255,.8); border: none; vertical-align: middle;
+      padding: 14px 20px; font-size: .85rem;
+      color: rgba(255,255,255,.9) !important;
+      border: none !important; vertical-align: middle;
+      background: inherit !important;
     }
 
     .td-username { font-weight: 700; color: #fff; }
@@ -205,10 +208,10 @@
     .chart-card h5 {
       font-family: var(--font-head);
       font-size: 1rem; font-weight: 700;
-      color: var(--text-main); margin-bottom: 6px;
+      color: rgba(255,255,255,.9); margin-bottom: 6px;
     }
     .chart-card .chart-sub {
-      font-size: .78rem; color: var(--text-faint); margin-bottom: 24px;
+      font-size: .78rem; color: rgba(255,255,255,.55); margin-bottom: 24px;
     }
 
     /* ── TICKER ── */
@@ -258,11 +261,11 @@
     <span class="brand-name">WasteWise</span>
   </a>
   <nav class="topbar-nav">
-    <a href="wastewise-admin.html">Dashboard</a>
-    <a href="wastewise-submissions.html">Submissions</a>
+    <a href="admin_dashboard.html">Dashboard</a>
+    <a href="participant_submission.html">Submissions</a>
     <a href="wastewise-points.html" class="active">Participants</a>
-    <a href="wastewise-monitor-rewards.html">Rewards</a>
-    <a href="wastewise-overview.html">Overview</a>
+    <a href="monitor_rewards.html">Rewards</a>
+    <a href="program_overview.html"> Overview</a>
   </nav>
   <span class="admin-pill">Admin</span>
   <a href="wastewise-admin.html" class="btn-exit">🔒 Exit Admin</a>
@@ -271,7 +274,7 @@
 <!-- PAGE -->
 <main class="page">
 
-  <a href="admin_dashhboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+  <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
 
   <div class="page-header" data-aos="fade-up">
     <h2>✨ Participant Points Dashboard</h2>
