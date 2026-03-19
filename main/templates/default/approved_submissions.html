@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WasteWise · Participant Submissions</title>
+  <title>WasteWise · Approved Submissions</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -37,7 +37,7 @@
 
     body {
       font-family: var(--font-body);
-      color: var(--text-main);
+      color: rgba(255,255,255,.9);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -68,7 +68,7 @@
     /* ── TOPBAR ── */
     .topbar {
       position: sticky; top: 0; z-index: 100;
-      background: #060f33 !important;
+      background: rgba(5,56,107,.55);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--card-border);
       padding: 0 52px; height: 64px;
@@ -87,7 +87,7 @@
     }
     .brand-name {
       font-family: var(--font-head);
-      font-weight: 800; font-size: 1.15rem; color: var(--text-main);
+      font-weight: 800; font-size: 1.15rem; color: rgba(255,255,255,.9);
     }
     .topbar-nav { display: flex; align-items: center; gap: 2px; }
     .topbar-nav a {
@@ -95,7 +95,7 @@
       font-size: .82rem; font-weight: 500; color: var(--text-muted);
       text-decoration: none; transition: background .18s, color .18s;
     }
-    .topbar-nav a:hover { background: var(--card-hover-bg); color: var(--text-main); }
+    .topbar-nav a:hover { background: var(--card-hover-bg); color: rgba(255,255,255,.9); }
     .topbar-nav a.active { color: var(--emerald); font-weight: 600; }
     .admin-pill {
       display: inline-flex; align-items: center; gap: 6px;
@@ -115,7 +115,7 @@
       text-decoration: none; cursor: pointer;
       transition: background .2s, border-color .2s, color .2s;
     }
-    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: var(--text-main); }
+    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.9); }
 
     /* ── PAGE ── */
     .page {
@@ -124,6 +124,7 @@
       padding: 48px 32px 80px;
     }
 
+    /* ── PAGE HEADER ── */
     .back-link {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: .78rem; font-weight: 600; color: var(--emerald);
@@ -131,9 +132,11 @@
       transition: opacity .2s;
     }
     .back-link:hover { opacity: 1; color: var(--emerald); }
-
     .page-header { margin-bottom: 32px; }
-    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+    .page-header h2 {
+      font-family: var(--font-head);
+      font-size: 1.9rem; font-weight: 800; color: rgba(255,255,255,.9); margin-bottom: 6px;
+    }
     .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
 
     /* ── TABLE CARD ── */
@@ -180,15 +183,17 @@
     /* waste pill */
     .waste-pill {
       display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(255,255,255,.14); border: 1px solid #2a6058;
+      background: rgba(45,184,122,.18);
+      border: 1px solid rgba(45,184,122,.35);
       padding: 4px 12px; border-radius: 99px;
-      font-size: .75rem; font-weight: 600; color: #fff;
+      font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.9);
     }
 
+    /* quantity / date */
     .td-qty  { font-weight: 600; color: #fff; }
-    .td-date { font-size: .8rem; color: rgba(255,255,255,.65); white-space: nowrap; }
+    .td-date { font-size: .8rem; color: rgba(255,255,255,.55); white-space: nowrap; }
 
-    /* evidence */
+    /* view image btn */
     .btn-view-img {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(92,219,149,.15);
@@ -199,59 +204,38 @@
     }
     .btn-view-img:hover { background: rgba(92,219,149,.28); color: #fff; }
 
-    /* status badge — pending */
-    .badge-pending {
+    /* points badge */
+    .pts-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(251,191,36,.12);
-      border: 1px solid rgba(251,191,36,.35);
-      color: #fbbf24;
+      background: rgba(96,165,250,.15);
+      border: 1px solid rgba(96,165,250,.35);
+      color: #93c5fd;
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .76rem; font-weight: 700;
+    }
+
+    /* status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(92,219,149,.14);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
       padding: 5px 13px; border-radius: 99px;
       font-size: .74rem; font-weight: 700;
     }
-    .badge-pending::before { content: '●'; font-size: .38rem; }
-
-    /* action buttons */
-    .btn-approve {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
-      border: none;
-      color: var(--btn-text);
-      padding: 7px 16px; border-radius: 99px;
-      font-size: .76rem; font-weight: 700; cursor: pointer;
-      transition: background .2s, color .2s;
-      white-space: nowrap;
-    }
-    .btn-approve:hover { transform: scale(1.04); box-shadow: 0 0 20px rgba(92,219,149,.35); color: var(--btn-text); }
-
-    .btn-reject {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(248,113,113,.12);
-      border: 1px solid rgba(248,113,113,.32);
-      color: #f87171;
-      padding: 7px 16px; border-radius: 99px;
-      font-size: .76rem; font-weight: 700; cursor: pointer;
-      transition: background .2s, color .2s;
-      white-space: nowrap;
-    }
-    .btn-reject:hover { background: rgba(248,113,113,.26); color: #fff; }
-
-    .actions-cell {
-      display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
-    }
+    .status-badge::before { content: '●'; font-size: .4rem; }
 
     /* ── MODAL ── */
     .modal-content.evidence-modal {
       background: rgba(5,56,107,.85);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--card-border);
-      border-radius: 18px; color: var(--text-main);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      color: rgba(255,255,255,.9);
     }
     .modal-content.evidence-modal .modal-header {
-      border-bottom: 1px solid var(--card-border); padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.14); padding: 18px 24px;
     }
-    .modal-content.evidence-modal .modal-title {
-      font-family: var(--font-head); font-weight: 700; font-size: .95rem;
-    }
+    .modal-content.evidence-modal .modal-title { font-weight: 700; font-size: .95rem; }
     .modal-content.evidence-modal .btn-close { filter: invert(1) brightness(1.5); }
     .modal-content.evidence-modal .modal-body { padding: 24px; color: var(--text-muted); }
 
@@ -283,8 +267,7 @@
       .topbar-nav { display: none; }
       .page { padding: 28px 16px 70px; }
       .custom-table thead th,
-      .custom-table tbody td { padding: 12px 12px; }
-      .actions-cell { flex-direction: column; gap: 6px; }
+      .custom-table tbody td { padding: 12px 14px; }
     }
   </style>
 </head>
@@ -305,7 +288,7 @@
   <nav class="topbar-nav">
     <a href="admin_dashboard.html">Dashboard</a>
     <a href="participant_submission.html" class="active">Submissions</a>
-    <a href="participant_points.html">Participants</a>
+    <a href="wastewise-points.html">Participants</a>
     <a href="monitor_rewards.html">Rewards</a>
     <a href="program_overview.html">Overview</a>
   </nav>
@@ -319,13 +302,10 @@
   <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
 
   <div class="page-header" data-aos="fade-up">
-    <h2>📝 Participant Submissions</h2>
-    <p>Review pending recycling contributions and verify the uploaded evidence before approval.</p>
+    <h2>✅ Approved Submissions</h2>
+    <p>View all approved recycling records, the evidence accepted, and the points awarded.</p>
   </div>
 
-  <div style="margin-bottom:20px;" data-aos="fade-up">
-    <a href="wastewise-approved.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;">✅ View Approved Submissions</a>
-  </div>
   <div class="table-card" data-aos="fade-up" data-aos-delay="80">
     <div class="table-responsive">
       <table class="table custom-table align-middle">
@@ -336,8 +316,8 @@
             <th>Quantity</th>
             <th>Date</th>
             <th>Evidence</th>
+            <th>Points Earned</th>
             <th>Status</th>
-            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -346,100 +326,100 @@
             <td class="td-username">@thabo_m</td>
             <td><span class="waste-pill">🥤 Plastic</span></td>
             <td class="td-qty">2.4 kg</td>
-            <td class="td-date">14 Mar 2026</td>
+            <td class="td-date">12 Mar 2026</td>
             <td>
               <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal1">🔍 View Image</button>
               <div class="modal fade" id="modal1" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content evidence-modal">
-                    <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body text-center"><p>Image will display here.</p></div>
                   </div>
                 </div>
               </div>
             </td>
-            <td><span class="badge-pending">Pending</span></td>
-            <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            <td><span class="pts-badge">⭐ 120 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@lerato_k</td>
             <td><span class="waste-pill">📰 Paper</span></td>
             <td class="td-qty">1.8 kg</td>
-            <td class="td-date">13 Mar 2026</td>
+            <td class="td-date">11 Mar 2026</td>
             <td>
               <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal2">🔍 View Image</button>
               <div class="modal fade" id="modal2" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content evidence-modal">
-                    <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body text-center"><p>Image will display here.</p></div>
                   </div>
                 </div>
               </div>
             </td>
-            <td><span class="badge-pending">Pending</span></td>
-            <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            <td><span class="pts-badge">⭐ 90 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@sipho_n</td>
             <td><span class="waste-pill">🥫 Metal</span></td>
             <td class="td-qty">3.1 kg</td>
-            <td class="td-date">13 Mar 2026</td>
+            <td class="td-date">10 Mar 2026</td>
             <td>
               <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal3">🔍 View Image</button>
               <div class="modal fade" id="modal3" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content evidence-modal">
-                    <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body text-center"><p>Image will display here.</p></div>
                   </div>
                 </div>
               </div>
             </td>
-            <td><span class="badge-pending">Pending</span></td>
-            <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            <td><span class="pts-badge">⭐ 155 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@amahle_d</td>
             <td><span class="waste-pill">🍶 Glass</span></td>
             <td class="td-qty">0.9 kg</td>
-            <td class="td-date">12 Mar 2026</td>
+            <td class="td-date">09 Mar 2026</td>
             <td>
               <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal4">🔍 View Image</button>
               <div class="modal fade" id="modal4" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content evidence-modal">
-                    <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body text-center"><p>Image will display here.</p></div>
                   </div>
                 </div>
               </div>
             </td>
-            <td><span class="badge-pending">Pending</span></td>
-            <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            <td><span class="pts-badge">⭐ 45 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
           <tr>
             <td class="td-username">@nkosi_z</td>
             <td><span class="waste-pill">🔋 E-Waste</span></td>
             <td class="td-qty">0.5 kg</td>
-            <td class="td-date">12 Mar 2026</td>
+            <td class="td-date">08 Mar 2026</td>
             <td>
               <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal5">🔍 View Image</button>
               <div class="modal fade" id="modal5" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content evidence-modal">
-                    <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-header"><h5 class="modal-title">Approved Evidence</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body text-center"><p>Image will display here.</p></div>
                   </div>
                 </div>
               </div>
             </td>
-            <td><span class="badge-pending">Pending</span></td>
-            <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            <td><span class="pts-badge">⭐ 200 pts</span></td>
+            <td><span class="status-badge">Approved</span></td>
           </tr>
 
         </tbody>

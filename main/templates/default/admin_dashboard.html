@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise · Admin Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --dark-navy:      #05386b;
+      --teal-dark:      #0a5a6e;
+      --teal-mid:       #1a8a6e;
+      --green-mid:      #2db87a;
+      --emerald:        #5cdb95;
+      --emerald-light:  #a8ffce;
+
+      --card-bg:        rgba(255,255,255,0.09);
+      --card-border:    rgba(255,255,255,0.14);
+      --card-hover-bg:  rgba(255,255,255,0.14);
+      --overlay-dark:   rgba(0,0,0,0.28);
+
+      --text-main:   #ffffff;
+      --text-muted:  rgba(255,255,255,0.55);
+      --text-faint:  rgba(255,255,255,0.32);
+      --btn-text:    #05386b;
+
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── BACKGROUND ─── */
+    .bg-wrap {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background: linear-gradient(155deg,
+        #05386b 0%,
+        #0a5a6e 22%,
+        #1a8a6e 55%,
+        #2db87a 78%,
+        #5cdb95 100%);
+    }
+
+    /* translucent blobs for depth */
+    .blob {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      animation: float 20s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 520px; height: 520px; top: 50%;  left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 380px; height: 380px; top:  5%;  right: -100px; animation-delay: -7s; }
+    .blob-3 { width: 260px; height: 260px; top: 32%;  left: 42%;    animation-delay: -13s; }
+    @keyframes float {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(35px, 25px) scale(1.08); }
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(5,56,107,.55);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 52px; height: 64px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; margin-right: auto;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 0 18px rgba(92,219,149,.45);
+    }
+    .brand-name {
+      font-family: var(--font-head);
+      font-weight: 800; font-size: 1.15rem; color: var(--text-main);
+    }
+
+    .topbar-nav { display: flex; align-items: center; gap: 2px; }
+    .topbar-nav a {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: .82rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: background .18s, color .18s;
+    }
+    .topbar-nav a:hover { background: var(--card-hover-bg); color: var(--text-main); }
+    .topbar-nav a.active {
+      color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .admin-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(92,219,149,.18);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
+      font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 4px 13px; border-radius: 99px;
+    }
+    .admin-pill::before { content: '●'; font-size: .42rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+    .btn-exit {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px; border-radius: 99px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: .77rem; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .btn-exit:hover {
+      background: var(--card-hover-bg);
+      border-color: rgba(255,255,255,.28);
+      color: var(--text-main);
+    }
+
+    /* ─── PAGE ─── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* ─── HERO CARD ─── */
+    .hero-card {
+      background: rgba(5,56,107,.35);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 46px 54px;
+      display: flex; align-items: center; justify-content: space-between; gap: 32px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 60px rgba(5,56,107,.3), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .hero-card::before {
+      content: '♻';
+      position: absolute; right: 36px; top: -28px;
+      font-size: 200px; opacity: .05; line-height: 1; pointer-events: none;
+    }
+    .hero-card::after {
+      content: '';
+      position: absolute; width: 320px; height: 320px; border-radius: 50%;
+      background: rgba(92,219,149,.08);
+      bottom: -110px; left: 33%; pointer-events: none;
+    }
+
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .62rem; font-weight: 700; letter-spacing: .13em;
+      text-transform: uppercase; color: var(--emerald);
+      background: rgba(92,219,149,.15);
+      border: 1px solid rgba(92,219,149,.3);
+      padding: 4px 12px; border-radius: 99px; margin-bottom: 14px;
+    }
+    .hero-label::before { content: '●'; font-size: .42rem; animation: pulse 2s infinite; }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: 2.4rem; font-weight: 800; line-height: 1.12;
+      color: var(--text-main); margin-bottom: 10px;
+    }
+    .hero-text {
+      font-size: .92rem; color: var(--text-muted);
+      max-width: 460px; line-height: 1.72;
+    }
+
+    .btn-hero {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+      color: var(--btn-text);
+      font-family: var(--font-body);
+      font-weight: 700; font-size: .85rem;
+      padding: 13px 30px; border-radius: 99px;
+      text-decoration: none; border: none; cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 0 32px rgba(92,219,149,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-hero:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 52px rgba(92,219,149,.6);
+      color: var(--btn-text);
+    }
+
+    /* ─── SECTION LABEL ─── */
+    .sec-head {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--font-body);
+      font-size: .6rem; font-weight: 600; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px;
+    }
+    .sec-head::after { content: ''; flex: 1; height: 1px; background: var(--card-border); }
+
+    /* ─── STAT CARDS ─── */
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 28px 20px; text-align: center;
+      transition: transform .24s, background .2s, border-color .24s;
+      height: 100%; position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(92,219,149,.12), transparent 65%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      background: var(--card-hover-bg);
+      border-color: rgba(255,255,255,.22);
+    }
+    .stat-card:hover::before { opacity: 1; }
+
+    .stat-icon  { font-size: 2rem; margin-bottom: 11px; display: block; }
+    .stat-num   {
+      font-family: var(--font-head);
+      font-size: 2.7rem; font-weight: 800; line-height: 1; margin-bottom: 7px;
+    }
+    .stat-label {
+      font-size: .68rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+
+    .stat-card:nth-child(1) .stat-num { color: #fbbf24; }
+    .stat-card:nth-child(2) .stat-num { color: var(--emerald); }
+    .stat-card:nth-child(3) .stat-num { color: #93c5fd; }
+    .stat-card:nth-child(4) .stat-num { color: #f9a8d4; }
+
+    /* ─── FEATURE CARDS ─── */
+    .feature-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px 26px;
+      transition: transform .25s, background .2s, border-color .25s, box-shadow .25s;
+      position: relative; overflow: hidden; height: 100%;
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute; bottom: -52px; right: -52px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(92,219,149,.09);
+      transition: transform .35s;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      background: var(--card-hover-bg);
+      border-color: rgba(92,219,149,.28);
+      box-shadow: 0 12px 44px rgba(5,56,107,.35);
+    }
+    .feature-card:hover::after { transform: scale(1.7); }
+
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+
+    .feature-card h4 {
+      font-family: var(--font-head);
+      font-size: .97rem; font-weight: 700;
+      color: var(--text-main); margin-bottom: 8px; line-height: 1.35;
+    }
+    .feature-card p {
+      font-size: .84rem; color: var(--text-muted);
+      line-height: 1.68; margin-bottom: 22px;
+    }
+
+    .btn-wastewise {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+      color: var(--btn-text);
+      padding: 9px 20px; border-radius: 99px;
+      font-size: .79rem; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 0 16px rgba(92,219,149,.25);
+      transition: transform .18s, box-shadow .18s;
+      position: relative; z-index: 1;
+    }
+    .btn-wastewise:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 28px rgba(92,219,149,.45);
+      color: var(--btn-text);
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--overlay-dark);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--card-border);
+      overflow: hidden; height: 30px;
+      display: flex; align-items: center;
+    }
+    .ticker-inner {
+      display: flex; gap: 56px;
+      animation: tick 32s linear infinite; white-space: nowrap;
+    }
+    .ticker-inner span {
+      font-size: .59rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--emerald); font-weight: 700; opacity: .75;
+    }
+    .ticker-inner span::before { content: '↗ '; }
+    @keyframes tick {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 20px; }
+      .topbar-nav { display: none; }
+      .hero-card { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
+      .hero-title { font-size: 1.8rem; }
+      .page { padding: 28px 16px 70px; }
+    }
+    @media (max-width: 480px) {
+      .stat-num { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-wrap" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="wastewise-admin.html" class="topbar-brand">
+    <div class="brand-mark">♻️</div>
+    <span class="brand-name">WasteWise</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="admin_dashhboard.html" class="active">Dashboard</a>
+    <a href="participant_submission.html">Submissions</a>
+    <a href="participant_points.html">Participants</a>
+    <a href="monitor_rewards.html">Rewards</a>
+    <a href="program_overview.html">Overview</a>
+  </nav>
+  <span class="admin-pill">Admin</span>
+  <a href="wastewise-admin.html" class="btn-exit">🔒 Exit Admin</a>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- HERO -->
+  <section class="mb-5" data-aos="fade-up">
+    <div class="hero-card">
+      <div>
+        <div class="hero-label">Admin Control Centre</div>
+        <h1 class="hero-title">Hello, Admin 👋</h1>
+        <p class="hero-text">
+          Welcome back. Manage participant submissions, rewards, points, and the recycling program from one place.
+        </p>
+      </div>
+      <a href="wastewise-admin.html" class="btn-hero">🔒 Exit Admin</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <p class="sec-head">At a Glance</p>
+  <section class="row g-4 mb-5">
+    <div class="col-6 col-lg-3" data-aos="zoom-in">
+      <div class="stat-card">
+        <span class="stat-icon">⏳</span>
+        <div class="stat-num">24</div>
+        <div class="stat-label">Pending Submissions</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="80">
+      <div class="stat-card">
+        <span class="stat-icon">✅</span>
+        <div class="stat-num">156</div>
+        <div class="stat-label">Approved Records</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="160">
+      <div class="stat-card">
+        <span class="stat-icon">👥</span>
+        <div class="stat-num">89</div>
+        <div class="stat-label">Participants</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="240">
+      <div class="stat-card">
+        <span class="stat-icon">🎁</span>
+        <div class="stat-num">12</div>
+        <div class="stat-label">Reward Types</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <p class="sec-head">Quick Actions</p>
+  <section class="row g-4">
+    <div class="col-md-6 col-xl-4" data-aos="fade-up">
+      <div class="feature-card">
+        <span class="feature-icon">📝</span>
+        <h4>Review Participant Submissions</h4>
+        <p>Check recycling contributions submitted by participants and approve or reject them.</p>
+        <a href="participant_submission.html" class="btn-wastewise">Manage Submissions</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="80">
+      <div class="feature-card">
+        <span class="feature-icon">✅</span>
+        <h4>Approved Submissions</h4>
+        <p>View contributions that have already been accepted and points assigned to them.</p>
+        <a href="approved_submissions.html" class="btn-wastewise">View Approved</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="160">
+      <div class="feature-card">
+        <span class="feature-icon">✨</span>
+        <h4>Participant Points</h4>
+        <p>Check participant usernames and the total points they have accumulated.</p>
+        <a href="participant_points.html" class="btn-wastewise">Track Points</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4" data-aos="fade-up">
+      <div class="feature-card">
+        <span class="feature-icon">🎁</span>
+        <h4>Monitor Rewards</h4>
+        <p>Track the rewards that participants redeemed and monitor their redemption status.</p>
+        <a href="monitor_rewards.html" class="btn-wastewise">Monitor Rewards</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="80">
+      <div class="feature-card">
+        <span class="feature-icon">⚙️</span>
+        <h4>Manage Rewards</h4>
+        <p>Add, edit, and update available rewards and the points required to redeem them.</p>
+        <a href="manage_rewards.html" class="btn-wastewise">Manage Rewards</a>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="160">
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h4>Program Overview</h4>
+        <p>Monitor overall recycling activity, totals, system performance, and environmental impact.</p>
+        <a href="program_overview.html" class="btn-wastewise">View Overview</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 560, once: true, easing: 'ease-out-cubic' });
+</script>
+</body>
+</html>
