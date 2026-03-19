@@ -2,6 +2,7 @@ import sys
 from main import create_app
 from waitress import serve
 from main.routes.auth import createsuperuser
+from main.routes.default import home, display_host
 
 
 app = create_app()
@@ -14,6 +15,8 @@ if __name__ == "__main__":
         with app.app_context():
             if  sys.argv[1] == 'createsuperuser':
                 createsuperuser()
-    else:        
+    else: 
+               
         serve(app, host="127.0.0.1", port=5000)
+        
     

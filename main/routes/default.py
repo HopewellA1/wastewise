@@ -67,3 +67,5 @@ def send_email(receiver_email,subject,body):
         print("Email sent successfully!")
     except Exception as e:
         print("Error sending email:", e)
+        
+        
