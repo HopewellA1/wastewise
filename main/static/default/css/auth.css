@@ -1,0 +1,31 @@
+.card{
+    width: 100%;
+    padding: 0rem;
+}
+
+section{
+    border: solid;
+    display: flex;
+    justify-content: center;
+}
+label{
+    display: flex;
+    justify-content: start;
+    padding: 0.5rem;
+}
+
+.card-header > div{
+    display: flex;
+    justify-content: start;
+}
+
+.card-header > div >a{
+    text-decoration: none;
+}
+#back101{
+    display: flex;
+    justify-content: start;
+}
+#back101 > a{
+    text-decoration: none;
+}
