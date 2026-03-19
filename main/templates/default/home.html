@@ -1,640 +1,7 @@
-{% extends "default/base.html" %}
+{% extends "default/new_base.html" %}
 
 {% block content %}
-<style>
-    :root {
-        --emerald: #2ecc71;
-        --deep-sea: #0a5c4e;
-        --ocean-teal: #1abc9c;
-        --sea-foam: #d0f0e8;
-        --coral-accent: #ff7f5f;
-        --dark-text: #1e2b2c;
-        --soft-cream: #f9fffd;
-    }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    body {
-        background-color: var(--soft-cream);
-        color: var(--dark-text);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        position: relative;
-        overflow-x: hidden;
-    }
-    
-    /* Subtle Background Pattern - Plants & Recycling Symbols */
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 50 Q 30 30, 40 50 T 60 50" stroke="%232ecc71" fill="none" stroke-width="1"/><circle cx="70" cy="30" r="5" fill="%231abc9c"/><path d="M80 70 L 85 60 L 90 70" stroke="%231abc9c" fill="none" stroke-width="1"/><path d="M15 80 Q 20 70, 25 80" stroke="%232ecc71" fill="none" stroke-width="1"/><path d="M45 15 L 50 8 L 55 15" stroke="%231abc9c" fill="none" stroke-width="1"/><circle cx="30" cy="25" r="4" fill="%232ecc71" opacity="0.5"/></svg>'),
-            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M30 60 Q 35 50, 40 60" stroke="%231abc9c" fill="none" stroke-width="1"/><circle cx="55" cy="70" r="6" fill="%232ecc71" opacity="0.4"/><path d="M75 20 L 82 20 L 78 27 Z" fill="%231abc9c"/><path d="M15 35 L 22 30 L 25 38" stroke="%232ecc71" fill="none" stroke-width="1"/><circle cx="85" cy="85" r="5" fill="%231abc9c" opacity="0.4"/></svg>');
-        background-repeat: repeat;
-        background-size: 150px 150px, 200px 200px;
-        pointer-events: none;
-        z-index: 0;
-    }
-    
-    /* Floating recycling symbols */
-    .floating-symbol {
-        position: fixed;
-        font-size: 2rem;
-        opacity: 0.03;
-        pointer-events: none;
-        z-index: 0;
-        animation: floatAround 20s infinite linear;
-        user-select: none;
-    }
-    
-    @keyframes floatAround {
-        0% { transform: translate(0, 0) rotate(0deg); }
-        33% { transform: translate(30px, -20px) rotate(120deg); }
-        66% { transform: translate(-20px, 30px) rotate(240deg); }
-        100% { transform: translate(0, 0) rotate(360deg); }
-    }
-    
-    .symbol1 { top: 15%; left: 5%; animation-duration: 25s; }
-    .symbol2 { bottom: 20%; right: 3%; animation-duration: 30s; }
-    .symbol3 { top: 60%; left: 8%; animation-duration: 22s; }
-    .symbol4 { top: 30%; right: 7%; animation-duration: 28s; }
-    .symbol5 { bottom: 10%; left: 12%; animation-duration: 35s; }
-    
-    /* Header styling with planet */
-    .navbar {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 30px rgba(26, 188, 156, 0.1);
-        padding: 1rem 2rem;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        border-bottom: 2px solid rgba(26, 188, 156, 0.3);
-    }
-    
-    .nav-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .planet-icon {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(145deg, #2ecc71, #16a085);
-        border-radius: 50%;
-        box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
-        position: relative;
-        animation: float 4s ease-in-out infinite;
-    }
-    
-    .planet-icon::before {
-        content: "";
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 50%;
-        top: 20%;
-        left: 30%;
-        box-shadow: 12px 8px 0 rgba(255, 255, 255, 0.7);
-    }
-    
-    .planet-icon::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.15) 80%);
-        border-radius: 50%;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-8px) rotate(5deg); }
-    }
-    
-    .brand-text {
-        font-size: 1.8rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, var(--deep-sea), var(--emerald));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
-    }
-    
-    .nav-links a {
-        margin-left: 30px;
-        color: var(--deep-sea);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.3s ease;
-        position: relative;
-    }
-    
-    .nav-links a::after {
-        content: "";
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--emerald);
-        transition: width 0.3s ease;
-    }
-    
-    .nav-links a:hover::after {
-        width: 100%;
-    }
-    
-    /* Hero section */
-    .hero {
-        background: linear-gradient(165deg, rgba(255,255,255,0.9) 0%, rgba(230,247,242,0.9) 100%);
-        min-height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 4rem 6rem;
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(5px);
-    }
-    
-    .hero::before {
-        content: "";
-        position: absolute;
-        width: 800px;
-        height: 800px;
-        background: radial-gradient(circle, rgba(26, 188, 156, 0.08) 0%, transparent 70%);
-        bottom: -400px;
-        right: -200px;
-        border-radius: 50%;
-    }
-    
-    .hero-text {
-        max-width: 600px;
-        z-index: 2;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(10px);
-        padding: 3rem;
-        border-radius: 40px;
-        box-shadow: 0 20px 40px rgba(26, 188, 156, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-    
-    .hero-text h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, var(--deep-sea), var(--emerald));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .hero-text p {
-        font-size: 1.2rem;
-        color: #2d4a4a;
-        margin-bottom: 2rem;
-        line-height: 1.8;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 20px;
-        border-left: 5px solid var(--emerald);
-    }
-    
-    .btn-emerald {
-        background: linear-gradient(135deg, var(--emerald), var(--deep-sea));
-        color: white;
-        padding: 14px 32px;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        margin-right: 1rem;
-        box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-        transition: all 0.3s ease;
-        border: none;
-    }
-    
-    .btn-emerald:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 25px rgba(46, 204, 113, 0.4);
-    }
-    
-    .btn-outline-emerald {
-        background: transparent;
-        color: var(--deep-sea);
-        padding: 12px 30px;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        border: 2px solid var(--emerald);
-        transition: all 0.3s ease;
-    }
-    
-    .btn-outline-emerald:hover {
-        background: rgba(46, 204, 113, 0.1);
-        transform: translateY(-2px);
-    }
-    
-    /* Recycling images section */
-    .recycling-showcase {
-        padding: 6rem 2rem;
-        background: linear-gradient(135deg, rgba(244, 251, 249, 0.9), rgba(224, 240, 234, 0.9));
-        position: relative;
-        z-index: 2;
-        backdrop-filter: blur(5px);
-    }
-    
-    .showcase-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .showcase-title {
-        text-align: center;
-        margin-bottom: 4rem;
-    }
-    
-    .showcase-title h2 {
-        font-size: 2.8rem;
-        color: var(--deep-sea);
-        margin-bottom: 1rem;
-        position: relative;
-        display: inline-block;
-    }
-    
-    .showcase-title h2::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, var(--emerald), var(--ocean-teal));
-        border-radius: 2px;
-    }
-    
-    .showcase-title p {
-        color: #2d4a4a;
-        font-size: 1.2rem;
-    }
-    
-    .image-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 5rem;
-    }
-    
-    .image-row {
-        display: flex;
-        align-items: center;
-        gap: 4rem;
-        opacity: 0;
-        transform: translateY(40px);
-        animation: fadeInUp 0.8s ease forwards;
-        background: rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(10px);
-        border-radius: 40px;
-        padding: 2rem;
-        box-shadow: 0 15px 35px rgba(26, 188, 156, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    
-    .image-row:nth-child(1) { animation-delay: 0.2s; }
-    .image-row:nth-child(2) { animation-delay: 0.4s; }
-    .image-row:nth-child(3) { animation-delay: 0.6s; }
-    .image-row:nth-child(4) { animation-delay: 0.8s; }
-    
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .image-row:nth-child(even) {
-        flex-direction: row-reverse;
-    }
-    
-    .recycle-image {
-        flex: 1;
-        height: 320px;
-        border-radius: 30px;
-        overflow: hidden;
-        box-shadow: 0 25px 45px rgba(26, 188, 156, 0.25);
-        background-size: cover;
-        background-position: center;
-        transition: all 0.5s ease;
-        position: relative;
-    }
-    
-    .recycle-image::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(26, 188, 156, 0.1));
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    
-    .recycle-image:hover {
-        transform: scale(1.03) translateY(-5px);
-        box-shadow: 0 30px 55px rgba(26, 188, 156, 0.35);
-    }
-    
-    .recycle-image:hover::after {
-        opacity: 1;
-    }
-    
-    .image-caption {
-        flex: 1;
-        padding: 1.5rem;
-    }
-    
-    .image-caption h3 {
-        font-size: 2rem;
-        color: var(--deep-sea);
-        margin-bottom: 1rem;
-        font-weight: 700;
-    }
-    
-    .image-caption p {
-        color: #2d4a4a;
-        line-height: 1.8;
-        font-size: 1.1rem;
-    }
-    
-    /* Values section */
-    .values-section {
-        padding: 6rem 2rem;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        position: relative;
-        z-index: 2;
-    }
-    
-    .values-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .values-header {
-        text-align: center;
-        margin-bottom: 4rem;
-    }
-    
-    .values-header h2 {
-        font-size: 2.8rem;
-        background: linear-gradient(135deg, var(--deep-sea), var(--emerald));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-        position: relative;
-        display: inline-block;
-    }
-    
-    .values-header h2::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 4px;
-        background: var(--emerald);
-        border-radius: 2px;
-    }
-    
-    .values-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-    }
-    
-    .value-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        padding: 2.5rem 2rem;
-        border-radius: 30px;
-        text-align: center;
-        box-shadow: 0 15px 35px rgba(26, 188, 156, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    
-    .value-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 25px 45px rgba(26, 188, 156, 0.2);
-        border-color: var(--emerald);
-        background: rgba(255, 255, 255, 0.9);
-    }
-    
-    .value-icon {
-        width: 90px;
-        height: 90px;
-        background: linear-gradient(135deg, var(--sea-foam), #b8e3d8);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.8rem;
-        font-size: 2.8rem;
-        color: var(--deep-sea);
-        transition: all 0.3s ease;
-    }
-    
-    .value-card:hover .value-icon {
-        transform: scale(1.1) rotate(5deg);
-        background: linear-gradient(135deg, var(--emerald), var(--ocean-teal));
-        color: white;
-    }
-    
-    .value-card h3 {
-        font-size: 1.6rem;
-        color: var(--deep-sea);
-        margin-bottom: 1rem;
-    }
-    
-    .value-card p {
-        color: #2d4a4a;
-        line-height: 1.7;
-        font-size: 1rem;
-    }
-    
-    /* Rest of sections with glass morphism */
-    .section-title {
-        font-size: 2.5rem;
-        color: var(--deep-sea);
-        text-align: center;
-        margin-bottom: 1rem;
-        position: relative;
-        display: inline-block;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .section-title::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, var(--emerald), transparent);
-    }
-    
-    .section-subtitle {
-        text-align: center;
-        color: #2d4a4a;
-        margin-bottom: 3rem;
-        font-size: 1.2rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    #how, #rewards, .impact {
-        padding: 5rem 2rem;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(8px);
-        position: relative;
-        z-index: 2;
-        margin: 2rem 0;
-    }
-    
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-    
-    .card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        padding: 2.5rem 2rem;
-        border-radius: 30px;
-        text-align: center;
-        box-shadow: 0 15px 30px rgba(26, 188, 156, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    
-    .card:hover {
-        transform: translateY(-8px);
-        border-color: var(--emerald);
-        background: white;
-        box-shadow: 0 20px 40px rgba(26, 188, 156, 0.2);
-    }
-    
-    .card-icon {
-        font-size: 3rem;
-        margin-bottom: 1.2rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .card:hover .card-icon {
-        transform: scale(1.1);
-    }
-    
-    .stats {
-        display: flex;
-        justify-content: center;
-        gap: 3rem;
-        flex-wrap: wrap;
-        margin-top: 3rem;
-    }
-    
-    .stat-box {
-        text-align: center;
-        padding: 2.5rem 4rem;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 30px;
-        box-shadow: 0 15px 35px rgba(26, 188, 156, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        transition: transform 0.3s ease;
-    }
-    
-    .stat-box:hover {
-        transform: translateY(-5px);
-        border-color: var(--emerald);
-    }
-    
-    .stat-box h3 {
-        font-size: 3rem;
-        color: var(--deep-sea);
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-box p {
-        color: #2d4a4a;
-        font-size: 1.1rem;
-        font-weight: 500;
-    }
-    
-    footer {
-        padding: 3rem;
-        text-align: center;
-        background: var(--deep-sea);
-        color: white;
-        position: relative;
-        z-index: 2;
-        margin-top: 4rem;
-    }
-</style>
-
-<!-- Floating Background Elements -->
-<div class="floating-symbol symbol1">♻️</div>
-<div class="floating-symbol symbol2">🌿</div>
-<div class="floating-symbol symbol3">🌍</div>
-<div class="floating-symbol symbol4">♻️</div>
-<div class="floating-symbol symbol5">🌱</div>
-
-<!-- Updated Navbar with Planet -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo">
-            <div class="planet-icon"></div>
-            <span class="brand-text">WasteWise</span>
-        </div>
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#how">How It Works</a>
-            <a href="#rewards">Rewards</a>
-            <a href="#impact">Impact</a>
-        </div>
-    </div>
-</nav>
-
-<!-- Hero Section -->
-<section class="hero" id="home">
+    <section class="hero" id="home">
     <div class="hero-text">
         <h1>Recycle Today for a Greener Tomorrow</h1>
         
@@ -672,224 +39,186 @@
             <a href="#rewards" class="btn-outline-emerald">See Rewards</a>
         </div>
     </div>
-</section>
+    </section>
 
-<!-- Recycling Images Showcase - Using MY downloaded images -->
-<section class="recycling-showcase">
-    <div class="showcase-container">
-        <div class="showcase-title">
-            <h2>Real People, Real Impact</h2>
-            <p>Meet the community making sustainability a daily habit</p>
+    <!-- Recycling Images Showcase - Using MY downloaded images -->
+    <section class="recycling-showcase">
+        <div class="showcase-container">
+            <div class="showcase-title">
+                <h2>Real People, Real Impact</h2>
+                <p>Meet the community making sustainability a daily habit</p>
+            </div>
+            
+            <div class="image-grid">
+                <!-- Image 1: People Recycling -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/people-recycling.jpg') }}'); background-size: cover; background-position: center 30%;"></div>
+                    <div class="image-caption">
+                        <h3>People Recycling</h3>
+                        <p>Dedicated individuals taking time to sort and recycle their waste properly, making a difference one item at a time.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 2: Recycling Bins -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/recycling-bins.jpg') }}'); background-size: cover; background-position: center 50%;"></div>
+                    <div class="image-caption">
+                        <h3>Recycling Bins</h3>
+                        <p>Color-coded recycling bins making it easy for everyone to sort paper, plastic, glass, and organic waste correctly.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 3: People Holding Different Recycling Materials -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/holding-materials.jpg') }}'); background-size: cover; background-position: center 25%;"></div>
+                    <div class="image-caption">
+                        <h3>Diverse Materials</h3>
+                        <p>Community members proudly showing the various recyclable materials - from plastics and papers to glass and metals.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 4: The Community -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/community.jpg') }}'); background-size: cover; background-position: center 40%;"></div>
+                    <div class="image-caption">
+                        <h3>The Community</h3>
+                        <p>United for a common cause - neighbors, friends, and families working together to build a cleaner, greener future.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="image-grid">
-            <!-- Image 1: People Recycling -->
-            <div class="image-row">
-                <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/people-recycling.jpg') }}'); background-size: cover; background-position: center 30%;"></div>
-                <div class="image-caption">
-                    <h3>People Recycling</h3>
-                    <p>Dedicated individuals taking time to sort and recycle their waste properly, making a difference one item at a time.</p>
-                </div>
+    </section>
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="values-container">
+            <div class="values-header">
+                <h2>Why Join WasteWise?</h2>
+                <p>Discover the value of becoming part of our sustainable community</p>
             </div>
             
-            <!-- Image 2: Recycling Bins -->
-            <div class="image-row">
-                <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/recycling-bins.jpg') }}'); background-size: cover; background-position: center 50%;"></div>
-                <div class="image-caption">
-                    <h3>Recycling Bins</h3>
-                    <p>Color-coded recycling bins making it easy for everyone to sort paper, plastic, glass, and organic waste correctly.</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🌱</div>
+                    <h3>Environmental Impact</h3>
+                    <p>Every item recycled reduces carbon emissions and conserves natural resources for future generations.</p>
                 </div>
-            </div>
-            
-            <!-- Image 3: People Holding Different Recycling Materials -->
-            <div class="image-row">
-                <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/holding-materials.jpg') }}'); background-size: cover; background-position: center 25%;"></div>
-                <div class="image-caption">
-                    <h3>Diverse Materials</h3>
-                    <p>Community members proudly showing the various recyclable materials - from plastics and papers to glass and metals.</p>
+                
+                <div class="value-card">
+                    <div class="value-icon">💰</div>
+                    <h3>Financial Rewards</h3>
+                    <p>Earn points that convert into real-world value - from shopping vouchers to eco-friendly products.</p>
                 </div>
-            </div>
-            
-            <!-- Image 4: The Community -->
-            <div class="image-row">
-                <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/community.jpg') }}'); background-size: cover; background-position: center 40%;"></div>
-                <div class="image-caption">
-                    <h3>The Community</h3>
-                    <p>United for a common cause - neighbors, friends, and families working together to build a cleaner, greener future.</p>
+                
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Community Building</h3>
+                    <p>Connect with like-minded individuals and be part of local environmental initiatives.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">📊</div>
+                    <h3>Track Your Impact</h3>
+                    <p>Monitor your contributions and see the tangible difference you're making in your community.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🎓</div>
+                    <h3>Learn & Grow</h3>
+                    <p>Access educational resources about sustainability and best recycling practices.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🏆</div>
+                    <h3>Recognition</h3>
+                    <p>Get recognized for your environmental efforts and inspire others to take action.</p>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-<!-- Values Section -->
-<section class="values-section">
-    <div class="values-container">
-        <div class="values-header">
-            <h2>Why Join WasteWise?</h2>
-            <p>Discover the value of becoming part of our sustainable community</p>
+    </section>
+
+    <!-- Original Sections -->
+    <section id="how">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+            The system is simple and easy to use for everyone.
+        </p>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h3>Report Waste</h3>
+                <p>Submit recyclable items through the app quickly and easily.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">✅</div>
+                <h3>Admin Approval</h3>
+                <p>Your contribution is reviewed and verified by the admin.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎁</div>
+                <h3>Earn Points</h3>
+                <p>You receive points for every approved recycling activity.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🏆</div>
+                <h3>Redeem Rewards</h3>
+                <p>Use your points to claim vouchers and eco-friendly rewards.</p>
+            </div>
         </div>
-        
-        <div class="values-grid">
-            <div class="value-card">
-                <div class="value-icon">🌱</div>
-                <h3>Environmental Impact</h3>
-                <p>Every item recycled reduces carbon emissions and conserves natural resources for future generations.</p>
+    </section>
+
+    <section id="rewards">
+        <h2 class="section-title">Rewards</h2>
+        <p class="section-subtitle">
+            Your recycling efforts are rewarded in exciting ways.
+        </p>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🛍</div>
+                <h3>Shopping Vouchers</h3>
+                <p>Redeem points for discounts and vouchers.</p>
             </div>
-            
-            <div class="value-card">
-                <div class="value-icon">💰</div>
-                <h3>Financial Rewards</h3>
-                <p>Earn points that convert into real-world value - from shopping vouchers to eco-friendly products.</p>
+
+            <div class="card">
+                <div class="card-icon">🌱</div>
+                <h3>Eco Products</h3>
+                <p>Get reusable bottles, bags, and other green items.</p>
             </div>
-            
-            <div class="value-card">
-                <div class="value-icon">🤝</div>
-                <h3>Community Building</h3>
-                <p>Connect with like-minded individuals and be part of local environmental initiatives.</p>
-            </div>
-            
-            <div class="value-card">
-                <div class="value-icon">📊</div>
-                <h3>Track Your Impact</h3>
-                <p>Monitor your contributions and see the tangible difference you're making in your community.</p>
-            </div>
-            
-            <div class="value-card">
-                <div class="value-icon">🎓</div>
-                <h3>Learn & Grow</h3>
-                <p>Access educational resources about sustainability and best recycling practices.</p>
-            </div>
-            
-            <div class="value-card">
-                <div class="value-icon">🏆</div>
+
+            <div class="card">
+                <div class="card-icon">🌟</div>
                 <h3>Recognition</h3>
-                <p>Get recognized for your environmental efforts and inspire others to take action.</p>
+                <p>Top recyclers can be recognized in the community.</p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Original Sections -->
-<section id="how">
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-subtitle">
-        The system is simple and easy to use for everyone.
-    </p>
+    <section class="impact" id="impact">
+        <h2 class="section-title">Community Impact</h2>
+        <p class="section-subtitle">
+            Together, small actions create a big difference.
+        </p>
 
-    <div class="cards">
-        <div class="card">
-            <div class="card-icon">📝</div>
-            <h3>Report Waste</h3>
-            <p>Submit recyclable items through the app quickly and easily.</p>
+        <div class="stats">
+            <div class="stat-box">
+                <h3 id="waste">0</h3>
+                <p>Kg Recycled</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="users">0</h3>
+                <p>Active Users</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="points">0</h3>
+                <p>Points Earned</p>
+            </div>
         </div>
-
-        <div class="card">
-            <div class="card-icon">✅</div>
-            <h3>Admin Approval</h3>
-            <p>Your contribution is reviewed and verified by the admin.</p>
-        </div>
-
-        <div class="card">
-            <div class="card-icon">🎁</div>
-            <h3>Earn Points</h3>
-            <p>You receive points for every approved recycling activity.</p>
-        </div>
-
-        <div class="card">
-            <div class="card-icon">🏆</div>
-            <h3>Redeem Rewards</h3>
-            <p>Use your points to claim vouchers and eco-friendly rewards.</p>
-        </div>
-    </div>
-</section>
-
-<section id="rewards">
-    <h2 class="section-title">Rewards</h2>
-    <p class="section-subtitle">
-        Your recycling efforts are rewarded in exciting ways.
-    </p>
-
-    <div class="cards">
-        <div class="card">
-            <div class="card-icon">🛍</div>
-            <h3>Shopping Vouchers</h3>
-            <p>Redeem points for discounts and vouchers.</p>
-        </div>
-
-        <div class="card">
-            <div class="card-icon">🌱</div>
-            <h3>Eco Products</h3>
-            <p>Get reusable bottles, bags, and other green items.</p>
-        </div>
-
-        <div class="card">
-            <div class="card-icon">🌟</div>
-            <h3>Recognition</h3>
-            <p>Top recyclers can be recognized in the community.</p>
-        </div>
-    </div>
-</section>
-
-<section class="impact" id="impact">
-    <h2 class="section-title">Community Impact</h2>
-    <p class="section-subtitle">
-        Together, small actions create a big difference.
-    </p>
-
-    <div class="stats">
-        <div class="stat-box">
-            <h3 id="waste">0</h3>
-            <p>Kg Recycled</p>
-        </div>
-
-        <div class="stat-box">
-            <h3 id="users">0</h3>
-            <p>Active Users</p>
-        </div>
-
-        <div class="stat-box">
-            <h3 id="points">0</h3>
-            <p>Points Earned</p>
-        </div>
-    </div>
-</section>
-
-<!-- Simple Footer -->
-<footer>
-    <p>© 2024 WasteWise - Together for a Greener Tomorrow</p>
-</footer>
-
-<!-- JavaScript for counter animation -->
-<script>
-    function animateCounter(elementId, target) {
-        let current = 0;
-        const increment = target / 100;
-        const element = document.getElementById(elementId);
-        
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                element.textContent = target.toLocaleString();
-                clearInterval(timer);
-            } else {
-                element.textContent = Math.floor(current).toLocaleString();
-            }
-        }, 20);
-    }
-
-    // Start counters when they come into view
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateCounter('waste', 15250);
-                animateCounter('users', 2847);
-                animateCounter('points', 82350);
-                observer.disconnect();
-            }
-        });
-    }, { threshold: 0.5 });
-
-    observer.observe(document.querySelector('#impact'));
-</script>
+    </section>
 
 {% endblock %}

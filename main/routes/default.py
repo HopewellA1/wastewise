@@ -24,7 +24,7 @@ def home():
 
 
     
-    send_email(receiver_email,subject,body)
+    #send_email(receiver_email,subject,body)
    
     return render_template("default/home.html")
 
