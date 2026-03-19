@@ -73,5 +73,5 @@ def getEmailCreds():
     print("Running")
     return { 
         'sender_email': os.getenv("EMAIL_USER"),
-        'app_password': os.getenv("EMAIL_PASS") #"fvugjdhinugqhrna"
+        'app_password': os.getenv("EMAIL_PASS") 
    }

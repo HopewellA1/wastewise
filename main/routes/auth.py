@@ -133,10 +133,17 @@ def change_password(id):
         return render_template('auth/change_password.html', user=user)
 
 
-@auth.route('/reset_password')
-@login_required
-def reset_password():
-    pass
+@auth.route('/reset_request', methods=['GET', 'POST'])
+def reset_request():
+    
+    if request.method == 'POST':
+        
+        pass
+    elif request.method == 'GET':
+        
+        return render_template('auth/reset_password_request.html')
+    
+
 #Admin
 
 @auth.route("/users", methods=['GET'])
@@ -151,7 +158,7 @@ def createsuperuser():
     try:
         fname = input("Enter first name: ")
         lname = input("Enter Last name: ")
-        email = input("Enter email address: ")
+        email = input("Enter email address: ").lower()
         password = getValidatePassword()
         
         
@@ -170,6 +177,9 @@ def createsuperuser():
         print(f'user({new_user.email}) account created successfully!')
     except KeyboardInterrupt:
         print("\n\nExited!")
+    except IntegrityError:
+        print(f"Username({email}) is already taken")  
+        
    
             
     
