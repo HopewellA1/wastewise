@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise — {% block title %}Dashboard{% endblock %}</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">♻️</div>
+      <div class="brand-name">Waste<em>Wise</em></div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <ul class="nav-list">
+        <li><a href="{{ url_for('/participant.dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">
+            <span class="ni">🏠</span> Dashboard
+          </a></li>
+        <li><a href="{{ url_for('/participant.history') }}" class="{{ 'active' if request.endpoint == 'history' }}">
+            <span class="ni">📋</span> Recycle Log
+          </a></li>
+        <li><a href="{{ url_for('/participant.challenges') }}"
+            class="{{ 'active' if request.endpoint == '/participant/challenges' }}">
+            <span class="ni">🎯</span> Challenges
+          </a></li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Community</div>
+      <ul class="nav-list">
+        <li><a href="{{ url_for('/participant.leaderboard') }}"
+            class="{{ 'active' if request.endpoint == '/participant.leaderboard' }}">
+            <span class="ni">🏆</span> Leaderboard
+          </a></li>
+        <li><a href="{{ url_for('/participant.rewards') }}" class="{{ 'active' if request.endpoint == 'rewards' }}">
+            <span class="ni">🎁</span> Rewards
+          </a></li>
+        <li><a href="{{ url_for('/participant.referral') }}" class="{{ 'active' if request.endpoint == 'referral' }}">
+            <span class="ni">👥</span> Referrals
+          </a></li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Explore</div>
+      <ul class="nav-list">
+        <li><a href="{{ url_for('/participant.resources') }}" class="{{ 'active' if request.endpoint == 'resources' }}">
+            <span class="ni">📚</span> Resources
+          </a></li>
+        <li><a href="{{ url_for('/participant.updates') }}" class="{{ 'active' if request.endpoint == 'updates' }}">
+            <span class="ni">📣</span> Updates
+          </a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">{{ user.name[:2].upper() if user else 'MB' }}</div>
+        <div>
+          <div class="user-name">{{ user.name if user else 'Mbali' }}</div>
+          <div class="user-pts">{{ user.points if user else '720' }} pts · Rank #{{ user.rank if user else '4' }}</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main-wrap">
+
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">{% block page_icon %}{% endblock %}{% block page_title %}Dashboard{% endblock %}</div>
+        <div class="topbar-sub">{% block page_sub %}{% endblock %}</div>
+      </div>
+      <div class="topbar-right">
+        <div class="tb-pts">⭐ {{ user.points if user else '720' }} pts</div>
+        <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+    // Animate progress bars
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.prog-fill').forEach(el => {
+        const w = el.style.width;
+        el.style.width = '0';
+        setTimeout(() => { el.style.width = w; }, 120);
+      });
+    });
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>

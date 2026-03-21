@@ -58,7 +58,7 @@ def login():
             login_user(user)
             print("user: ", user)
         
-            return redirect(url_for('default.home'))
+            return redirect(url_for('/participant.dashboard'))
         else:
             
             flash("Invalid login details","danger" )

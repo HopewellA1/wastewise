@@ -1,0 +1,819 @@
+{% extends "participant/base.html" %}
+{% block title %}Recycle Log{% endblock %}
+{% block page_icon %}📋 {% endblock %}
+{% block page_title %}Recycle Log{% endblock %}
+{% block page_sub %}Log items manually, by AI camera, or barcode scan{% endblock %}
+
+{% block extra_head %}
+<style>
+  .history-wrap {
+    max-width: 860px;
+  }
+
+  /* ── Log Card & Tabs ── */
+  .log-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .log-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .log-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 13px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'DM Sans', sans-serif;
+    border-bottom: 3px solid transparent;
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
+    position: relative;
+  }
+
+  .log-tab:hover {
+    color: var(--emerald);
+    background: rgba(92, 219, 149, 0.10);
+  }
+
+  .log-tab.active {
+    color: var(--emerald);
+    background: rgba(92, 219, 149, 0.12);
+    border-bottom-color: var(--emerald);
+    font-weight: 700;
+  }
+
+  .tab-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(92, 219, 149, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .log-tab.active .tab-icon {
+    background: rgba(92, 219, 149, 0.25);
+  }
+
+  .tab-badge {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    background: var(--emerald);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+  }
+
+  .log-panel {
+    display: none;
+    padding: 22px 24px;
+  }
+
+  .log-panel.active {
+    display: block;
+  }
+
+  /* ── Shared form ── */
+  .form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 130px;
+  }
+
+  .form-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+  }
+
+  .form-control {
+    padding: 9px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.10);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+
+  .form-control:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(92, 219, 149, 0.18);
+  }
+
+  /* ── Camera / Barcode shared viewport ── */
+  .scan-viewport {
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius);
+    background: #0a1f14;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scan-viewport.cam-ratio {
+    aspect-ratio: 4/3;
+  }
+
+  .scan-viewport.bc-ratio {
+    aspect-ratio: 16/7;
+  }
+
+  .scan-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  .scan-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: center;
+  }
+
+  .scan-placeholder .sp-icon {
+    font-size: 44px;
+  }
+
+  .scan-placeholder p {
+    font-size: 12.5px;
+  }
+
+  /* AI green scan line */
+  .ai-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+  }
+
+  .ai-overlay.active {
+    display: block;
+  }
+
+  .ai-scanline {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    box-shadow: 0 0 10px var(--green);
+    animation: aiScan 2s ease-in-out infinite;
+  }
+
+  .ai-corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-color: var(--green);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .ai-corner.tl {
+    top: 10px;
+    left: 10px;
+    border-top-width: 3px;
+    border-left-width: 3px;
+    border-radius: 4px 0 0 0;
+  }
+
+  .ai-corner.tr {
+    top: 10px;
+    right: 10px;
+    border-top-width: 3px;
+    border-right-width: 3px;
+    border-radius: 0 4px 0 0;
+  }
+
+  .ai-corner.bl {
+    bottom: 10px;
+    left: 10px;
+    border-bottom-width: 3px;
+    border-left-width: 3px;
+    border-radius: 0 0 0 4px;
+  }
+
+  .ai-corner.br {
+    bottom: 10px;
+    right: 10px;
+    border-bottom-width: 3px;
+    border-right-width: 3px;
+    border-radius: 0 0 4px 0;
+  }
+
+  @keyframes aiScan {
+
+    0%,
+    100% {
+      top: 15%
+    }
+
+    50% {
+      top: 78%
+    }
+  }
+
+  /* Barcode orange line */
+  .bc-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+  }
+
+  .bc-overlay.active {
+    display: block;
+  }
+
+  .bc-guide-box {
+    position: absolute;
+    top: 15%;
+    bottom: 15%;
+    left: 8%;
+    right: 8%;
+    border: 2px solid rgba(245, 166, 35, 0.65);
+    border-radius: 6px;
+  }
+
+  .bc-scanline {
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f5a623, #f5a623, transparent);
+    box-shadow: 0 0 10px #f5a623;
+    animation: bcPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes bcPulse {
+
+    0%,
+    100% {
+      opacity: .55
+    }
+
+    50% {
+      opacity: 1
+    }
+  }
+
+  /* ── Result cards ── */
+  .scan-result {
+    display: none;
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .scan-result.visible {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .scan-result.ai-res {
+    background: rgba(92, 219, 149, 0.10);
+    border: 1px solid var(--card-border);
+  }
+
+  .scan-result.bc-res {
+    background: rgba(251, 191, 36, 0.12);
+    border: 1.5px solid #ffe9a0;
+  }
+
+  .sr-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .sr-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .sr-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .sr-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: #fff;
+  }
+
+  .sr-tag.green {
+    background: var(--green-dark);
+  }
+
+  .sr-tag.orange {
+    background: #d97706;
+  }
+
+  .sr-action {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* ── Status row ── */
+  .scan-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .s-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  .s-dot.live {
+    background: #22c55e;
+    animation: dotPulse 1.5s infinite;
+  }
+
+  .s-dot.scanning {
+    background: #f5a623;
+    animation: dotPulse 0.8s infinite;
+  }
+
+  @keyframes dotPulse {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1)
+    }
+
+    50% {
+      opacity: .4;
+      transform: scale(.7)
+    }
+  }
+
+  /* ── Camera wrap / barcode wrap ── */
+  .scan-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .scan-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bc-manual-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .bc-manual-row input {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+
+  .bc-manual-row input:focus {
+    border-color: #f5a623;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.18);
+  }
+
+  .scan-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 380px;
+  }
+
+  /* ── History table ── */
+  .type-icon {
+    margin-right: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .log-tab span:not(.tab-icon):not(.tab-badge) {
+      display: none;
+    }
+
+    .log-tab {
+      padding: 12px 6px;
+    }
+
+    .eco-table thead {
+      display: none;
+    }
+
+    .eco-table tbody tr {
+      display: block;
+      padding: 12px 0;
+    }
+
+    .eco-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border: none;
+    }
+
+    .eco-table tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-wrap">
+
+  <!-- ── Logging Card ── -->
+  <div class="log-card">
+
+    <div class="log-tabs" role="tablist">
+      <button class="log-tab active" onclick="switchTab('manual',this)">
+        <span class="tab-icon">✏️</span><span>Manual</span>
+      </button>
+      <button class="log-tab" onclick="switchTab('camera',this)">
+        <span class="tab-icon">📷</span><span>AI Camera</span>
+        <span class="tab-badge">AI</span>
+      </button>
+      <button class="log-tab" onclick="switchTab('barcode',this)">
+        <span class="tab-icon">📊</span><span>Barcode</span>
+        <span class="tab-badge">NEW</span>
+      </button>
+    </div>
+
+    <!-- Manual -->
+    <div class="log-panel active" id="panel-manual">
+      <form action="{{ url_for('/participant.log_item') }}" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Material Type</label>
+            <select name="item_type" class="form-control">
+              <option>🥤 Plastic Bottles</option>
+              <option>📰 Paper</option>
+              <option>🫙 Glass</option>
+              <option>🥫 Metal Cans</option>
+              <option>🔋 Electronics</option>
+              <option>📦 Cardboard</option>
+              <option>🧴 Plastic Containers</option>
+              <option>📱 Mobile Phones</option>
+            </select>
+          </div>
+          <div class="form-group" style="max-width:110px;">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" value="1" min="1" class="form-control" />
+          </div>
+          <div><button type="submit" class="btn btn-primary">♻️ Log It</button></div>
+        </div>
+      </form>
+    </div>
+
+    <!-- AI Camera -->
+    <div class="log-panel" id="panel-camera">
+      <div class="scan-wrap">
+        <div class="scan-viewport cam-ratio" id="camViewport">
+          <video class="scan-video" id="camVideo" autoplay playsinline muted></video>
+          <div class="ai-overlay" id="aiOverlay">
+            <div class="ai-scanline"></div>
+            <div class="ai-corner tl"></div>
+            <div class="ai-corner tr"></div>
+            <div class="ai-corner bl"></div>
+            <div class="ai-corner br"></div>
+          </div>
+          <div class="scan-placeholder" id="camPlaceholder">
+            <div class="sp-icon">📷</div>
+            <p>Point your camera at<br>a recyclable item</p>
+          </div>
+        </div>
+
+        <div class="scan-status">
+          <div class="s-dot" id="camDot"></div>
+          <span id="camStatus">Camera not started</span>
+        </div>
+
+        <div class="scan-result ai-res" id="aiResult">
+          <div class="sr-icon" id="aiIcon">♻️</div>
+          <div>
+            <div class="sr-label" id="aiLabel">—</div>
+            <div class="sr-sub" id="aiSub">—</div>
+            <span class="sr-tag green" id="aiConf">—</span>
+          </div>
+          <div class="sr-action">
+            <button class="btn btn-primary btn-sm" onclick="logAI()">Log It ♻️</button>
+          </div>
+        </div>
+
+        <div class="scan-controls">
+          <button class="btn btn-primary" id="camStartBtn" onclick="startCam()">📷 Start Camera</button>
+          <button class="btn btn-outline" id="camStopBtn" onclick="stopCam()" style="display:none">⏹ Stop</button>
+          <button class="btn btn-outline" id="camSnapBtn" onclick="aiScan()" style="display:none">🤖 Identify
+            Item</button>
+        </div>
+
+        <p class="scan-hint">AI identifies recyclable materials in real time. Works best in good lighting.</p>
+      </div>
+    </div>
+
+    <!-- Barcode -->
+    <div class="log-panel" id="panel-barcode">
+      <div class="scan-wrap">
+        <div class="scan-viewport bc-ratio" id="bcViewport">
+          <video class="scan-video" id="bcVideo" autoplay playsinline muted></video>
+          <div class="bc-overlay" id="bcOverlay">
+            <div class="bc-guide-box"></div>
+            <div class="bc-scanline"></div>
+          </div>
+          <div class="scan-placeholder" id="bcPlaceholder">
+            <div class="sp-icon">📊</div>
+            <p>Point at a product barcode</p>
+          </div>
+        </div>
+
+        <div class="scan-status">
+          <div class="s-dot" id="bcDot"></div>
+          <span id="bcStatus">Scanner not started</span>
+        </div>
+
+        <div class="scan-result bc-res" id="bcResult">
+          <div class="sr-icon" id="bcIcon">🥤</div>
+          <div>
+            <div class="sr-label" id="bcLabel">—</div>
+            <div class="sr-sub" id="bcSub">—</div>
+            <span class="sr-tag orange" id="bcCode">—</span>
+          </div>
+          <div class="sr-action">
+            <button class="btn btn-primary btn-sm" onclick="logBC()">Log It ♻️</button>
+          </div>
+        </div>
+
+        <div class="scan-controls">
+          <button class="btn btn-primary" id="bcStartBtn" onclick="startBC()">📊 Start Scanner</button>
+          <button class="btn btn-outline" id="bcStopBtn" onclick="stopBC()" style="display:none">⏹ Stop</button>
+        </div>
+
+        <div class="bc-manual-row">
+          <input type="text" id="bcManualInput" placeholder="Or type a barcode number…" maxlength="20" />
+          <button class="btn btn-outline btn-sm" onclick="lookupBC()">Look up</button>
+        </div>
+
+        <p class="scan-hint">Scan product barcodes to auto-identify material type and recycling category.</p>
+      </div>
+    </div>
+
+  </div><!-- /log-card -->
+
+  <!-- History Table -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><span class="ct-icon">📋</span> All Entries</div>
+      <span class="badge badge-green">{{ history|length }} entries</span>
+    </div>
+    <table class="eco-table">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Quantity</th>
+          <th>Date</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set icons = {'Plastic Bottles':'🥤','Paper':'📰','Glass':'🫙','Metal Cans':'🥫'} %}
+        {% for h in history %}
+        <tr>
+          <td data-label="Material"><span class="type-icon">{{ icons.get(h.type,'♻️') }}</span>{{ h.type }}</td>
+          <td data-label="Quantity">{{ h.quantity }} items</td>
+          <td data-label="Date">{{ h.date }}</td>
+          <td data-label="Points"><span class="badge badge-green">+{{ h.points }} pts</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* ── TABS ─────────────────────────────────────────────────── */
+  function switchTab(name, btn) {
+    document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.log-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+    if (name !== 'camera') stopCam();
+    if (name !== 'barcode') stopBC();
+  }
+
+  /* ── AI CAMERA ────────────────────────────────────────────── */
+  let camStream = null;
+
+  async function startCam() {
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      document.getElementById('camVideo').srcObject = camStream;
+    } catch (e) { /* demo mode — no real stream */ }
+    document.getElementById('camVideo').style.display = 'block';
+    document.getElementById('camPlaceholder').style.display = 'none';
+    document.getElementById('aiOverlay').classList.add('active');
+    document.getElementById('camStartBtn').style.display = 'none';
+    document.getElementById('camStopBtn').style.display = '';
+    document.getElementById('camSnapBtn').style.display = '';
+    document.getElementById('camDot').className = 's-dot live';
+    document.getElementById('camStatus').textContent = 'Camera live — point at a recyclable item';
+  }
+
+  function stopCam() {
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    const v = document.getElementById('camVideo');
+    v.srcObject = null; v.style.display = 'none';
+    document.getElementById('camPlaceholder').style.display = 'flex';
+    document.getElementById('aiOverlay').classList.remove('active');
+    document.getElementById('camStartBtn').style.display = '';
+    document.getElementById('camStopBtn').style.display = 'none';
+    document.getElementById('camSnapBtn').style.display = 'none';
+    document.getElementById('camDot').className = 's-dot';
+    document.getElementById('camStatus').textContent = 'Camera stopped';
+    document.getElementById('aiResult').classList.remove('visible');
+  }
+
+  const AI_DB = [
+    { icon: '🥤', label: 'Plastic Bottle (PET)', sub: 'Recyclable · +50 pts estimated', conf: '94% confident', type: 'Plastic Bottles' },
+    { icon: '📦', label: 'Cardboard Box', sub: 'Recyclable · +40 pts estimated', conf: '89% confident', type: 'Cardboard' },
+    { icon: '🥫', label: 'Aluminium Can', sub: 'Recyclable · +60 pts estimated', conf: '97% confident', type: 'Metal Cans' },
+    { icon: '📰', label: 'Newspaper / Paper', sub: 'Recyclable · +30 pts estimated', conf: '91% confident', type: 'Paper' },
+    { icon: '🫙', label: 'Glass Bottle', sub: 'Recyclable · +45 pts estimated', conf: '88% confident', type: 'Glass' },
+    { icon: '🔋', label: 'Li-Ion Battery', sub: 'Special disposal · +80 pts est.', conf: '82% confident', type: 'Electronics' },
+  ];
+  let lastAI = null;
+
+  function aiScan() {
+    document.getElementById('camDot').className = 's-dot scanning';
+    document.getElementById('camStatus').textContent = 'AI scanning…';
+    document.getElementById('aiResult').classList.remove('visible');
+    setTimeout(() => {
+      lastAI = AI_DB[Math.floor(Math.random() * AI_DB.length)];
+      document.getElementById('aiIcon').textContent = lastAI.icon;
+      document.getElementById('aiLabel').textContent = lastAI.label;
+      document.getElementById('aiSub').textContent = lastAI.sub;
+      document.getElementById('aiConf').textContent = lastAI.conf;
+      document.getElementById('aiResult').classList.add('visible');
+      document.getElementById('camDot').className = 's-dot live';
+      document.getElementById('camStatus').textContent = 'Item identified — review below';
+    }, 1400);
+  }
+
+  function logAI() {
+    if (!lastAI) return;
+    alert('✅ Logged: ' + lastAI.label);
+    document.getElementById('aiResult').classList.remove('visible');
+    document.getElementById('camStatus').textContent = '✓ Logged! Ready for next scan.';
+  }
+
+  /* ── BARCODE ──────────────────────────────────────────────── */
+  let bcStream = null, bcTimer = null;
+
+  const BC_DB = [
+    { icon: '🥤', code: '5449000000996', label: 'Coca-Cola 500ml', sub: 'PET Plastic · Recyclable' },
+    { icon: '🧴', code: '8710522959435', label: 'Shampoo Bottle 250ml', sub: 'HDPE Plastic · Recyclable' },
+    { icon: '🥫', code: '5000159407236', label: 'Baked Beans Tin 410g', sub: 'Steel Can · Recyclable' },
+    { icon: '📦', code: '6009880861908', label: 'Cereal Box 500g', sub: 'Cardboard · Recyclable' },
+    { icon: '🫙', code: '5010193631473', label: 'Glass Jar 340g', sub: 'Clear Glass · Recyclable' },
+    { icon: '🔋', code: '4902505194207', label: 'AA Batteries x4', sub: 'Special Disposal Required' },
+  ];
+  let lastBC = null;
+
+  async function startBC() {
+    try {
+      bcStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      document.getElementById('bcVideo').srcObject = bcStream;
+    } catch (e) { }
+    document.getElementById('bcVideo').style.display = 'block';
+    document.getElementById('bcPlaceholder').style.display = 'none';
+    document.getElementById('bcOverlay').classList.add('active');
+    document.getElementById('bcStartBtn').style.display = 'none';
+    document.getElementById('bcStopBtn').style.display = '';
+    document.getElementById('bcDot').className = 's-dot scanning';
+    document.getElementById('bcStatus').textContent = 'Scanning for barcode…';
+    bcTimer = setTimeout(simulateBC, 2500);
+  }
+
+  function stopBC() {
+    if (bcStream) { bcStream.getTracks().forEach(t => t.stop()); bcStream = null; }
+    clearTimeout(bcTimer);
+    const v = document.getElementById('bcVideo');
+    v.srcObject = null; v.style.display = 'none';
+    document.getElementById('bcPlaceholder').style.display = 'flex';
+    document.getElementById('bcOverlay').classList.remove('active');
+    document.getElementById('bcStartBtn').style.display = '';
+    document.getElementById('bcStopBtn').style.display = 'none';
+    document.getElementById('bcDot').className = 's-dot';
+    document.getElementById('bcStatus').textContent = 'Scanner stopped';
+    document.getElementById('bcResult').classList.remove('visible');
+  }
+
+  function simulateBC() {
+    lastBC = BC_DB[Math.floor(Math.random() * BC_DB.length)];
+    showBCResult(lastBC);
+  }
+
+  function showBCResult(item) {
+    document.getElementById('bcIcon').textContent = item.icon;
+    document.getElementById('bcLabel').textContent = item.label;
+    document.getElementById('bcSub').textContent = item.sub;
+    document.getElementById('bcCode').textContent = item.code;
+    document.getElementById('bcResult').classList.add('visible');
+    document.getElementById('bcDot').className = 's-dot live';
+    document.getElementById('bcStatus').textContent = 'Barcode detected — review below';
+  }
+
+  function logBC() {
+    if (!lastBC) return;
+    alert('✅ Logged: ' + lastBC.label);
+    document.getElementById('bcResult').classList.remove('visible');
+    document.getElementById('bcStatus').textContent = '✓ Logged! Scan another.';
+    bcTimer = setTimeout(simulateBC, 2000);
+  }
+
+  function lookupBC() {
+    const code = document.getElementById('bcManualInput').value.trim();
+    if (!code) return;
+    lastBC = BC_DB.find(b => b.code === code) || { icon: '♻️', code, label: 'Unknown Product', sub: 'Select category manually' };
+    showBCResult(lastBC);
+  }
+</script>
+{% endblock %}
