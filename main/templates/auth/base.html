@@ -52,18 +52,27 @@
 <div class="mobile-menu" id="mobileMenu">
   <button class="m-close" id="menuClose">&#x2715;</button>
   <a href="#home" onclick="closeMobile()">Home</a>
-  <a href="#how" onclick="closeMobile()">How It Works</a>
-  <a href="#rewards" onclick="closeMobile()">Rewards</a>
-  <a href="#impact" onclick="closeMobile()">Impact</a>
-  <div class="m-auth-row">
-    <a href="/login.html" class="btn-login">Log In</a>
-    <a href="/signup.html" class="btn-signup">Sign Up</a>
-  </div>
+ 
 </div>
 
 <div class="wrap">
 
- 
+  <!-- TOPBAR -->
+  <nav class="topbar" id="topbar">
+    <div class="c">
+      <div class="tb-inner">
+       
+      
+            <ul class="tb-links">
+                <li><a href="{{url_for('default.home')}}">Home</a></li>
+              
+            </ul>
+         
+            </div>
+     
+      </div>
+    </div>
+  </nav>
 
 
     {% block content %}
