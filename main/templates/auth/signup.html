@@ -1,53 +1,137 @@
-{% extends "default/base.html" %}
+{% extends "auth/base.html" %}
+
+{% block hide_nav %}{% endblock %}
+{% block hide_footer %}{% endblock %}
+
 {% block content %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/login.css') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
+<style>
+  .req-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 10px;
+    padding: 0;
+    list-style: none;
+  }
 
+  .req-item {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #7a9a9a;
+  }
 
+  .req-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #cde4e4;
+    flex-shrink: 0;
+    display: inline-block;
+  }
 
-    <section class="hero">
+  .req-item.met {
+    color: #1a8a6e;
+  }
 
+  .req-item.met .req-dot {
+    background: #1a8a6e;
+  }
 
-        <div class="card">
-            <div class="card-header">
-                <h3>
-                    <b>
-                        Signup
-                    </b>
-                </h1>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="/auth/signup" class="form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  .str-bar {
+    display: flex !important;
+    gap: 5px;
+    margin-top: 8px;
+  }
 
-                    <div class="mb-3">
-                        <label >First Name</label>
-                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{new_user.first_name}}" required>
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label>Last Name</label>
-                        <input type="text" name="last_name" class="form-control" placeholder="Last name" value="{{new_user.last_name}}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{new_user.email}}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="password" required>
-                    </div>
+  .str-seg {
+    flex: 1;
+    height: 4px;
+    border-radius: 100px;
+    background: #dde8e8;
+    transition: background 0.3s;
+  }
+</style>
 
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="password2" class="form-control" placeholder="re-nter password" required>
-                    </div>
-                    <button class='btn btn-primary' type="submit">Submit</button>
-                </form>
+    <section>
 
-            </div>
+<div class="page">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-icon">♻</div>
+        <span class="brand-name">WasteWise</span>
+      </div>
+      <div class="brand-tag">Local Recycling Initiative Tracker</div>
+    </div>
 
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Create your account</div>
+        <div class="card-sub">Join the recycling movement in your community</div>
+      </div>
+
+      <form action="javascript:void(0)">
+        <!-- Names -->
+        <div class="name-grid">
+          <div>
+            <label class="flabel">Full Name(s)</label>
+            <input type="text" autocomplete="given-name"/>
+          </div>
+          <div>
+            <label class="flabel">Surname</label>
+            <input type="text" autocomplete="family-name"/>
+          </div>
         </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label class="flabel">Email Address</label>
+          <input type="email" autocomplete="email"/>
+        </div>
+
+        <!-- Password + strength -->
+        <div class="field">
+          <label class="flabel">Password</label>
+          <input type="password" id="pw" autocomplete="new-password" oninput="checkStr()"/>
+          <div class="str-bar">
+            <div class="str-seg" id="s1"></div>
+            <div class="str-seg" id="s2"></div>
+            <div class="str-seg" id="s3"></div>
+            <div class="str-seg" id="s4"></div>
+          </div>
+          <ul class="req-grid">
+            <li class="req-item" id="r1"><span class="req-dot"></span>8+ characters</li>
+            <li class="req-item" id="r2"><span class="req-dot"></span>Uppercase letter</li>
+            <li class="req-item" id="r3"><span class="req-dot"></span>One number</li>
+            <li class="req-item" id="r4"><span class="req-dot"></span>Special character</li>
+          </ul>
+        </div>
+
+        <!-- Confirm -->
+        <div class="field">
+          <label class="flabel">Confirm Password</label>
+          <input type="password" id="cpw" autocomplete="new-password"/>
+          <div class="err-msg" id="mErr">Passwords do not match.</div>
+        </div>
+
+        <!-- Terms -->
+        <div class="chk">
+          <input type="checkbox" id="terms">
+          <label class="chk-lbl" for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+
+      <div class="div"><span>already have an account?</span></div>
+      <div style="text-align:center; font-size:0.9rem; color:#3a6060; margin-top:8px;">
+      </div><div class="foot">Already registered? <a href="{{url_for('/auth.login')}}">Log in</a></div>
+      
+    </div>
+  </div>
 
         
     </section>

@@ -1,8 +1,11 @@
 from flask import Blueprint, render_template, url_for, request, redirect, flash, flash
-from main.models.auth import User
+from main.models.auth import User, OTP
+from main.routes.default import send_email
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
+from getpass import getpass
+import random
 auth = Blueprint("/auth", __name__, url_prefix="/auth")
 
 @auth.route("/signup", methods=['POST', 'GET'])
@@ -32,6 +35,8 @@ def signup():
             flash(f'Username ({new_user.email}) already taken, try login.','danger')
             return render_template("auth/signup.html", new_user=new_user)
     else:
+        
+        
         return render_template("auth/signup.html", new_user=User('','','',''))
         
   
@@ -67,9 +72,9 @@ def logout():
     return redirect(url_for('default.home'))
     
     
-@auth.route("/account", methods=['GET', 'POST'])
+@auth.route("/account/<int:id>", methods=['GET', 'POST'])
 @login_required
-def account(id=None):
+def account(id):
     
     if id:
         user = User.query.get(int(id))
@@ -87,18 +92,111 @@ def account(id=None):
         user.first_name = request.form["first_name"]
         user.last_name = request.form["last_name"]
         user.email = request.form["email"]
+        
+        
+        
+        try:
+            user.is_staff  = "is_staff" in request.form
+            user.is_superuser = "is_superuser" in request.form
+        except:
+             pass
         db.session.commit()
         
-        flash("Changes saved successfully!", "success")
-        return redirect(url_for('/auth.account'))
+        flash("Changes saved successfully!", 'success')
         
+        if current_user.is_superuser:
+            return redirect(url_for('/auth.users'))
+        else:
+            return redirect(url_for('/auth.account', id=user.id))
         
+@auth.route("/change_password/<int:id>",methods=['GET','POST'])
+@login_required
+def change_password(id):
     
+    user = User.query.get(int(id))
+    if request.method =='POST':
+        
+        old_password = request.form["old_password"]
+        new_password = request.form["new_password"]
+        new_password2 = request.form["new_password2"]
+        
+        if bcrypt.check_password_hash(user.password, old_password):
+            if new_password == new_password2:
+                user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                db.session.commit()
+                flash("Password updated successfully!", 'success')
+                return redirect(url_for('/auth.account',id=user.id))
+            else:
+                flash(f'new password do not match, try login.','danger')
+                return redirect(url_for('/auth.change_password', id=id))
+        else:
+            flash(f'Old password invalid, try login.','danger')
+            return redirect(url_for('/auth.change_password', id=id))
+    else:
+        return render_template('auth/change_password.html', user=user)
+
+
+@auth.route('/reset_request', methods=['GET', 'POST'])
+def reset_request():
+    
+    if request.method == 'POST':
+        
+        email = request.form.get("email").lower()
+        user = User.query.filter_by(email=email).first()
+        if user:
+            otp = OTP(user.id,generate_code(),'Pending')
+            db.session.add(otp)
+            db.session.commit()
+            if send_otp(user, otp):
+                
+                flash(f"OTP sent to '{user.email}', please access your email inbox.", "success")
+                return redirect(url_for('/auth.reset_request'))
+                
+            else:
+                flash(f"Something went wrong while sending OTP sent to '{user.email}', Please try again", "danger")
+                return redirect(url_for('/auth.reset_request'))
+                
+            
+        else:
+            flash(f"No user found matching: {email}", "danger")
+            return redirect(url_for('/auth.reset_request'))
+            pass
+    elif request.method == 'GET':
+        return render_template('auth/reset_password_request.html')
+    
+def send_otp(user, otp):
+    subject = 'OTP: Confirm email'
+    msg = f'Dear {user.first_name}\n'
+    msg+=f'Please use the code below to comfirm your email address.\n'
+    msg += f'OTP: {otp.code}\n'
+    msg += f'\n'
+    msg += f'Kind regards,\nWastwise'
+    
+    return send_email(user.email,subject, msg)
+    
+    
+
+def generate_code():
+    return str(random.randint(100000, 999999))
+
+
+
+
+#Admin
+
+@auth.route("/users", methods=['GET'])
+@login_required
+def users():
+    
+    users = User.query.all()
+    return render_template('auth/users.html', users=users)
+
+
 def createsuperuser():
     try:
         fname = input("Enter first name: ")
         lname = input("Enter Last name: ")
-        email = input("Enter email address: ")
+        email = input("Enter email address: ").lower()
         password = getValidatePassword()
         
         
@@ -117,20 +215,22 @@ def createsuperuser():
         print(f'user({new_user.email}) account created successfully!')
     except KeyboardInterrupt:
         print("\n\nExited!")
+    except IntegrityError:
+        print(f"Username({email}) is already taken")  
+        
    
             
     
     
 def getValidatePassword():
-    password1 = input("Enter email new password: ")
-    password2 = input("Re-Enter email new password: ")
+    password1 = getpass("Enter email new password: ")
+    password2 = getpass("Re-Enter email new password: ")
     
     if password1 != password2:
         print("Password do not match!")
         print("_______________________")
         getValidatePassword()
     else:
-        print("password1: ", password1  )
         return password1
     
     

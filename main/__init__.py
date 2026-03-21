@@ -9,12 +9,13 @@ from dotenv import load_dotenv
 
 
 
+
 load_dotenv()
 
 db  = SQLAlchemy()
 bcrypt= Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = "auth.login"
+login_manager.login_view = "/auth/login"
 mail = Mail()
 
 @login_manager.user_loader
@@ -40,26 +41,38 @@ def create_app():
     #Blueprints
     from .routes.default import default
     from .routes.auth import auth
+    from .routes.participant import participant
     
     app.register_blueprint(auth)
     app.register_blueprint(default)
+    app.register_blueprint(participant)
     
     
     
     #Email config  
     from flask_mail import Mail
 
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = False
-    #app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USE_SSL'] = True
-    app.config['MAIL_USERNAME'] = os.getenv("EMAIL_USER")
-    app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
-
+    # app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    # app.config['MAIL_PORT'] = 465
+    # app.config['MAIL_USE_TLS'] = False
+    # app.config['MAIL_USE_SSL'] = True
+    # app.config['MAIL_USERNAME'] = os.getenv("EMAIL_USER")
+    # app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
+    # app.config['MAIL_DEFAULT_SENDER'] = os.getenv("EMAIL_USER")
+    
+    
     
     with app.app_context():
         from .models.auth import User
         db.create_all()
     
     return app
+
+
+
+def getEmailCreds():
+
+    return { 
+        'sender_email': os.getenv("EMAIL_USER"),
+        'app_password': os.getenv("EMAIL_PASS") 
+   }

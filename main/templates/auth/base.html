@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WasteWise — Local Recycling Initiative Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+ <link rel="stylesheet" href="{{ url_for('static', filename='/default/css/new_base.css') }}">
+    
+</head>
+<body>
+
+<!-- BACKGROUND LEAF SHAPES -->
+<div class="bg-leaves">
+  <svg class="leaf-1" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 C160 10 190 60 190 130 C190 200 160 270 100 290 C40 270 10 200 10 130 C10 60 40 10 100 10 Z" fill="white"/>
+    <path d="M100 10 L100 290" stroke="white" stroke-width="3"/>
+    <path d="M100 80 C130 80 150 100 160 130" stroke="white" stroke-width="1.5"/>
+    <path d="M100 120 C70 120 50 140 40 165" stroke="white" stroke-width="1.5"/>
+    <path d="M100 160 C125 155 145 168 155 185" stroke="white" stroke-width="1.5"/>
+  </svg>
+  <svg class="leaf-2" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 C160 10 190 60 190 130 C190 200 160 270 100 290 C40 270 10 200 10 130 C10 60 40 10 100 10 Z" fill="white"/>
+    <path d="M100 10 L100 290" stroke="white" stroke-width="3"/>
+    <path d="M100 80 C130 80 150 100 160 130" stroke="white" stroke-width="1.5"/>
+    <path d="M100 120 C70 120 50 140 40 165" stroke="white" stroke-width="1.5"/>
+    <path d="M100 160 C125 155 145 168 155 185" stroke="white" stroke-width="1.5"/>
+  </svg>
+  <svg class="leaf-3" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70 8 C110 8 132 45 132 95 C132 145 110 182 70 192 C30 182 8 145 8 95 C8 45 30 8 70 8 Z" fill="white"/>
+    <path d="M70 8 L70 192" stroke="white" stroke-width="2.5"/>
+    <path d="M70 60 C95 60 112 75 118 95" stroke="white" stroke-width="1.2"/>
+    <path d="M70 100 C45 100 28 115 22 135" stroke="white" stroke-width="1.2"/>
+  </svg>
+  <svg class="leaf-4" viewBox="0 0 160 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80 8 C124 8 152 50 152 110 C152 170 124 222 80 232 C36 222 8 170 8 110 C8 50 36 8 80 8 Z" fill="white"/>
+    <path d="M80 8 L80 232" stroke="white" stroke-width="2.5"/>
+    <path d="M80 70 C108 68 128 85 135 108" stroke="white" stroke-width="1.3"/>
+    <path d="M80 115 C52 115 32 132 25 155" stroke="white" stroke-width="1.3"/>
+    <path d="M80 155 C105 150 122 165 128 185" stroke="white" stroke-width="1.3"/>
+  </svg>
+  <svg class="leaf-5" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 5 C80 5 95 35 95 70 C95 105 80 135 50 145 C20 135 5 105 5 70 C5 35 20 5 50 5 Z" fill="white"/>
+    <path d="M50 5 L50 145" stroke="white" stroke-width="2"/>
+  </svg>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="m-close" id="menuClose">&#x2715;</button>
+  <a href="#home" onclick="closeMobile()">Home</a>
+  <a href="#how" onclick="closeMobile()">How It Works</a>
+  <a href="#rewards" onclick="closeMobile()">Rewards</a>
+  <a href="#impact" onclick="closeMobile()">Impact</a>
+  <div class="m-auth-row">
+    <a href="/login.html" class="btn-login">Log In</a>
+    <a href="/signup.html" class="btn-signup">Sign Up</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+ 
+
+
+    {% block content %}
+    
+    {% endblock  %}
+
+
+ 
+
+</div>
+
+<script>
+  function scrollToHow() {
+    document.getElementById('how').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const tb = document.getElementById('topbar');
+  window.addEventListener('scroll', () => tb.classList.toggle('stuck', scrollY > 50));
+
+  document.getElementById('burgerBtn').onclick = () => document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('menuClose').onclick  = () => document.getElementById('mobileMenu').classList.remove('open');
+  function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+
+  function countUp(el, target, dur) {
+    let s = null;
+    const fn = ts => {
+      if (!s) s = ts;
+      const p = Math.min((ts - s) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(e * target).toLocaleString() + '+';
+      if (p < 1) requestAnimationFrame(fn);
+    };
+    requestAnimationFrame(fn);
+  }
+
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach((en, i) => {
+      if (en.isIntersecting) { setTimeout(() => en.target.classList.add('on'), i * 60); ro.unobserve(en.target); }
+    });
+  }, { threshold: .1 });
+  document.querySelectorAll('.rv').forEach(e => ro.observe(e));
+
+  const io = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      countUp(document.getElementById('iw'), 1200, 1800);
+      countUp(document.getElementById('iu'), 350,  1800);
+      countUp(document.getElementById('ip'), 2000, 1800);
+      io.disconnect();
+    }
+  }, { threshold: .3 });
+  io.observe(document.getElementById('impact'));
+
+  const rwo = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      countUp(document.getElementById('pts-cnt'), 580, 1500);
+      document.querySelectorAll('.pb-f').forEach(b => {
+        setTimeout(() => b.style.width = b.dataset.w, 300);
+      });
+      rwo.disconnect();
+    }
+  }, { threshold: .3 });
+  rwo.observe(document.getElementById('rewards'));
+</script>
+
+</body>
+</html>

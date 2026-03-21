@@ -1,126 +1,221 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WasteWise Recycling</title>
- <!--link rel="stylesheet" href="{{ url_for('static', filename='/default/css/base.css') }}">-->
- <link rel="stylesheet" href="{{ url_for('static', filename='default/css/base.css') }}">
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WasteWise — Local Recycling Initiative Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+ <link rel="stylesheet" href="{{ url_for('static', filename='/default/css/new_base.css') }}">
+    
 </head>
 <body>
 
-  <header>
-    
-    <nav class="navbar ">
-      <div class="logo">♻ WasteWise</div>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <ul class="collapse navbar-collapse" id="navbarNav">
-        <li><a href="{{url_for('default.home')}}">Home</a></li>
+<!-- BACKGROUND LEAF SHAPES -->
+<div class="bg-leaves">
+  <svg class="leaf-1" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 C160 10 190 60 190 130 C190 200 160 270 100 290 C40 270 10 200 10 130 C10 60 40 10 100 10 Z" fill="white"/>
+    <path d="M100 10 L100 290" stroke="white" stroke-width="3"/>
+    <path d="M100 80 C130 80 150 100 160 130" stroke="white" stroke-width="1.5"/>
+    <path d="M100 120 C70 120 50 140 40 165" stroke="white" stroke-width="1.5"/>
+    <path d="M100 160 C125 155 145 168 155 185" stroke="white" stroke-width="1.5"/>
+  </svg>
+  <svg class="leaf-2" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 C160 10 190 60 190 130 C190 200 160 270 100 290 C40 270 10 200 10 130 C10 60 40 10 100 10 Z" fill="white"/>
+    <path d="M100 10 L100 290" stroke="white" stroke-width="3"/>
+    <path d="M100 80 C130 80 150 100 160 130" stroke="white" stroke-width="1.5"/>
+    <path d="M100 120 C70 120 50 140 40 165" stroke="white" stroke-width="1.5"/>
+    <path d="M100 160 C125 155 145 168 155 185" stroke="white" stroke-width="1.5"/>
+  </svg>
+  <svg class="leaf-3" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70 8 C110 8 132 45 132 95 C132 145 110 182 70 192 C30 182 8 145 8 95 C8 45 30 8 70 8 Z" fill="white"/>
+    <path d="M70 8 L70 192" stroke="white" stroke-width="2.5"/>
+    <path d="M70 60 C95 60 112 75 118 95" stroke="white" stroke-width="1.2"/>
+    <path d="M70 100 C45 100 28 115 22 135" stroke="white" stroke-width="1.2"/>
+  </svg>
+  <svg class="leaf-4" viewBox="0 0 160 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80 8 C124 8 152 50 152 110 C152 170 124 222 80 232 C36 222 8 170 8 110 C8 50 36 8 80 8 Z" fill="white"/>
+    <path d="M80 8 L80 232" stroke="white" stroke-width="2.5"/>
+    <path d="M80 70 C108 68 128 85 135 108" stroke="white" stroke-width="1.3"/>
+    <path d="M80 115 C52 115 32 132 25 155" stroke="white" stroke-width="1.3"/>
+    <path d="M80 155 C105 150 122 165 128 185" stroke="white" stroke-width="1.3"/>
+  </svg>
+  <svg class="leaf-5" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 5 C80 5 95 35 95 70 C95 105 80 135 50 145 C20 135 5 105 5 70 C5 35 20 5 50 5 Z" fill="white"/>
+    <path d="M50 5 L50 145" stroke="white" stroke-width="2"/>
+  </svg>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="m-close" id="menuClose">&#x2715;</button>
+  <a href="#home" onclick="closeMobile()">Home</a>
+  <a href="#how" onclick="closeMobile()">How It Works</a>
+  <a href="#rewards" onclick="closeMobile()">Rewards</a>
+  <a href="#impact" onclick="closeMobile()">Impact</a>
+  <div class="m-auth-row">
+    <a href="/login.html" class="btn-login">Log In</a>
+    <a href="/signup.html" class="btn-signup">Sign Up</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <nav class="topbar" id="topbar">
+    <div class="c">
+      <div class="tb-inner">
+        <a href="#home" class="tb-logo">
+          <span class="lf">&#9851;</span> WasteWise
+        </a>
         {% if current_user.is_authenticated %}
-          <li><a href="#how">How It Works</a></li>
-          <li><a href="#rewards">Rewards</a></li>
-          <li><a href="#impact">Impact</a></li>
-          <li><a href="{{url_for('/auth.account')}}">{{current_user.email}}</a></li>
-          <li><a href="{{url_for('/auth.logout')}}">Logout</a></li>
-        {% else %}
-          <li><a href="{{url_for('/auth.signup')}}">sign up</a></li>
-          <li><a href="{{url_for('/auth.login')}}">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  
-  <!--
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
+            {% if current_user.is_superuser %}
+                <ul>
+                    <li>
+                        <a href="{{url_for('/auth.users')}}">Users</a>
+                    </li>
+                </ul>
+              <li class="nav-item"></li>
+            {% endif %}
+            <ul class="tb-links">
+                <li><a href="{{url_for('/auth.account', id=current_user.id)}}">{{current_user.email}}</a></li>
+            </ul>
 
-      <a class="navbar-brand fw-bold" href="#">♻ WasteWise</a>
 
-     
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('default.home')}}">Home</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#how">How It Works</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#rewards">Rewards</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#impact">Impact</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link btn btn-success text-white ms-lg-3 px-3" href="{{url_for('/auth.signup')}}">
-              Sign Up
-            </a>
-          </li>
-
-        </ul>
-      </div>
-
-    </div>
-  </nav>-->
-  </header>
-   
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        
-          {% if messages %}
-            <div style="padding: 0.6rem">
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} text-center">
-                      {{ message }}
-                  </div>
-                {% endfor %}
+            <div class="tb-auth">
+                <a href="href="{{url_for('/auth.logout')}}" class="btn-login">Logout</a>" 
+                  <button class="tb-burger" id="burgerBtn"></button> 
+                <span></span><span></span><span></span>
+                </button>
             </div>
-          {% endif %}
-        
-      {% endwith %}
- 
+
+
+        {% else %}
+            <ul class="tb-links">
+                <li><a href="#how">How It Works</a></li>
+                <li><a href="#rewards">Rewards</a></li>
+                <li><a href="#impact">Impact</a></li>
+            </ul>
+            <div class="tb-auth">
+                <a href="{{url_for('/auth.login')}}" class="btn-login">Log In</a>
+                <a class="btn-signup" href="{{url_for('/auth.signup')}}">sign up</a>
+                <button class="tb-burger" id="burgerBtn">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+
     {% block content %}
     
     {% endblock  %}
-  <footer>
-    <p>&copy; 2026 WasteWise | Recycling for a Better Future</p>
+
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <div class="c">
+      <div class="foot-g">
+        <div class="foot-brand">
+          <a href="#home" class="foot-logo"><span class="lf">&#9851;</span> WasteWise</a>
+          <p>A community-driven recycling platform turning green actions into real rewards.</p>
+        </div>
+        <div class="foot-col">
+          <h5>Platform</h5>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#rewards">Rewards</a></li>
+            <li><a href="#impact">Community Impact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h5>Support</h5>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Report an Issue</a></li>
+            <li><a href="#">Help Centre</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Accessibility</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bot">
+        <span>&copy; 2026 WasteWise &mdash; Recycling for a Better Future</span>
+        <div class="fbl">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
-  <script>
-    function animateValue(id, end, speed) {
-      let start = 0;
-      let element = document.getElementById(id);
+</div>
 
-      let counter = setInterval(() => {
-        start += Math.ceil(end / 100);
+<script>
+  function scrollToHow() {
+    document.getElementById('how').scrollIntoView({ behavior: 'smooth' });
+  }
 
-        if (start >= end) {
-          start = end;
-          clearInterval(counter);
-        }
+  const tb = document.getElementById('topbar');
+  window.addEventListener('scroll', () => tb.classList.toggle('stuck', scrollY > 50));
 
-        element.textContent = start.toLocaleString() + "+";
-      }, speed);
-    }
+  document.getElementById('burgerBtn').onclick = () => document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('menuClose').onclick  = () => document.getElementById('mobileMenu').classList.remove('open');
+  function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
 
-    window.onload = function () {
-      animateValue("waste", 1200, 20);
-      animateValue("users", 350, 25);
-      animateValue("points", 2000, 15);
+  function countUp(el, target, dur) {
+    let s = null;
+    const fn = ts => {
+      if (!s) s = ts;
+      const p = Math.min((ts - s) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(e * target).toLocaleString() + '+';
+      if (p < 1) requestAnimationFrame(fn);
     };
-  </script>
-  <script src="{{ url_for('static', filename='/default/js/base.js') }}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    requestAnimationFrame(fn);
+  }
+
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach((en, i) => {
+      if (en.isIntersecting) { setTimeout(() => en.target.classList.add('on'), i * 60); ro.unobserve(en.target); }
+    });
+  }, { threshold: .1 });
+  document.querySelectorAll('.rv').forEach(e => ro.observe(e));
+
+  const io = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      countUp(document.getElementById('iw'), 1200, 1800);
+      countUp(document.getElementById('iu'), 350,  1800);
+      countUp(document.getElementById('ip'), 2000, 1800);
+      io.disconnect();
+    }
+  }, { threshold: .3 });
+  io.observe(document.getElementById('impact'));
+
+  const rwo = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      countUp(document.getElementById('pts-cnt'), 580, 1500);
+      document.querySelectorAll('.pb-f').forEach(b => {
+        setTimeout(() => b.style.width = b.dataset.w, 300);
+      });
+      rwo.disconnect();
+    }
+  }, { threshold: .3 });
+  rwo.observe(document.getElementById('rewards'));
+</script>
 
 </body>
 </html>
