@@ -2,7 +2,7 @@ import sys
 from main import create_app
 from waitress import serve
 from main.routes.auth import createsuperuser
-from main.routes.default import home, display_host
+from main.routes.default import home
 
 
 app = create_app()

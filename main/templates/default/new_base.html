@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            
+        </style>
+    </head>
+    <body>
+        <div class="floating-symbol symbol1">♻️</div>
+        <div class="floating-symbol symbol2">🌿</div>
+        <div class="floating-symbol symbol3">🌍</div>
+        <div class="floating-symbol symbol4">♻️</div>
+        <div class="floating-symbol symbol5">🌱</div>
+
+        <!-- Updated Navbar with Planet -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <div class="planet-icon"></div>
+                    <span class="brand-text">WasteWise</span>
+                </div>
+                <div class="menu-toggle" id="menu-toggle">
+                    ☰
+                </div>
+
+                <div class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#how">How It Works</a>
+                    <a href="#rewards">Rewards</a>
+                    <a href="#impact">Impact</a>
+                </div>
+            </div>
+        </nav>
+
+        {% block content %}
+
+        {% endblock  %} 
+        
+
+        <footer>
+            <p>© 2024 WasteWise - Together for a Greener Tomorrow</p>
+        </footer>
+
+        <script src="" async defer></script>
+    </body>
+</html>
+
+
+<!-- Floating Background Elements -->
+
+<!-- Hero Section -->
+
+<!-- Simple Footer -->
+
+<!-- JavaScript for counter animation -->
+<script>
+    function animateCounter(elementId, target) {
+        let current = 0;
+        const increment = target / 100;
+        const element = document.getElementById(elementId);
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target.toLocaleString();
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current).toLocaleString();
+            }
+        }, 20);
+    }
+
+    // Start counters when they come into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter('waste', 15250);
+                animateCounter('users', 2847);
+                animateCounter('points', 82350);
+                observer.disconnect();
+            }
+        });
+    }, { threshold: 0.5 });
+
+    observer.observe(document.querySelector('#impact'));
+
+
+    const toggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    toggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+    });
+</script>

@@ -15,7 +15,6 @@ def home():
     
     
     # Gmail credentials
-    sender_email = "hopewellsitshaka@gmail.com"
     receiver_email = "hopewellsitshaka@gmail.com"
     # app_password = "fvugjdhinugqhrna"
     # Create the email  
@@ -24,7 +23,7 @@ def home():
 
 
     
-    send_email(receiver_email,subject,body)
+    #send_email(receiver_email,subject,body)
    
     return render_template("default/home.html")
 
@@ -64,8 +63,10 @@ def send_email(receiver_email,subject,body):
         server.login(sender_email, app_password)
         server.sendmail(sender_email, receiver_email, msg.as_string())
         server.quit()
-        print("Email sent successfully!")
+        return True
     except Exception as e:
         print("Error sending email:", e)
+        
+        return False
         
         

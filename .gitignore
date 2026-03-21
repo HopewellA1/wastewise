@@ -16,6 +16,5 @@ logs/
 
 # Ignore virtual environment directory
 env/
-
 #instance dir
 instance/

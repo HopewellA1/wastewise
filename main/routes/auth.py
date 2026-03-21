@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, url_for, request, redirect, flash, flash
-from main.models.auth import User
+from main.models.auth import User, OTP
+from main.routes.default import send_email
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
 from getpass import getpass
-
+import random
 auth = Blueprint("/auth", __name__, url_prefix="/auth")
 
 @auth.route("/signup", methods=['POST', 'GET'])
@@ -34,6 +35,8 @@ def signup():
             flash(f'Username ({new_user.email}) already taken, try login.','danger')
             return render_template("auth/signup.html", new_user=new_user)
     else:
+        
+        
         return render_template("auth/signup.html", new_user=User('','','',''))
         
   
@@ -133,10 +136,52 @@ def change_password(id):
         return render_template('auth/change_password.html', user=user)
 
 
-@auth.route('/reset_password')
-@login_required
-def reset_password():
-    pass
+@auth.route('/reset_request', methods=['GET', 'POST'])
+def reset_request():
+    
+    if request.method == 'POST':
+        
+        email = request.form.get("email").lower()
+        user = User.query.filter_by(email=email).first()
+        if user:
+            otp = OTP(user.id,generate_code(),'Pending')
+            db.session.add(otp)
+            db.session.commit()
+            if send_otp(user, otp):
+                
+                flash(f"OTP sent to '{user.email}', please access your email inbox.", "success")
+                return redirect(url_for('/auth.reset_request'))
+                
+            else:
+                flash(f"Something went wrong while sending OTP sent to '{user.email}', Please try again", "danger")
+                return redirect(url_for('/auth.reset_request'))
+                
+            
+        else:
+            flash(f"No user found matching: {email}", "danger")
+            return redirect(url_for('/auth.reset_request'))
+            pass
+    elif request.method == 'GET':
+        return render_template('auth/reset_password_request.html')
+    
+def send_otp(user, otp):
+    subject = 'OTP: Confirm email'
+    msg = f'Dear {user.first_name}\n'
+    msg+=f'Please use the code below to comfirm your email address.\n'
+    msg += f'OTP: {otp.code}\n'
+    msg += f'\n'
+    msg += f'Kind regards,\nWastwise'
+    
+    return send_email(user.email,subject, msg)
+    
+    
+
+def generate_code():
+    return str(random.randint(100000, 999999))
+
+
+
+
 #Admin
 
 @auth.route("/users", methods=['GET'])
@@ -151,7 +196,7 @@ def createsuperuser():
     try:
         fname = input("Enter first name: ")
         lname = input("Enter Last name: ")
-        email = input("Enter email address: ")
+        email = input("Enter email address: ").lower()
         password = getValidatePassword()
         
         
@@ -170,6 +215,9 @@ def createsuperuser():
         print(f'user({new_user.email}) account created successfully!')
     except KeyboardInterrupt:
         print("\n\nExited!")
+    except IntegrityError:
+        print(f"Username({email}) is already taken")  
+        
    
             
     
