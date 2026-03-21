@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" data-aos="fade-up">
+    <h2>Monitor Rewards</h2>
+    <p>Track reward redemptions and their current status.</p>
+</div>
+
+<div class="custom-table-card" data-aos="fade-up">
+    <div class="table-responsive">
+        <table class="table custom-table align-middle">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Reward</th>
+                    <th>Points Used</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in redemptions %}
+                <tr>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.reward }}</td>
+                    <td>{{ item.points_used }}</td>
+                    <td><span class="badge bg-info text-dark">{{ item.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

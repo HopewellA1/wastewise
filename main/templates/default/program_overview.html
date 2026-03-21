@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" data-aos="fade-up">
+    <h2>Program Overview</h2>
+    <p>Monitor the overall recycling program and environmental performance.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3" data-aos="zoom-in">
+        <div class="summary-card">
+            <div class="summary-icon emoji-icon">👥</div>
+            <h3>{{ stats.total_participants }}</h3>
+            <p>Total Participants</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3" data-aos="zoom-in" data-aos-delay="100">
+        <div class="summary-card">
+            <div class="summary-icon emoji-icon">📥</div>
+            <h3>{{ stats.total_submissions }}</h3>
+            <p>Total Submissions</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3" data-aos="zoom-in" data-aos-delay="200">
+        <div class="summary-card">
+            <div class="summary-icon emoji-icon">✅</div>
+            <h3>{{ stats.approved_submissions }}</h3>
+            <p>Approved</p>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3" data-aos="zoom-in" data-aos-delay="300">
+        <div class="summary-card">
+            <div class="summary-icon emoji-icon">⭐</div>
+            <h3>{{ stats.total_points_awarded }}</h3>
+            <p>Points Awarded</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6" data-aos="fade-right">
+        <div class="chart-card">
+            <h5 class="mb-3">Submission Status</h5>
+            <canvas id="submissionChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6" data-aos="fade-left">
+        <div class="chart-card">
+            <h5 class="mb-3">Waste Category Distribution</h5>
+            <canvas id="wasteChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const submissionCtx = document.getElementById("submissionChart");
+    new Chart(submissionCtx, {
+        type: "doughnut",
+        data: {
+            labels: ["Approved", "Rejected", "Pending"],
+            datasets: [{
+                data: [34, 6, 12],
+                backgroundColor: ["#5cdb95", "#05386b", "#8ee4af"],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+
+    const wasteCtx = document.getElementById("wasteChart");
+    new Chart(wasteCtx, {
+        type: "bar",
+        data: {
+            labels: ["Plastic", "Glass", "Paper", "Metal"],
+            datasets: [{
+                label: "Submissions",
+                data: [30, 18, 22, 12],
+                backgroundColor: ["#05386b", "#5cdb95", "#379683", "#8ee4af"],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
