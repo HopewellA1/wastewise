@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WasteWise – Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --grad:        linear-gradient(155deg, #05386b 0%, #0a5a6e 22%, #1a8a6e 55%, #2db87a 78%, #5cdb95 100%);
+      --accent:      #1a8a6e;
+      --accent-btn:  #0d4f5c;
+      --card-bg:     #ffffff;
+      --text-dark:   #0d3a3a;
+      --text-mid:    #3a6060;
+      --text-muted:  #7a9a9a;
+      --label:       #4a6e6e;
+      --input-bg:    #f5fafa;
+      --input-bd:    #cde4e4;
+      --input-focus: #1a8a6e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh; font-family: 'DM Sans', sans-serif;
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1rem; position: relative; overflow: hidden;
+    }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 5% 95%,  rgba(92,219,149,0.22) 0%, transparent 42%),
+        radial-gradient(ellipse at 95% 5%,  rgba(5,56,107,0.55)   0%, transparent 42%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,138,110,0.1)  0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .leaf { position: fixed; pointer-events: none; z-index: 0; border-radius: 0 60% 0 60%; opacity: 0.12; }
+    .leaf-1 { width: 340px; height: 340px; background: rgba(255,255,255,0.18); top: -80px; left: -80px; transform: rotate(20deg); }
+    .leaf-2 { width: 240px; height: 240px; background: rgba(255,255,255,0.12); bottom: -60px; left: 60px; transform: rotate(80deg); }
+    .leaf-3 { width: 200px; height: 200px; background: rgba(92,219,149,0.2); top: 30%; right: -50px; transform: rotate(210deg); }
+
+    .orb { position: fixed; border-radius: 50%; filter: blur(110px); pointer-events: none; z-index: 0; animation: drift 14s ease-in-out infinite; }
+    .orb-a { width: 500px; height: 500px; background: rgba(92,219,149,0.12); top: -160px; right: -120px; }
+    .orb-b { width: 380px; height: 380px; background: rgba(5,56,107,0.45); bottom: -130px; left: -100px; animation-delay: 6s; }
+    @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-28px); } }
+
+    .page {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 440px;
+      animation: up 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes up { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Brand */
+    .brand { text-align: center; margin-bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+    .brand-logo { display: flex; align-items: center; gap: 0.5rem; }
+    .brand-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; }
+    .brand-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; color: #ffffff; letter-spacing: -0.4px; }
+    .brand-tag { font-size: 0.68rem; color: rgba(255,255,255,0.6); letter-spacing: 3.5px; text-transform: uppercase; }
+
+    /* Card */
+    .card {
+      background: var(--card-bg); border-radius: 20px; padding: 2.6rem 2.4rem;
+      box-shadow: 0 30px 80px rgba(5,56,107,0.35), 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .card-head { text-align: center; margin-bottom: 2rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.65rem; color: var(--text-dark); letter-spacing: -0.4px; margin-bottom: 0.3rem; }
+    .card-sub { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Form */
+    .field { margin-bottom: 1.2rem; }
+    .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 1.2rem; }
+
+    .flabel { display: block; font-size: 0.72rem; font-weight: 700; color: var(--label); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.45rem; }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%; background: var(--input-bg);
+      border: 1.5px solid var(--input-bd); border-radius: 10px;
+      padding: 0.82rem 1rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text-dark);
+      outline: none; transition: all 0.25s;
+    }
+    input::placeholder { color: #b0c8c8; }
+    input:focus { border-color: var(--input-focus); background: #fff; box-shadow: 0 0 0 4px rgba(26,138,110,0.1); }
+    input.err { border-color: #d94f4f; box-shadow: 0 0 0 3px rgba(217,79,79,0.1); }
+
+    /* Strength bar */
+    .str-bar { display: flex; gap: 4px; margin-top: 0.5rem; }
+    .str-seg { flex: 1; height: 3px; border-radius: 99px; background: #dde8e8; transition: background 0.3s; }
+
+    /* Req list */
+    .req-grid { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.5rem; }
+    .req-item { font-size: 0.78rem; color: #aabebe; display: flex; align-items: center; gap: 0.32rem; transition: color 0.25s; }
+    .req-item.met { color: var(--accent); }
+    .req-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    .err-msg { font-size: 0.78rem; color: #d94f4f; margin-top: 0.3rem; display: none; }
+
+    /* Checkbox */
+    .chk { display: flex; align-items: flex-start; gap: 0.65rem; margin-bottom: 1.5rem; }
+    .chk input[type="checkbox"] {
+      width: 17px; height: 17px; appearance: none; -webkit-appearance: none;
+      border: 1.5px solid var(--input-bd); border-radius: 5px;
+      background: var(--input-bg); cursor: pointer; flex-shrink: 0; margin-top: 2px;
+      position: relative; transition: all 0.2s;
+    }
+    .chk input:checked { background: var(--accent); border-color: var(--accent); }
+    .chk input:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.6rem; color: white; font-weight: 900; }
+    .chk-lbl { font-size: 0.875rem; color: var(--text-mid); cursor: pointer; line-height: 1.5; }
+    .chk-lbl a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+    /* Button */
+    .btn {
+      width: 100%; padding: 0.92rem;
+      background: var(--accent-btn);
+      border: none; border-radius: 10px;
+      color: #ffffff; font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 18px rgba(13,79,92,0.35);
+    }
+    .btn:hover { background: #0a3d4a; transform: translateY(-2px); box-shadow: 0 8px 26px rgba(13,79,92,0.45); }
+    .btn:active { transform: translateY(0); }
+
+    /* Divider */
+    .div { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0; }
+    .div::before, .div::after { content: ''; flex: 1; height: 1px; background: #e2eeee; }
+    .div span { font-size: 0.75rem; color: var(--text-muted); }
+
+    .foot { text-align: center; font-size: 0.9rem; color: var(--text-mid); }
+    .foot a { color: var(--accent); font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
+    .foot a:hover { opacity: 0.7; }
+
+    
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      .name-grid { grid-template-columns: 1fr; }
+      .req-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="leaf leaf-3"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+
+  <div class="page">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-icon">♻</div>
+        <span class="brand-name">WasteWise</span>
+      </div>
+      <div class="brand-tag">Local Recycling Initiative Tracker</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Create your account</div>
+        <div class="card-sub">Join the recycling movement in your community</div>
+      </div>
+
+      <form action="javascript:void(0)">
+        <!-- Names -->
+        <div class="name-grid">
+          <div>
+            <label class="flabel">Full Name(s)</label>
+            <input type="text" autocomplete="given-name"/>
+          </div>
+          <div>
+            <label class="flabel">Surname</label>
+            <input type="text" autocomplete="family-name"/>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label class="flabel">Email Address</label>
+          <input type="email" autocomplete="email"/>
+        </div>
+
+        <!-- Password + strength -->
+        <div class="field">
+          <label class="flabel">Password</label>
+          <input type="password" id="pw" autocomplete="new-password" oninput="checkStr()"/>
+          <div class="str-bar">
+            <div class="str-seg" id="s1"></div>
+            <div class="str-seg" id="s2"></div>
+            <div class="str-seg" id="s3"></div>
+            <div class="str-seg" id="s4"></div>
+          </div>
+          <ul class="req-grid">
+            <li class="req-item" id="r1"><span class="req-dot"></span>8+ characters</li>
+            <li class="req-item" id="r2"><span class="req-dot"></span>Uppercase letter</li>
+            <li class="req-item" id="r3"><span class="req-dot"></span>One number</li>
+            <li class="req-item" id="r4"><span class="req-dot"></span>Special character</li>
+          </ul>
+        </div>
+
+        <!-- Confirm -->
+        <div class="field">
+          <label class="flabel">Confirm Password</label>
+          <input type="password" id="cpw" autocomplete="new-password"/>
+          <div class="err-msg" id="mErr">Passwords do not match.</div>
+        </div>
+
+        <!-- Terms -->
+        <div class="chk">
+          <input type="checkbox" id="terms">
+          <label class="chk-lbl" for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+
+      <div class="div"><span>already have an account?</span></div>
+      <div class="foot">Already registered? <a href="login.html">Sign in instead</a></div>
+      
+    </div>
+  </div>
+
+  <script>
+    const cols = { 1:'#d94f4f', 2:'#e8a020', 3:'#1a8a6e', 4:'#2db87a' };
+    function checkStr() {
+      const v = document.getElementById('pw').value;
+      const c = { len: v.length>=8, up: /[A-Z]/.test(v), num: /[0-9]/.test(v), sp: /[^A-Za-z0-9]/.test(v) };
+      ['r1','r2','r3','r4'].forEach((id,i) => document.getElementById(id).classList.toggle('met', Object.values(c)[i]));
+      const sc = Object.values(c).filter(Boolean).length;
+      [1,2,3,4].forEach(n => { document.getElementById('s'+n).style.background = sc>=n ? cols[sc] : '#dde8e8'; });
+    }
+    document.getElementById('cpw').addEventListener('input', function() {
+      const ok = this.value === document.getElementById('pw').value;
+      this.classList.toggle('err', !!this.value && !ok);
+      document.getElementById('mErr').style.display = (this.value && !ok) ? 'block' : 'none';
+    });
+  </script>
+</body>
+</html>

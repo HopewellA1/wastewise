@@ -1,0 +1,169 @@
+    :root {
+      --grad:        linear-gradient(155deg, #05386b 0%, #0a5a6e 22%, #1a8a6e 55%, #2db87a 78%, #5cdb95 100%);
+      --accent:      #1a8a6e;
+      --accent-btn:  #0d4f5c;
+      --card-bg:     #ffffff;
+      --text-dark:   #0d3a3a;
+      --text-mid:    #3a6060;
+      --text-muted:  #7a9a9a;
+      --label:       #4a6e6e;
+      --input-bg:    #f5fafa;
+      --input-bd:    #cde4e4;
+      --input-focus: #1a8a6e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+
+
+/* ── Page wrapper ── */
+    .page {
+    
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding-top: 1.5rem;
+      animation: up 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes up { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Brand header ── */
+    .brand {
+      text-align: center; margin-bottom: 2rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    }
+    .brand-logo { display: flex; align-items: center; gap: 0.5rem; }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.8rem; color: #ffffff; letter-spacing: -0.4px;
+    }
+    .brand-tag {
+      font-size: 0.68rem; color: rgba(255,255,255,0.6);
+      letter-spacing: 3.5px; text-transform: uppercase; font-weight: 400;
+    }
+
+    /* ── White card ── */
+    .card {
+        max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 2.6rem 2.4rem;
+      box-shadow: 0 30px 80px rgba(5,56,107,0.35), 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Card header — centred like Image 1 */
+    .card-head { text-align: center; margin-bottom: 2rem; }
+    .card-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.65rem; color: var(--text-dark);
+      letter-spacing: -0.4px; margin-bottom: 0.3rem;
+    }
+    .card-sub { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Form ── */
+    .field { margin-bottom: 1.2rem; }
+    .lrow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem; }
+
+    .flabel {
+      display: block;
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--label); letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 0.45rem;
+    }
+    .lrow .flabel { margin: 0; }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-bd);
+      border-radius: 10px;
+      padding: 0.82rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; color: var(--text-dark);
+      outline: none; transition: all 0.25s;
+    }
+    input::placeholder { color: #b0c8c8; }
+    input:focus {
+      border-color: var(--input-focus);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(26,138,110,0.1);
+    }
+    input.err { border-color: #d94f4f; box-shadow: 0 0 0 3px rgba(217,79,79,0.1); }
+
+    .forgot {
+      font-size: 0.75rem; color: var(--accent);
+      text-decoration: none; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      transition: opacity 0.2s;
+    }
+    .forgot:hover { opacity: 0.7; }
+
+    /* Checkbox */
+    .chk { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.6rem; }
+    .chk input[type="checkbox"] {
+      width: 17px; height: 17px; appearance: none; -webkit-appearance: none;
+      border: 1.5px solid var(--input-bd); border-radius: 5px;
+      background: var(--input-bg); cursor: pointer; flex-shrink: 0;
+      position: relative; transition: all 0.2s;
+    }
+    .chk input:checked { background: var(--accent); border-color: var(--accent); }
+    .chk input:checked::after {
+      content: '✓'; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%); font-size: 0.6rem; color: white; font-weight: 900;
+    }
+    .chk-lbl { font-size: 0.875rem; color: var(--text-mid); cursor: pointer; }
+
+    /* Button */
+    .btn {
+      width: 100%; padding: 0.92rem;
+      background: var(--accent-btn);
+      border: none; border-radius: 10px;
+      color: #ffffff; font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.3px;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 18px rgba(13,79,92,0.35);
+    }
+    .btn:hover { background: #0a3d4a; transform: translateY(-2px); box-shadow: 0 8px 26px rgba(13,79,92,0.45); }
+    .btn:active { transform: translateY(0); }
+
+    /* Divider */
+    .div { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0; }
+    .div::before, .div::after { content: ''; flex: 1; height: 1px; background: #e2eeee; }
+    .div span { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Footer */
+    .foot { text-align: center; font-size: 0.9rem; color: var(--text-mid); }
+    .foot a { color: var(--accent); font-weight: 700; text-decoration: none; transition: opacity 0.2s; font-size: 1rem; }
+    .foot a:hover { opacity: 0.7; }
+
+    /* Google button */
+    .btn-google {
+      width: 100%; padding: 0.88rem;
+      background: #ffffff;
+      border: 1.5px solid var(--input-bd);
+      border-radius: 10px;
+      color: var(--text-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 0.65rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .btn-google:hover { background: #f5fafa; border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    .btn-google:active { transform: translateY(0); }
+    .btn-google svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      .card-title { font-size: 1.4rem; }
+    }
