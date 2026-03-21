@@ -1,0 +1,37 @@
+{% extends "default/base.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
+
+<section>
+    <div class="card">
+
+        <div class="card-header">
+            Update Participant
+        </div>
+
+        <div class="card-body">
+            <form method="post" action="{{ url_for('participant.update_participant', participant_id=participant.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="PhoneNumber" class="form-control" value="{{ participant.PhoneNumber }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Physical Address</label>
+                    <input type="text" name="PhysicalAddress" class="form-control" value="{{ participant.PhysicalAddress }}" required>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Update</button>
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <a href="{{ url_for('default.home') }}" class="btn btn-secondary">Back</a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

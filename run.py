@@ -5,6 +5,7 @@ from main.routes.auth import createsuperuser
 from main.routes.default import home
 
 
+
 app = create_app()
 
     

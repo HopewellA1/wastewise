@@ -1,0 +1,63 @@
+{% extends "default/base.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
+
+<section>
+    <div class="card">
+
+        <div class="card-header">
+            Contributions
+        </div>
+
+        <div class="card-body">
+
+            <form method="post" action="{{ url_for('participant.add_contribution', participant_id=participant.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <div class="mb-3">
+                    <label class="form-label">Amount</label>
+                    <input type="number" step="0.01" name="amount" class="form-control" placeholder="Enter amount" required>
+                </div>
+
+                <button class="btn btn-primary mb-4" type="submit">Add Contribution</button>
+            </form>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contribution in participant.contributions %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ contribution.amount }}</td>
+                            <td>
+                                {% if contribution.date %}
+                                    {{ contribution.date.strftime('%Y-%m-%d') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No contributions yet</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="card-footer">
+            <a href="{{ url_for('default.home') }}" class="btn btn-secondary">Back</a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
