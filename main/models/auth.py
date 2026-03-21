@@ -1,5 +1,5 @@
 from main import db
-from datetime import date
+from datetime import date, datetime, timezone
 from flask_login import UserMixin
 
 
@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     is_superuser = db.Column(db.Boolean, default=False)
     is_staff = db.Column(db.Boolean, default=False)
    # is_active = db.Column(db.Boolean, default=True)
-    date_joined = db.Column(db.Date, default=date.today())
+    date_joined = db.Column(db.Date, default=lambda:datetime.now(timezone.utc))
     
     def __init__(self, fname, lname, email,password,is_superuser = False, is_staff = False,  ):
         self.first_name = fname
@@ -31,3 +31,27 @@ class User(db.Model, UserMixin):
         return f"<User {self.email} >"
         
         
+        
+class OTP(db.Model):
+    
+    otp_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    code = db.Column(db.String(6), nullable=False)
+    status=db.Column(db.String(30), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
+    
+    def __init__(self, userId, code, status):
+        
+        self.user_id = userId
+        self.code = code
+        self.status = status
+        
+    def __repr__(self):
+        return f"<OTP {self.code}"
+        
+    
+ #check expiry:   
+# from datetime import datetime, timezone, timedelta
+
+# if datetime.now(timezone.utc) > otp.created_at + timedelta(minutes=5):
+#     print("OTP expired")

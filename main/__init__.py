@@ -15,7 +15,7 @@ load_dotenv()
 db  = SQLAlchemy()
 bcrypt= Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = "auth.login"
+login_manager.login_view = "/auth/login"
 mail = Mail()
 
 @login_manager.user_loader
@@ -41,9 +41,11 @@ def create_app():
     #Blueprints
     from .routes.default import default
     from .routes.auth import auth
+    from .routes.participant import participant
     
     app.register_blueprint(auth)
     app.register_blueprint(default)
+    app.register_blueprint(participant)
     
     
     
@@ -70,8 +72,7 @@ def create_app():
 
 def getEmailCreds():
 
-    print("Running")
     return { 
         'sender_email': os.getenv("EMAIL_USER"),
-        'app_password': os.getenv("EMAIL_PASS") #"fvugjdhinugqhrna"
+        'app_password': os.getenv("EMAIL_PASS") 
    }

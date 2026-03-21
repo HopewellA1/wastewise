@@ -1,0 +1,166 @@
+{% extends "participant/base.html" %}
+{% block title %}Leaderboard{% endblock %}
+{% block page_icon %}🏆 {% endblock %}
+{% block page_title %}Leaderboard{% endblock %}
+{% block page_sub %}See how you stack up against the community{% endblock %}
+
+{% block extra_head %}
+<style>
+  .lb-wrap {
+    max-width: 700px;
+  }
+
+  .lb-hero {
+    background: linear-gradient(135deg, var(--teal-mid) 0%, var(--green-mid) 60%, var(--emerald) 100%);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    color: var(--text-main);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 28px rgba(92, 219, 149, 0.3);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .lb-hero-left h2 {
+    font-family: 'DM Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .lb-hero-left p {
+    font-size: 14px;
+    opacity: 0.75;
+  }
+
+  .lb-hero-rank {
+    font-family: 'DM Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    opacity: 0.9;
+  }
+
+  .lb-hero-rank span {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    opacity: 0.7;
+  }
+
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--card-border);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .lb-row:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border);
+  }
+
+  .lb-row.is-you {
+    background: rgba(92, 219, 149, 0.10);
+    border-color: var(--green-light);
+    border-width: 2px;
+  }
+
+  .lb-pos {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    width: 30px;
+    text-align: center;
+    flex-shrink: 0;
+    color: var(--text-faint);
+  }
+
+  .lb-av-lg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(92, 219, 149, 0.3);
+  }
+
+  .lb-info-name {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .lb-info-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .lb-pts-lg {
+    margin-left: auto;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--emerald);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .lb-hero {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lb-wrap">
+
+  <div class="lb-hero">
+    <div class="lb-hero-left">
+      <h2>Your Current Rank</h2>
+      <p>Keep recycling to climb higher!</p>
+    </div>
+    <div class="lb-hero-rank">#{{ user_rank }}<span> / {{ leaderboard|length }}</span></div>
+  </div>
+
+  {% set medals = ['🥇','🥈','🥉'] %}
+  {% for p in leaderboard %}
+  <div class="lb-row {{ 'is-you' if p.username == 'Mbali' }}" style="animation-delay:{{ loop.index0 * 0.05 }}s">
+    <div class="lb-pos">{{ medals[loop.index0] if loop.index0 < 3 else loop.index }}</div>
+        <div class="lb-av-lg">{{ p.username[:2].upper() }}</div>
+        <div>
+          <div class="lb-info-name">
+            {{ p.username }}
+            {% if p.username == 'Mbali' %}<span class="badge badge-green" style="margin-left:6px;">You</span>{% endif %}
+          </div>
+          <div class="lb-info-sub">Eco Recycler</div>
+        </div>
+        <div class="lb-pts-lg">{{ p.points }} pts</div>
+    </div>
+    {% endfor %}
+
+  </div>
+  {% endblock %}

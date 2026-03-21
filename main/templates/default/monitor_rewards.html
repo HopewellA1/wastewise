@@ -1,33 +1,394 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise · Monitor Rewards</title>
 
-{% block content %}
-<div class="page-header" data-aos="fade-up">
-    <h2>Monitor Rewards</h2>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --dark-navy:     #05386b;
+      --teal-dark:     #0a5a6e;
+      --teal-mid:      #1a8a6e;
+      --green-mid:     #2db87a;
+      --emerald:       #5cdb95;
+      --emerald-light: #a8ffce;
+
+      --card-bg:       rgba(255,255,255,0.09);
+      --card-border:   rgba(255,255,255,0.14);
+      --card-hover-bg: rgba(255,255,255,0.14);
+      --overlay-dark:  rgba(0,0,0,0.28);
+
+      --text-main:   #ffffff;
+      --text-muted:  rgba(255,255,255,0.55);
+      --text-faint:  rgba(255,255,255,0.32);
+      --btn-text:    #05386b;
+
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: rgba(255,255,255,.9);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-wrap {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background: linear-gradient(155deg,
+        #05386b 0%,
+        #0a5a6e 22%,
+        #1a8a6e 55%,
+        #2db87a 78%,
+        #5cdb95 100%);
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      animation: float 20s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 520px; height: 520px; top: 50%;  left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 380px; height: 380px; top:  5%;  right: -100px; animation-delay: -7s; }
+    .blob-3 { width: 260px; height: 260px; top: 32%;  left: 42%;    animation-delay: -13s; }
+    @keyframes float {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(35px,25px) scale(1.08); }
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(5,56,107,.55);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 52px; height: 64px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; margin-right: auto;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; box-shadow: 0 0 18px rgba(92,219,149,.45);
+    }
+    .brand-name {
+      font-family: var(--font-head);
+      font-weight: 800; font-size: 1.15rem; color: rgba(255,255,255,.9);
+    }
+    .topbar-nav { display: flex; align-items: center; gap: 2px; }
+    .topbar-nav a {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: .82rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: background .18s, color .18s;
+    }
+    .topbar-nav a:hover { background: var(--card-hover-bg); color: rgba(255,255,255,.9); }
+    .topbar-nav a.active { color: var(--emerald); font-weight: 600; }
+    .admin-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(92,219,149,.18);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
+      font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 4px 13px; border-radius: 99px;
+    }
+    .admin-pill::before { content: '●'; font-size: .42rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
+    .btn-exit {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px; border-radius: 99px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-muted); font-size: .77rem; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .btn-exit:hover { background: var(--card-hover-bg); border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.9); }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1000px; margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .78rem; font-weight: 600; color: var(--emerald);
+      text-decoration: none; margin-bottom: 20px; opacity: .8;
+      transition: opacity .2s;
+    }
+    .back-link:hover { opacity: 1; color: var(--emerald); }
+
+    .page-header { margin-bottom: 32px; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; color: rgba(255,255,255,.9); margin-bottom: 6px; }
+    .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── TABLE CARD ── */
+    .table-card {
+      background: #0d6e6e !important;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 56px rgba(0,0,0,.3);
+    }
+
+    .custom-table { margin: 0; color: #fff; }
+
+    .custom-table thead tr {
+      background: #085858 !important;
+      border-bottom: 2px solid rgba(255,255,255,.2) !important;
+    }
+    .custom-table thead th {
+      font-family: var(--font-body);
+      font-size: .68rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: #a8ffce !important; padding: 16px 20px;
+      border: none !important; white-space: nowrap;
+      background: #085858 !important;
+    }
+    .custom-table tbody tr {
+      background: #0d6e6e !important;
+      border-bottom: 1px solid rgba(255,255,255,.1) !important;
+      transition: background .18s;
+    }
+    .custom-table tbody tr:nth-child(even) { background: #0f7a7a !important; }
+    .custom-table tbody tr:last-child { border-bottom: none !important; }
+    .custom-table tbody tr:hover { background: #118f8f !important; }
+    .custom-table tbody td {
+      padding: 14px 20px; font-size: .85rem;
+      color: rgba(255,255,255,.9) !important;
+      border: none !important; vertical-align: middle;
+      background: inherit !important;
+    }
+
+    /* username */
+    .td-username { font-weight: 700; color: #fff; }
+
+    /* reward name */
+    .reward-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(45,184,122,.18);
+      border: 1px solid rgba(45,184,122,.35);
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .78rem; font-weight: 600; color: rgba(255,255,255,.9);
+    }
+
+    /* points used */
+    .pts-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(96,165,250,.15);
+      border: 1px solid rgba(96,165,250,.35);
+      color: #93c5fd;
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .76rem; font-weight: 700;
+    }
+
+    /* status badges */
+    .badge-pending {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(251,191,36,.12);
+      border: 1px solid rgba(251,191,36,.35);
+      color: #fbbf24;
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .74rem; font-weight: 700;
+    }
+    .badge-pending::before { content: '●'; font-size: .38rem; }
+
+    .badge-redeemed {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(92,219,149,.13);
+      border: 1px solid rgba(92,219,149,.35);
+      color: var(--emerald);
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .74rem; font-weight: 700;
+    }
+    .badge-redeemed::before { content: '●'; font-size: .38rem; }
+
+    .badge-processing {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(139,92,246,.13);
+      border: 1px solid rgba(139,92,246,.35);
+      color: #a78bfa;
+      padding: 5px 13px; border-radius: 99px;
+      font-size: .74rem; font-weight: 700;
+    }
+    .badge-processing::before { content: '●'; font-size: .38rem; }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--overlay-dark);
+      border-top: 1px solid var(--card-border);
+      overflow: hidden; height: 30px;
+      display: flex; align-items: center;
+    }
+    .ticker-inner {
+      display: flex; gap: 56px;
+      animation: tick 32s linear infinite; white-space: nowrap;
+    }
+    .ticker-inner span {
+      font-size: .59rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--emerald); font-weight: 700; opacity: .7;
+    }
+    .ticker-inner span::before { content: '↗ '; }
+    @keyframes tick {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 20px; }
+      .topbar-nav { display: none; }
+      .page { padding: 28px 16px 70px; }
+      .custom-table thead th,
+      .custom-table tbody td { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-wrap" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="wastewise-admin.html" class="topbar-brand">
+    <div class="brand-mark">♻️</div>
+    <span class="brand-name">WasteWise</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="admin_dashboard.html">Dashboard</a>
+    <a href="participant_submission.html">Submissions</a>
+    <a href="wastewise-points.html">Participants</a>
+    <a href="monitor_rewards.html" class="active">Rewards</a>
+    <a href="program_overview.html">Overview</a>
+  </nav>
+  <span class="admin-pill">Admin</span>
+  <a href="admin_dashboard.html" class="btn-exit">🔒 Exit Admin</a>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+
+  <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+
+  <div class="page-header" data-aos="fade-up">
+    <h2>🎁 Monitor Rewards</h2>
     <p>Track reward redemptions and their current status.</p>
+  </div>
+
+  <div style="margin-bottom:20px;" data-aos="fade-up">
+    <a href="manage_rewards.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;transition:background .2s;">⚙️ Switch to Manage Rewards</a>
+  </div>
+  <div class="table-card" data-aos="fade-up" data-aos-delay="80">
+    <div class="table-responsive">
+      <table class="table custom-table align-middle">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Reward</th>
+            <th>Points Used</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td class="td-username">@thabo_m</td>
+            <td><span class="reward-pill">🧴 Eco Bottle</span></td>
+            <td><span class="pts-badge">⭐ 50 pts</span></td>
+            <td><span class="badge-redeemed">Redeemed</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@lerato_k</td>
+            <td><span class="reward-pill">☕ Coffee Voucher</span></td>
+            <td><span class="pts-badge">⭐ 25 pts</span></td>
+            <td><span class="badge-pending">Pending</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@sipho_n</td>
+            <td><span class="reward-pill">🎟️ Shopping Voucher</span></td>
+            <td><span class="pts-badge">⭐ 100 pts</span></td>
+            <td><span class="badge-processing">Processing</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@amahle_d</td>
+            <td><span class="reward-pill">🛍️ Reusable Bag</span></td>
+            <td><span class="pts-badge">⭐ 30 pts</span></td>
+            <td><span class="badge-redeemed">Redeemed</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@nkosi_z</td>
+            <td><span class="reward-pill">🎬 Movie Ticket</span></td>
+            <td><span class="pts-badge">⭐ 80 pts</span></td>
+            <td><span class="badge-pending">Pending</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@zanele_p</td>
+            <td><span class="reward-pill">🌳 Tree Planting Certificate</span></td>
+            <td><span class="pts-badge">⭐ 200 pts</span></td>
+            <td><span class="badge-redeemed">Redeemed</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@mpho_r</td>
+            <td><span class="reward-pill">🎒 Eco Backpack</span></td>
+            <td><span class="pts-badge">⭐ 150 pts</span></td>
+            <td><span class="badge-processing">Processing</span></td>
+          </tr>
+
+          <tr>
+            <td class="td-username">@kagiso_t</td>
+            <td><span class="reward-pill">🍱 Eco Lunch Box</span></td>
+            <td><span class="pts-badge">⭐ 60 pts</span></td>
+            <td><span class="badge-redeemed">Redeemed</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+    <span>Track Impact</span><span>Go Green</span><span>Community First</span>
+    <span>Smart Recycling</span><span>Eco Rewards</span><span>Zero Waste</span>
+    <span>Clean Cities</span><span>Report It</span>
+  </div>
 </div>
 
-<div class="custom-table-card" data-aos="fade-up">
-    <div class="table-responsive">
-        <table class="table custom-table align-middle">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Reward</th>
-                    <th>Points Used</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in redemptions %}
-                <tr>
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.reward }}</td>
-                    <td>{{ item.points_used }}</td>
-                    <td><span class="badge bg-info text-dark">{{ item.status }}</span></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 560, once: true, easing: 'ease-out-cubic' });
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+{% extends "participant/base.html" %}
+{% block title %}Rewards{% endblock %}
+{% block page_icon %}🎁 {% endblock %}
+{% block page_title %}Rewards{% endblock %}
+{% block page_sub %}Redeem your eco points for real rewards{% endblock %}
+
+{% block extra_head %}
+<style>
+  .pts-banner {
+    background: linear-gradient(135deg, var(--teal-mid) 0%, var(--green-mid) 60%, var(--emerald) 100%);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 28px rgba(92, 219, 149, 0.28);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .pts-banner-left h3 {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-main);
+    margin-bottom: 4px;
+  }
+
+  .pts-banner-val {
+    font-family: 'DM Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .pts-banner-sub {
+    font-size: 13px;
+    color: rgba(13, 42, 26, 0.65);
+    margin-top: 4px;
+  }
+
+  .pts-banner-icon {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    opacity: 0.5;
+  }
+
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .reward-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    animation: fadeUp 0.4s ease both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reward-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--green-light);
+  }
+
+  .reward-card.locked {
+    opacity: 0.55;
+    filter: grayscale(0.3);
+  }
+
+  .r-icon {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    margin-bottom: 12px;
+  }
+
+  .r-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 5px;
+  }
+
+  .r-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .r-cost {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--emerald);
+    margin-bottom: 14px;
+  }
+
+  .redeemed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .redeemed-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(92, 219, 149, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .redeemed-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .redeemed-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .section-head {
+    margin-bottom: 16px;
+  }
+
+  .section-head h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 600px) {
+    .pts-banner {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="pts-banner">
+  <div class="pts-banner-left">
+    <h3>Available Points</h3>
+    <div class="pts-banner-val">{{ user_points }}</div>
+    <div class="pts-banner-sub">Keep recycling to earn more!</div>
+  </div>
+  <div class="pts-banner-icon">⭐</div>
+</div>
+
+<div class="section-head">
+  <h2>🎁 Available Rewards</h2>
+</div>
+
+<div class="rewards-grid">
+  {% for r in rewards %}
+  <div class="reward-card {{ 'locked' if user_points < r.cost }}" style="animation-delay:{{ loop.index0 * 0.07 }}s">
+    <div class="r-icon">{{ r.icon }}</div>
+    <div class="r-name">{{ r.name }}</div>
+    <div class="r-desc">{{ r.description }}</div>
+    <div class="r-cost">{{ r.cost }} pts</div>
+    <form action="{{ url_for('/participant.redeem_reward') }}" method="POST" style="width:100%">
+      <input type="hidden" name="reward_id" value="{{ r.id }}" />
+      {% if user_points >= r.cost %}
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+        Redeem
+      </button>
+      {% else %}
+      <button type="button" class="btn btn-outline"
+        style="width:100%;justify-content:center;cursor:not-allowed;opacity:0.55;">
+        Need {{ r.cost - user_points }} more pts
+      </button>
+      {% endif %}
+    </form>
+  </div>
+  {% endfor %}
+</div>
+
+{% if redeemed %}
+<div class="section-head" style="margin-top:8px;">
+  <h2>✅ Redeemed</h2>
+</div>
+<div class="redeemed-list" style="max-width:600px;">
+  {% for rd in redeemed %}
+  <div class="redeemed-row" style="animation-delay:{{ loop.index0 * 0.05 }}s">
+    <div>
+      <div class="redeemed-name">{{ rd.name }}</div>
+      <div class="redeemed-date">{{ rd.date }}</div>
+    </div>
+    <span class="badge badge-green">✓ Redeemed</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

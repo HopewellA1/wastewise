@@ -1,64 +1,177 @@
 {% extends "default/base.html" %}
 
 {% block content %}
-    
 
-  <section class="hero" id="home">
+    <section class="hero" id="home">
     <div class="hero-text">
-      <h1>Recycle Today for a Greener Tomorrow</h1>
-      <p>
-        WasteWise is a recycling web app that helps users report recyclable waste,
-        earn rewards, and make a positive impact in their communities.
-      </p>
-      <div class="hero-buttons">
-        <a href="#how" class="btn-green">Get Started</a>
-        <a href="#rewards" class="btn-light">See Rewards</a>
-      </div>
+        <h1>Recycle Today for a Greener Tomorrow</h1>
+        
+        <!-- Rotating Gradient & Glowing Icon - OPTION 2 -->
+        <style>
+            @keyframes glow-spin {
+                0% { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 5px #2ecc71); }
+                50% { transform: rotate(180deg) scale(1.1); filter: drop-shadow(0 0 20px #1abc9c); }
+                100% { transform: rotate(360deg) scale(1); filter: drop-shadow(0 0 5px #2ecc71); }
+            }
+            
+            .glow-recycle {
+                font-size: 3rem;
+                animation: glow-spin 3s ease-in-out infinite;
+                display: inline-block;
+                background: linear-gradient(135deg, #2ecc71, #1abc9c);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-right: 15px;
+            }
+        </style>
+        
+        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.5); padding: 15px 25px; border-radius: 50px; backdrop-filter: blur(5px); margin-bottom: 25px; border: 1px solid rgba(46, 204, 113, 0.3);">
+            <span class="glow-recycle">♻️</span>
+            <span style="font-size: 1.2rem; color: var(--deep-sea); font-weight: 500;">Join 2,847+ recyclers making a difference</span>
+        </div>
+        
+        <p>
+            WasteWise is a recycling web app that helps users report recyclable waste,
+            earn rewards, and make a positive impact in their communities. Join thousands
+            of eco-conscious individuals in creating a sustainable future, one recyclable at a time.
+        </p>
+        <div class="hero-buttons">
+            <a href="#how" class="btn-emerald">Get Started</a>
+            <a href="#rewards" class="btn-outline-emerald">See Rewards</a>
+        </div>
     </div>
+    </section>
 
-    <div class="hero-image">
-      <div class="hero-card">
-        <div class="icon">🌍</div>
-        <h3>Clean. Recycle. Earn.</h3>
-        <p>Take part in building a cleaner environment with smart recycling actions.</p>
-      </div>
-    </div>
-  </section>
+    <!-- Recycling Images Showcase - Using MY downloaded images -->
+    <section class="recycling-showcase">
+        <div class="showcase-container">
+            <div class="showcase-title">
+                <h2>Real People, Real Impact</h2>
+                <p>Meet the community making sustainability a daily habit</p>
+            </div>
+            
+            <div class="image-grid">
+                <!-- Image 1: People Recycling -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/people-recycling.jpg') }}'); background-size: cover; background-position: center 30%;"></div>
+                    <div class="image-caption">
+                        <h3>People Recycling</h3>
+                        <p>Dedicated individuals taking time to sort and recycle their waste properly, making a difference one item at a time.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 2: Recycling Bins -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/recycling-bins.jpg') }}'); background-size: cover; background-position: center 50%;"></div>
+                    <div class="image-caption">
+                        <h3>Recycling Bins</h3>
+                        <p>Color-coded recycling bins making it easy for everyone to sort paper, plastic, glass, and organic waste correctly.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 3: People Holding Different Recycling Materials -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/holding-materials.jpg') }}'); background-size: cover; background-position: center 25%;"></div>
+                    <div class="image-caption">
+                        <h3>Diverse Materials</h3>
+                        <p>Community members proudly showing the various recyclable materials - from plastics and papers to glass and metals.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 4: The Community -->
+                <div class="image-row">
+                    <div class="recycle-image" style="background-image: url('{{ url_for('static', filename='images/community.jpg') }}'); background-size: cover; background-position: center 40%;"></div>
+                    <div class="image-caption">
+                        <h3>The Community</h3>
+                        <p>United for a common cause - neighbors, friends, and families working together to build a cleaner, greener future.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="values-container">
+            <div class="values-header">
+                <h2>Why Join WasteWise?</h2>
+                <p>Discover the value of becoming part of our sustainable community</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🌱</div>
+                    <h3>Environmental Impact</h3>
+                    <p>Every item recycled reduces carbon emissions and conserves natural resources for future generations.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">💰</div>
+                    <h3>Financial Rewards</h3>
+                    <p>Earn points that convert into real-world value - from shopping vouchers to eco-friendly products.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Community Building</h3>
+                    <p>Connect with like-minded individuals and be part of local environmental initiatives.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">📊</div>
+                    <h3>Track Your Impact</h3>
+                    <p>Monitor your contributions and see the tangible difference you're making in your community.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🎓</div>
+                    <h3>Learn & Grow</h3>
+                    <p>Access educational resources about sustainability and best recycling practices.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🏆</div>
+                    <h3>Recognition</h3>
+                    <p>Get recognized for your environmental efforts and inspire others to take action.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <section id="how">
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-subtitle">
-      The system is simple and easy to use for everyone.
-    </p>
+    <!-- Original Sections -->
+    <section id="how">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+            The system is simple and easy to use for everyone.
+        </p>
 
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">📝</div>
-        <h3>Report Waste</h3>
-        <p>Submit recyclable items through the app quickly and easily.</p>
-      </div>
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h3>Report Waste</h3>
+                <p>Submit recyclable items through the app quickly and easily.</p>
+            </div>
 
-      <div class="card">
-        <div class="card-icon">✅</div>
-        <h3>Admin Approval</h3>
-        <p>Your contribution is reviewed and verified by the admin.</p>
-      </div>
+            <div class="card">
+                <div class="card-icon">✅</div>
+                <h3>Admin Approval</h3>
+                <p>Your contribution is reviewed and verified by the admin.</p>
+            </div>
 
-      <div class="card">
-        <div class="card-icon">🎁</div>
-        <h3>Earn Points</h3>
-        <p>You receive points for every approved recycling activity.</p>
-      </div>
+            <div class="card">
+                <div class="card-icon">🎁</div>
+                <h3>Earn Points</h3>
+                <p>You receive points for every approved recycling activity.</p>
+            </div>
 
-      <div class="card">
-        <div class="card-icon">🏆</div>
-        <h3>Redeem Rewards</h3>
-        <p>Use your points to claim vouchers and eco-friendly rewards.</p>
-      </div>
-    </div>
-  </section>
+            <div class="card">
+                <div class="card-icon">🏆</div>
+                <h3>Redeem Rewards</h3>
+                <p>Use your points to claim vouchers and eco-friendly rewards.</p>
+            </div>
+        </div>
+    </section>
 
-  <section id="rewards">
+    <section id="rewards">
         <h2 class="section-title">Rewards</h2>
         <p class="section-subtitle">
             Your recycling efforts are rewarded in exciting ways.
@@ -83,37 +196,30 @@
                 <p>Top recyclers can be recognized in the community.</p>
             </div>
         </div>
-  </section>
+    </section>
 
     <section class="impact" id="impact">
         <h2 class="section-title">Community Impact</h2>
         <p class="section-subtitle">
-        Together, small actions create a big difference.
+            Together, small actions create a big difference.
         </p>
 
         <div class="stats">
-        <div class="stat-box">
-            <h3 id="waste">0</h3>
-            <p>Kg Recycled</p>
-        </div>
+            <div class="stat-box">
+                <h3 id="waste">0</h3>
+                <p>Kg Recycled</p>
+            </div>
 
-        <div class="stat-box">
-            <h3 id="users">0</h3>
-            <p>Active Users</p>
-        </div>
+            <div class="stat-box">
+                <h3 id="users">0</h3>
+                <p>Active Users</p>
+            </div>
 
-        <div class="stat-box">
-            <h3 id="points">0</h3>
-            <p>Points Earned</p>
-        </div>
+            <div class="stat-box">
+                <h3 id="points">0</h3>
+                <p>Points Earned</p>
+            </div>
         </div>
     </section>
 
-  <section class="cta">
-    <h2>Join the Recycling Movement</h2>
-        <p>
-        Start using WasteWise today and be part of a cleaner, healthier, and greener future.
-        </p>
-    <a href="#" class="btn-green" style="padding:14px 28px; text-decoration:none; border-radius:8px; display:inline-block;">Join Now</a>
-  </section>
-{% endblock  %}
+{% endblock %}
