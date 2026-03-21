@@ -1,0 +1,214 @@
+{% extends "participant/base.html" %}
+{% block title %}Referrals{% endblock %}
+{% block page_icon %}👥 {% endblock %}
+{% block page_title %}Referrals{% endblock %}
+{% block page_sub %}Invite friends and earn bonus points together{% endblock %}
+
+{% block extra_head %}
+<style>
+  .ref-wrap {
+    max-width: 740px;
+  }
+
+  .ref-hero {
+    background: linear-gradient(135deg, var(--teal-mid) 0%, var(--green-mid) 60%, var(--emerald) 100%);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 28px rgba(92, 219, 149, 0.28);
+    animation: fadeUp 0.4s ease both;
+    color: var(--text-main);
+  }
+
+  .ref-hero h2 {
+    font-family: 'DM Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .ref-hero p {
+    font-size: 13.5px;
+    opacity: 0.72;
+    margin-bottom: 20px;
+  }
+
+  .ref-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .ref-stat {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .ref-stat-val {
+    font-family: 'DM Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .ref-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.7;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .copy-row {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .copy-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 11px 14px;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-main);
+    outline: none;
+    min-width: 0;
+  }
+
+  .copy-btn {
+    padding: 11px 18px;
+    background: var(--green-dark);
+    color: white;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background var(--transition);
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover {
+    background: var(--teal-dark);
+  }
+
+  .friends-table tbody td:first-child {
+    font-weight: 600;
+  }
+
+  .status-active {
+    color: var(--emerald);
+    font-weight: 700;
+  }
+
+  .status-pending {
+    color: #fbbf24;
+    font-weight: 700;
+  }
+
+  @media (max-width: 500px) {
+    .ref-stats-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ref-wrap">
+
+  <div class="ref-hero">
+    <h2>Share & Earn Together 🌍</h2>
+    <p>Earn <strong>50 points</strong> for every friend who joins and makes their first recycle.</p>
+
+    <div class="ref-stats-row">
+      <div class="ref-stat">
+        <div class="ref-stat-val">{{ referral.count }}</div>
+        <div class="ref-stat-label">Invited</div>
+      </div>
+      <div class="ref-stat">
+        <div class="ref-stat-val">{{ referral.pending }}</div>
+        <div class="ref-stat-label">Pending</div>
+      </div>
+      <div class="ref-stat">
+        <div class="ref-stat-val">{{ referral.points }}</div>
+        <div class="ref-stat-label">Pts Earned</div>
+      </div>
+    </div>
+
+    <div class="copy-row">
+      <input class="copy-input" type="text" value="{{ referral.link }}" id="refLink" readonly />
+      <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><span class="ct-icon">👥</span> Your Referrals</div>
+      <span class="badge badge-green">{{ referral.friends|length }} friends</span>
+    </div>
+    <table class="eco-table friends-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Your Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in referral.friends %}
+        <tr>
+          <td>{{ f.name }}</td>
+          <td>{{ f.joined }}</td>
+          <td>
+            <span class="status-{{ f.status|lower }}">
+              {{ '✓ ' if f.status == 'Active' else '⏳ ' }}{{ f.status }}
+            </span>
+          </td>
+          <td>
+            {% if f.points > 0 %}
+            <span class="badge badge-green">+{{ f.points }} pts</span>
+            {% else %}
+            <span class="badge badge-amber">Pending</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function copyLink() {
+    const el = document.getElementById('refLink');
+    el.select();
+    el.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(el.value).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "participant/base.html" %}
+{% block title %}Updates{% endblock %}
+{% block page_icon %}📣 {% endblock %}
+{% block page_title %}Updates{% endblock %}
+{% block page_sub %}Latest news from the WasteWise community{% endblock %}
+
+{% block extra_head %}
+<style>
+  .updates-wrap {
+    max-width: 680px;
+  }
+
+  .update-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    animation: fadeUp 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .update-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--green-light));
+  }
+
+  .update-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border);
+  }
+
+  .update-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .update-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .update-body {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .update-date {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+
+  .tag-new {
+    background: rgba(92, 219, 149, 0.10);
+    color: var(--emerald);
+    border: 1px solid var(--border);
+  }
+
+  .tag-tip {
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  .tag-challenge {
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="updates-wrap">
+  {% set tag_map = {'New':'tag-new','Tip':'tag-tip','Challenge':'tag-challenge'} %}
+  {% for u in updates %}
+  <div class="update-card" style="animation-delay:{{ loop.index0 * 0.07 }}s">
+    <div class="update-top">
+      <span class="badge {{ tag_map.get(u.tag, 'badge-green') }}">{{ u.tag }}</span>
+      <span class="update-date">{{ u.date }}</span>
+    </div>
+    <div class="update-title">{{ u.title }}</div>
+    <div class="update-body">{{ u.body }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

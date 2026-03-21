@@ -1,0 +1,179 @@
+{% extends "participant/base.html" %}
+{% block title %}Challenges{% endblock %}
+{% block page_icon %}🎯 {% endblock %}
+{% block page_title %}Challenges{% endblock %}
+{% block page_sub %}Complete challenges to earn bonus points{% endblock %}
+
+{% block extra_head %}
+<style>
+  .challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .challenge-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    animation: fadeUp 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .challenge-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--green), var(--green-mid));
+    border-radius: 4px 0 0 4px;
+  }
+
+  .challenge-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border);
+  }
+
+  .ch-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 5px;
+  }
+
+  .ch-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .ch-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .ch-pts {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--emerald);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .section-head h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+  }
+
+  .completed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .completed-card {
+    background: rgba(92, 219, 149, 0.10);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .completed-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .completed-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .completed-pts {
+    font-size: 12px;
+    color: var(--emerald);
+    font-weight: 600;
+    margin-top: 1px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="section-head">
+  <span style="font-size:18px;">🔥</span>
+  <h2>Active Challenges</h2>
+  <span class="badge badge-green">{{ active_challenges|length }} active</span>
+</div>
+
+<div class="challenges-grid">
+  {% for c in active_challenges %}
+  <div class="challenge-card" style="animation-delay:{{ loop.index0 * 0.07 }}s">
+    <div class="ch-title">{{ c.title }}</div>
+    <div class="ch-desc">{{ c.description }}</div>
+    <div class="prog-meta">
+      <span>Progress</span>
+      <span class="prog-pct">{{ c.progress }}%</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" style="width:{{ c.progress }}%"></div>
+    </div>
+    <div class="ch-meta">
+      <span>⏰ Due: {{ c.due }}</span>
+      <span class="ch-pts">+{{ c.points }} pts</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-head" style="margin-top:8px;">
+  <span style="font-size:18px;">✅</span>
+  <h2>Completed</h2>
+  <span class="badge badge-white">{{ completed_challenges|length }} done</span>
+</div>
+
+<div class="completed-grid">
+  {% for c in completed_challenges %}
+  <div class="completed-card" style="animation-delay:{{ loop.index0 * 0.06 }}s">
+    <div class="completed-icon">✓</div>
+    <div>
+      <div class="completed-name">{{ c.title }}</div>
+      <div class="completed-pts">+{{ c.points }} pts earned</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
