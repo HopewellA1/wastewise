@@ -1,56 +1,344 @@
-{% extends "default/base.html" %}
+{% extends "auth/base.html" %}
+
+{% block hide_nav %}{% endblock %}
+{% block hide_footer %}{% endblock %}
+
 {% block content %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/login.css') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
+<style>
+  .req-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 10px;
+    padding: 0;
+    list-style: none;
+  }
 
+  .req-item {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #7a9a9a;
+  }
 
+  .req-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #cde4e4;
+    flex-shrink: 0;
+    display: inline-block;
+  }
 
-    <section class="hero">
+  .req-item.met {
+    color: #1a8a6e;
+  }
 
+  .req-item.met .req-dot {
+    background: #1a8a6e;
+  }
 
-        <div class="card">
-            <div class="card-header">
-                <h3>
-                    <b>
-                        Signup
-                    </b>
-                </h1>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="/auth/signup" class="form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  .str-bar {
+    display: flex !important;
+    gap: 5px;
+    margin-top: 8px;
+  }
 
-                    <div class="mb-3">
-                        <label >First Name</label>
-                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{new_user.first_name}}" required>
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label>Last Name</label>
-                        <input type="text" name="last_name" class="form-control" placeholder="Last name" value="{{new_user.last_name}}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{new_user.email}}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="password" required>
-                    </div>
+  .str-seg {
+    flex: 1;
+    height: 4px;
+    border-radius: 100px;
+    background: #dde8e8;
+    transition: background 0.3s;}
+    .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(5, 56, 107, 0.55);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 18px;
+    width: 100%; max-width: 540px;
+    max-height: 80vh; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 30px 80px rgba(5,56,107,0.3);
+    animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform: translateY(24px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 1.8rem 1rem;
+    border-bottom: 1px solid #e2eeee; flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800;
+    color: #0d3a3a; display: flex; align-items: center; gap: 8px;
+  }
+  .modal-header h2 .m-icon {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, #1a8a6e, #2db87a);
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 0.9rem; color: #fff;
+  }
+  .modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: #f5fafa; border: 1px solid #cde4e4;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; color: #3a6060; transition: all 0.2s;
+  }
+  .modal-close:hover { background: #1a8a6e; color: #fff; border-color: #1a8a6e; }
+  .modal-body {
+    padding: 1.4rem 1.8rem; overflow-y: auto; flex: 1;
+  }
+  .modal-body h3 {
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    color: #1a8a6e; text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 1.2rem 0 0.5rem;
+  }
+  .modal-body h3:first-child { margin-top: 0; }
+  .modal-body p { font-size: 0.875rem; color: #4a6e6e; line-height: 1.75; margin-bottom: 0.5rem; }
+  .modal-body ul { padding-left: 1.2rem; margin-bottom: 0.5rem; }
+  .modal-body ul li { font-size: 0.875rem; color: #4a6e6e; line-height: 1.75; }
+  .modal-footer {
+    padding: 1rem 1.8rem 1.4rem;
+    border-top: 1px solid #e2eeee; flex-shrink: 0;
+  }
+  .modal-footer button {
+    width: 100%; padding: 0.85rem;
+    background: #0d4f5c; color: #fff; border: none;
+    border-radius: 10px; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.25s;
+  }
+  .modal-footer button:hover { background: #1a8a6e; transform: translateY(-1px); }
+  .chk-lbl a { color: #1a8a6e; font-weight: 600; text-decoration: underline; cursor: pointer; }
+  .chk-lbl a:hover { color: #0d4f5c; }
+  .foot {
+    background: transparent !important; box-shadow: none !important;
+    border: none !important; padding: 8px 0 !important;
+    text-align: center; font-size: 0.9rem; color: #3a6060;
+  }
+  .foot a { color: #1a8a6e; font-weight: 700; text-decoration: none; }
+</style>
 
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="password2" class="form-control" placeholder="re-nter password" required>
-                    </div>
-                    <button class='btn btn-primary' type="submit">Submit</button>
-                </form>
+    <section>
 
-            </div>
+<div class="page">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-icon">♻</div>
+        <span class="brand-name">WasteWise</span>
+      </div>
+      <div class="brand-tag">Local Recycling Initiative Tracker</div>
+    </div>
 
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Create your account</div>
+        <div class="card-sub">Join the recycling movement in your community</div>
+      </div>
+
+      <form action="javascript:void(0)">
+        <!-- Names -->
+        <div class="name-grid">
+          <div>
+            <label class="flabel">Full Name(s)</label>
+            <input type="text" autocomplete="given-name"/>
+          </div>
+          <div>
+            <label class="flabel">Surname</label>
+            <input type="text" autocomplete="family-name"/>
+          </div>
         </div>
 
-        
-    </section>
+        <!-- Email -->
+        <div class="field">
+          <label class="flabel">Email Address</label>
+          <input type="email" autocomplete="email"/>
+        </div>
+
+        <!-- Password + strength -->
+        <div class="field">
+          <label class="flabel">Password</label>
+          <input type="password" id="pw" autocomplete="new-password" oninput="checkStr()"/>
+          <div class="str-bar">
+            <div class="str-seg" id="s1"></div>
+            <div class="str-seg" id="s2"></div>
+            <div class="str-seg" id="s3"></div>
+            <div class="str-seg" id="s4"></div>
+          </div>
+          <ul class="req-grid">
+            <li class="req-item" id="r1"><span class="req-dot"></span>8+ characters</li>
+            <li class="req-item" id="r2"><span class="req-dot"></span>Uppercase letter</li>
+            <li class="req-item" id="r3"><span class="req-dot"></span>One number</li>
+            <li class="req-item" id="r4"><span class="req-dot"></span>Special character</li>
+          </ul>
+        </div>
+
+        <!-- Confirm -->
+        <div class="field">
+          <label class="flabel">Confirm Password</label>
+          <input type="password" id="cpw" autocomplete="new-password"/>
+          <div class="err-msg" id="mErr">Passwords do not match.</div>
+        </div>
+ <div class="chk">
+          <input type="checkbox" id="terms">
+          <label class="chk-lbl" for="terms">
+            I agree to the
+            <a onclick="openModal('tos'); return false;">Terms of Service</a>
+            and
+            <a onclick="openModal('pp'); return false;">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+
+      <div class="div"><span>already have an account?</span></div>
+      <div class="foot">Already registered? <a href="{{url_for('/auth.login')}}">Log in</a></div>
+    </div>
+  </div>
+</section>
+   <!-- TERMS OF SERVICE MODAL -->
+<div class="modal-overlay" id="modal-tos">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2><span class="m-icon">📋</span> Terms of Service</h2>
+      <button class="modal-close" onclick="closeModal('tos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>1. Acceptance of Terms</h3>
+      <p>By creating a WasteWise account you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
+      <h3>2. Use of the Platform</h3>
+      <p>WasteWise is a community recycling tracker. You agree to:</p>
+      <ul>
+        <li>Submit only accurate and truthful waste reports</li>
+        <li>Not misuse the points or rewards system</li>
+        <li>Not create multiple accounts to gain unfair advantages</li>
+        <li>Treat other community members with respect</li>
+      </ul>
+      <h3>3. Points and Rewards</h3>
+      <p>Points are awarded at the discretion of local admins following verification of submissions. WasteWise reserves the right to adjust, suspend or revoke points if misuse is detected.</p>
+      <h3>4. Account Responsibility</h3>
+      <p>You are responsible for maintaining the confidentiality of your login credentials. Notify us immediately if you suspect unauthorised access to your account.</p>
+      <h3>5. Termination</h3>
+      <p>WasteWise reserves the right to suspend or terminate accounts that violate these terms, engage in fraudulent activity, or abuse the platform.</p>
+      <h3>6. Changes to Terms</h3>
+      <p>We may update these terms from time to time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+      <h3>7. Contact</h3>
+      <p>For any questions regarding these terms, please contact us through the Help Centre on the WasteWise platform.</p>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('tos')">I Understand</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-overlay" id="modal-pp">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2><span class="m-icon">🔒</span> Privacy Policy</h2>
+      <button class="modal-close" onclick="closeModal('pp')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>1. Information We Collect</h3>
+      <p>When you register and use WasteWise, we collect:</p>
+      <ul>
+        <li>Your name and email address</li>
+        <li>Waste submission data and recycling activity</li>
+        <li>Points earned and rewards redeemed</li>
+        <li>General location data tied to waste reports</li>
+      </ul>
+      <h3>2. How We Use Your Information</h3>
+      <p>Your information is used to:</p>
+      <ul>
+        <li>Operate and improve the WasteWise platform</li>
+        <li>Verify and approve your recycling submissions</li>
+        <li>Calculate and display your points and rewards</li>
+        <li>Show community impact statistics</li>
+        <li>Send important account notifications</li>
+      </ul>
+      <h3>3. Data Sharing</h3>
+      <p>We do not sell your personal data. Aggregated, anonymised community statistics may be shared publicly to demonstrate recycling impact.</p>
+      <h3>4. Data Security</h3>
+      <p>We implement industry-standard security measures including encrypted passwords, secure connections (HTTPS), and access controls.</p>
+      <h3>5. Your Rights</h3>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access the personal data we hold about you</li>
+        <li>Request correction of inaccurate data</li>
+        <li>Request deletion of your account and data</li>
+        <li>Withdraw consent at any time</li>
+      </ul>
+      <h3>6. Cookies</h3>
+      <p>WasteWise uses essential session cookies to keep you logged in. No third-party tracking cookies are used.</p>
+      <h3>7. Contact</h3>
+      <p>For privacy-related requests contact us through the Help Centre on the WasteWise platform.</p>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('pp')">I Understand</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(type) {
+    document.getElementById('modal-' + type).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(type) {
+    document.getElementById('modal-' + type).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close by clicking outside
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => {
+        m.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+
+  // Password strength
+  const cols = { 1:'#d94f4f', 2:'#e8a020', 3:'#1a8a6e', 4:'#2db87a' };
+  function checkStr() {
+    const v = document.getElementById('pw').value;
+    const c = {
+      len: v.length >= 8,
+      up:  /[A-Z]/.test(v),
+      num: /[0-9]/.test(v),
+      sp:  /[^A-Za-z0-9]/.test(v)
+    };
+    ['r1','r2','r3','r4'].forEach((id, i) =>
+      document.getElementById(id).classList.toggle('met', Object.values(c)[i])
+    );
+    const sc = Object.values(c).filter(Boolean).length;
+    [1,2,3,4].forEach(n => {
+      document.getElementById('s'+n).style.background = sc >= n ? cols[sc] : '#dde8e8';
+    });
+  }
+</script>     
 
 
 {% endblock %}

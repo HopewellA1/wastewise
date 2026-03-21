@@ -58,7 +58,7 @@ def login():
             login_user(user)
             print("user: ", user)
         
-            return redirect(url_for('default.home'))
+            return redirect(url_for('/participant.dashboard'))
         else:
             
             flash("Invalid login details","danger" )
@@ -150,7 +150,7 @@ def reset_request():
             if send_otp(user, otp):
                 
                 flash(f"OTP sent to '{user.email}', please access your email inbox.", "success")
-                return redirect(url_for('/auth.reset_request'))
+                return redirect(url_for('/auth.confirm_otp',  action="reset_password"))
                 
             else:
                 flash(f"Something went wrong while sending OTP sent to '{user.email}', Please try again", "danger")
@@ -164,6 +164,41 @@ def reset_request():
     elif request.method == 'GET':
         return render_template('auth/reset_password_request.html')
     
+@auth.route('/confirm_otp/<action>', methods=['POST', 'GET'])
+def confirm_otp(action):
+    
+    if request.method == 'GET':
+        
+        return render_template('auth/confirm_otp.html')
+    elif request.method == 'POST':
+        
+        otpcode = request.form.get('otpcode')
+        otp_obj = OTP.query.filter_by(code=otpcode, status="Pending")
+        
+        otp_obj.status = 'Expired'
+        
+        db.session.commit
+        flash("Email verified successfully.", "success")
+        
+        if action == 'reset_password':
+            
+            return redirect(url_for('auth.reset_password'))
+        elif action == 'verify_email':
+            
+            return redirect(url_for('/default.home'))
+        
+@auth.route('/reset_password/<int:user_id>', methods=['POST', 'GET'])
+def reset_password(user_id):
+    
+    if request.method == 'GET':
+        
+        return render_template('auth/reset_password.html')
+    elif request.method == 'POST':
+        pass
+        
+        
+        
+        
 def send_otp(user, otp):
     subject = 'OTP: Confirm email'
     msg = f'Dear {user.first_name}\n'
@@ -174,7 +209,7 @@ def send_otp(user, otp):
     
     return send_email(user.email,subject, msg)
     
-    
+   
 
 def generate_code():
     return str(random.randint(100000, 999999))
