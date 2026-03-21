@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WasteWise – Admin Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --grad:       linear-gradient(155deg, #05386b 0%, #0a5a6e 22%, #1a8a6e 55%, #2db87a 78%, #5cdb95 100%);
+      --accent:     #1a8a6e;
+      --accent-btn: #05386b;
+      --card-bg:    #ffffff;
+      --text-dark:  #0d1f3a;
+      --text-mid:   #2a4060;
+      --text-muted: #7a90a8;
+      --label:      #3a5070;
+      --input-bg:   #f4f7fb;
+      --input-bd:   #c8d8ec;
+      --badge-bg:   #0d2a4a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--grad);
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Radial overlays ── */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 5% 95%,  rgba(92,219,149,0.18) 0%, transparent 42%),
+        radial-gradient(ellipse at 95% 5%,  rgba(5,56,107,0.6)   0%, transparent 42%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,138,110,0.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Leaf shapes ── */
+    .leaf { position: fixed; pointer-events: none; z-index: 0; border-radius: 0 60% 0 60%; opacity: 0.1; }
+    .leaf-1 { width: 380px; height: 380px; background: rgba(255,255,255,0.2); top: -100px; left: -90px; transform: rotate(20deg); }
+    .leaf-2 { width: 260px; height: 260px; background: rgba(255,255,255,0.12); bottom: -70px; left: 80px; transform: rotate(80deg); }
+    .leaf-3 { width: 220px; height: 220px; background: rgba(92,219,149,0.18); top: 25%; right: -60px; transform: rotate(210deg); }
+
+    /* ── Orbs ── */
+    .orb { position: fixed; border-radius: 50%; filter: blur(110px); pointer-events: none; z-index: 0; animation: drift 14s ease-in-out infinite; }
+    .orb-a { width: 520px; height: 520px; background: rgba(92,219,149,0.1); top: -170px; right: -130px; }
+    .orb-b { width: 400px; height: 400px; background: rgba(5,56,107,0.5); bottom: -140px; left: -110px; animation-delay: 6s; }
+    @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-28px); } }
+
+    /* ════════════════════════════════
+       SPLIT LAYOUT
+    ════════════════════════════════ */
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .right-panel {
+      width: 480px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 2.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Left panel content ── */
+    .left-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 4rem;
+    }
+
+    .left-brand-icon {
+      width: 40px; height: 40px; border-radius: 11px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+
+    .left-brand-name {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; color: #fff; letter-spacing: -0.4px;
+    }
+
+    .admin-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(5,56,107,0.55); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 99px; padding: 0.35rem 0.9rem;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #5cdb95; box-shadow: 0 0 8px #5cdb95;
+    }
+
+    .left-heading {
+      font-family: 'Syne', sans-serif; font-weight: 900;
+      font-size: 3.2rem; line-height: 1.1;
+      color: #ffffff; letter-spacing: -1px;
+      margin-bottom: 1.2rem;
+    }
+
+    .left-heading span { color: #5cdb95; }
+
+    .left-sub {
+      font-size: 1rem; color: rgba(255,255,255,0.65);
+      line-height: 1.7; max-width: 420px;
+      margin-bottom: 3rem;
+    }
+
+    /* Feature list */
+    .features { display: flex; flex-direction: column; gap: 0.9rem; }
+    .feat {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.9rem; color: rgba(255,255,255,0.75);
+    }
+    .feat-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; flex-shrink: 0;
+    }
+
+    /* ── Right panel — card ── */
+    .card-wrap { width: 100%; max-width: 400px; animation: up 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes up { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 2.6rem 2.4rem;
+      box-shadow: 0 40px 100px rgba(5,56,107,0.4), 0 4px 24px rgba(0,0,0,0.12);
+    }
+
+    /* Secure badge at top of card */
+    .secure-tag {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: #f0f7f4; border: 1px solid #c8e8dc;
+      border-radius: 99px; padding: 0.3rem 0.75rem;
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+    .secure-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 6px rgba(26,138,110,0.5);
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; color: var(--text-dark);
+      letter-spacing: -0.4px; margin-bottom: 0.3rem;
+    }
+
+    .card-sub {
+      font-size: 0.875rem; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 2rem;
+    }
+
+    /* Role selector */
+    .role-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.55rem; margin-bottom: 1.4rem;
+    }
+
+    .role-btn {
+      padding: 0.65rem 0.5rem;
+      background: var(--input-bg); border: 1.5px solid var(--input-bd);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+      color: var(--text-muted); transition: all 0.22s;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .role-btn:hover { border-color: var(--accent); color: var(--text-dark); }
+    .role-btn.active {
+      border-color: var(--accent-btn); color: var(--accent-btn);
+      background: rgba(5,56,107,0.05);
+      font-weight: 600;
+    }
+    .role-btn .rbadge {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
+    }
+
+    /* Form */
+    .field { margin-bottom: 1.2rem; }
+    .lrow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem; }
+
+    .flabel {
+      display: block; font-size: 0.72rem; font-weight: 700;
+      color: var(--label); letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 0.45rem;
+    }
+    .lrow .flabel { margin: 0; }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%; background: var(--input-bg);
+      border: 1.5px solid var(--input-bd); border-radius: 10px;
+      padding: 0.82rem 1rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text-dark);
+      outline: none; transition: all 0.25s;
+    }
+    input::placeholder { color: #b0bec8; }
+    input:focus {
+      border-color: var(--accent-btn); background: #fff;
+      box-shadow: 0 0 0 4px rgba(5,56,107,0.08);
+    }
+
+    /* Show/hide password */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 3rem; }
+    .pw-toggle {
+      position: absolute; right: 0.9rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      transition: color 0.2s; padding: 0;
+    }
+    .pw-toggle:hover { color: var(--text-dark); }
+
+    .forgot {
+      font-size: 0.75rem; color: var(--accent);
+      text-decoration: none; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      transition: opacity 0.2s;
+    }
+    .forgot:hover { opacity: 0.7; }
+
+    /* Remember me */
+    .chk { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.6rem; }
+    .chk input[type="checkbox"] {
+      width: 17px; height: 17px; appearance: none; -webkit-appearance: none;
+      border: 1.5px solid var(--input-bd); border-radius: 5px;
+      background: var(--input-bg); cursor: pointer; flex-shrink: 0;
+      position: relative; transition: all 0.2s;
+    }
+    .chk input:checked { background: var(--accent-btn); border-color: var(--accent-btn); }
+    .chk input:checked::after {
+      content: '✓'; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%); font-size: 0.6rem; color: white; font-weight: 900;
+    }
+    .chk-lbl { font-size: 0.875rem; color: var(--text-mid); cursor: pointer; }
+
+    /* Login button */
+    .btn {
+      width: 100%; padding: 0.92rem;
+      background: linear-gradient(135deg, var(--accent-btn), #0d4f5c);
+      border: none; border-radius: 10px;
+      color: #ffffff; font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 800; letter-spacing: 0.3px;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(5,56,107,0.4);
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(5,56,107,0.5); }
+    .btn:active { transform: translateY(0); }
+    .btn svg { width: 16px; height: 16px; }
+
+    /* Security notice */
+    .security-note {
+      display: flex; align-items: flex-start; gap: 0.55rem;
+      background: #f4f7fb; border: 1px solid #c8d8ec;
+      border-radius: 10px; padding: 0.75rem 0.9rem;
+      margin-top: 1.4rem;
+      font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .security-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; stroke: var(--text-muted); }
+
+    
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; padding: 2rem 1.5rem; }
+      body { justify-content: center; align-items: center; }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      .card-title { font-size: 1.4rem; }
+      .role-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="leaf leaf-3"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+
+  <!-- ══ LEFT PANEL ══ -->
+  <div class="left-panel">
+    <div class="left-brand">
+      <div class="left-brand-icon">♻</div>
+      <span class="left-brand-name">WasteWise</span>
+    </div>
+
+    <div class="admin-badge">
+      <span class="admin-badge-dot"></span>
+      Admin Portal
+    </div>
+
+    <div class="left-heading">
+      Manage.<br/>
+      <span>Monitor.</span><br/>
+      Make impact.
+    </div>
+
+    <div class="left-sub">
+      The WasteWise admin dashboard gives you full control over waste reports, user activity, reward approvals, and community impact data.
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">📋</div>
+        Review and approve waste submissions
+      </div>
+      <div class="feat">
+        <div class="feat-icon">👥</div>
+        Manage user accounts and activity
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🎁</div>
+        Control reward allocations
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📊</div>
+        View community impact analytics
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <div class="right-panel">
+    <div class="card-wrap">
+      <div class="card">
+
+        <div class="secure-tag">
+          <span class="secure-dot"></span>
+          Secure Admin Access
+        </div>
+
+        <div class="card-title">Sign In</div>
+        <div class="card-sub">Restricted access — authorised personnel only.</div>
+
+        <!-- Role selector -->
+        <div class="role-row">
+          <button class="role-btn active" id="rSuper" onclick="setRole('super')">
+            <span class="rbadge"></span> Super Admin
+          </button>
+          <button class="role-btn" id="rMod" onclick="setRole('mod')">
+            <span class="rbadge"></span> Moderator
+          </button>
+        </div>
+
+        <form action="javascript:void(0)">
+          <div class="field">
+            <label class="flabel">Email Address</label>
+            <input type="email" placeholder="admin@wastewise.com" autocomplete="username"/>
+          </div>
+
+          <div class="field">
+            <div class="lrow">
+              <label class="flabel">Password</label>
+              <a href="#" class="forgot">Forgot Password?</a>
+            </div>
+            <div class="pw-wrap">
+              <input type="password" id="adminPw" placeholder="Enter your password" autocomplete="current-password"/>
+              <button type="button" class="pw-toggle" onclick="togglePw()">Show</button>
+            </div>
+          </div>
+
+          <div class="chk">
+            <input type="checkbox" id="stayIn">
+            <label class="chk-lbl" for="stayIn">Keep me signed in on this device</label>
+          </div>
+
+          <button type="submit" class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Sign In
+          </button>
+        </form>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          This is a secured admin area. All login attempts are logged and monitored.
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Role toggle
+    function setRole(r) {
+      document.getElementById('rSuper').classList.toggle('active', r === 'super');
+      document.getElementById('rMod').classList.toggle('active', r === 'mod');
+    }
+
+    // Show/hide password
+    function togglePw() {
+      const inp = document.getElementById('adminPw');
+      const btn = inp.nextElementSibling;
+      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
+      else { inp.type = 'password'; btn.textContent = 'Show'; }
+    }
+  </script>
+</body>
+</html>
