@@ -518,26 +518,31 @@
     <!-- Manual -->
     <div class="log-panel active" id="panel-manual">
       <form action="{{ url_for('/participant.log_item') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Material Type</label>
-            <select name="item_type" class="form-control">
-              <option>🥤 Plastic Bottles</option>
-              <option>📰 Paper</option>
-              <option>🫙 Glass</option>
-              <option>🥫 Metal Cans</option>
-              <option>🔋 Electronics</option>
-              <option>📦 Cardboard</option>
-              <option>🧴 Plastic Containers</option>
-              <option>📱 Mobile Phones</option>
+            <select name="Category_id" class="form-control">
+              {% for category in categories %}
+                <option value="{{category.Category_id}}"> {{category.Name}} </option>
+             
+              {% endfor  %}
             </select>
           </div>
+          
+
           <div class="form-group" style="max-width:110px;">
             <label class="form-label">Quantity</label>
             <input type="number" name="quantity" value="1" min="1" class="form-control" />
           </div>
-          <div><button type="submit" class="btn btn-primary">♻️ Log It</button></div>
+          
         </div>
+        <div class="form-group">
+          <label class="form-label">description</label>
+          <textarea class="form-control"  name="description"></textarea>
+        </div>
+        <br/>
+        <div class="form-group"><button type="submit" class="btn btn-primary">♻️ Log It</button></div>
       </form>
     </div>
 
@@ -646,19 +651,25 @@
         <tr>
           <th>Material</th>
           <th>Quantity</th>
+          <th>Status</th>
           <th>Date</th>
           <th>Points</th>
+          
         </tr>
       </thead>
       <tbody>
         {% set icons = {'Plastic Bottles':'🥤','Paper':'📰','Glass':'🫙','Metal Cans':'🥫'} %}
         {% for h in history %}
-        <tr>
-          <td data-label="Material"><span class="type-icon">{{ icons.get(h.type,'♻️') }}</span>{{ h.type }}</td>
-          <td data-label="Quantity">{{ h.quantity }} items</td>
-          <td data-label="Date">{{ h.date }}</td>
-          <td data-label="Points"><span class="badge badge-green">+{{ h.points }} pts</span></td>
-        </tr>
+          <tr style="cursor:pointer" title="Click to see more." onclick="go_detailed({{h.contri.Contribution_Id}})">
+            <td data-label="Material"><span class="type-icon">{{ icons.get(h.type,'♻️') }}</span>{{ h.type }}</td>
+            <td data-label="Quantity">{{ h.quantity }} items</td>
+            <td>
+              {{h.status}}
+            </td>
+            <td data-label="Date">{{ h.date }}</td>
+            <td data-label="Points"><span class="badge badge-green">+{{ h.points }} pts</span></td>
+          </tr>
+          <a hidden id="go_detailed{{h.contri.Contribution_Id}}" href="{{url_for('/participant.detailed_recycle', contri_id=h.contri.Contribution_Id)}}">go</a>
         {% endfor %}
       </tbody>
     </table>
@@ -814,6 +825,10 @@
     if (!code) return;
     lastBC = BC_DB.find(b => b.code === code) || { icon: '♻️', code, label: 'Unknown Product', sub: 'Select category manually' };
     showBCResult(lastBC);
+  }
+
+  function go_detailed(contri_Id){
+    document.getElementById("go_detailed"+contri_Id).click()
   }
 </script>
 {% endblock %}

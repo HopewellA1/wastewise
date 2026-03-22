@@ -7,6 +7,7 @@ import os
 from flask_mail import Mail
 from dotenv import load_dotenv
 from flask_cors import CORS
+from flask_migrate import Migrate
 
 
 
@@ -39,6 +40,8 @@ def create_app():
     mail.init_app(app)
     login_manager.init_app(app)
     
+    
+    
     #File uploading
     UPLOAD_FOLDER = 'static/uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -49,10 +52,12 @@ def create_app():
     from .routes.default import default
     from .routes.auth import auth
     from .routes.participant import participant
+    from .routes.admin import admin
     
     app.register_blueprint(auth)
     app.register_blueprint(default)
     app.register_blueprint(participant)
+    app.register_blueprint(admin)
     
     
     

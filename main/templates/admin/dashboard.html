@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+
+
+{% block content %}
+
+    <main class="page">
+
+    <!-- HERO -->
+    <section class="mb-5" data-aos="fade-up">
+        <div class="hero-card">
+        <div>
+            <div class="hero-label">Admin Control Centre</div>
+            <h1 class="hero-title">Hello, Admin 👋</h1>
+            <p class="hero-text">
+            Welcome back. Manage participant submissions, rewards, points, and the recycling program from one place.
+            </p>
+        </div>
+        <a href="wastewise-admin.html" class="btn-hero">🔒 Exit Admin</a>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <p class="sec-head">At a Glance</p>
+    <section class="row g-4 mb-5">
+        <div class="col-6 col-lg-3" data-aos="zoom-in">
+        <div class="stat-card">
+            <span class="stat-icon">⏳</span>
+            <div class="stat-num">24</div>
+            <div class="stat-label">Pending Submissions</div>
+        </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="80">
+        <div class="stat-card">
+            <span class="stat-icon">✅</span>
+            <div class="stat-num">156</div>
+            <div class="stat-label">Approved Records</div>
+        </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="160">
+        <div class="stat-card">
+            <span class="stat-icon">👥</span>
+            <div class="stat-num">89</div>
+            <div class="stat-label">Participants</div>
+        </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="zoom-in" data-aos-delay="240">
+        <div class="stat-card">
+            <span class="stat-icon">🎁</span>
+            <div class="stat-num">12</div>
+            <div class="stat-label">Reward Types</div>
+        </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <p class="sec-head">Quick Actions</p>
+    <section class="row g-4">
+        <div class="col-md-6 col-xl-4" data-aos="fade-up">
+        <div class="feature-card">
+            <span class="feature-icon">📝</span>
+            <h4>Review Participant Submissions</h4>
+            <p>Check recycling contributions submitted by participants and approve or reject them.</p>
+            <a href="participant_submission.html" class="btn-wastewise">Manage Submissions</a>
+        </div>
+        </div>
+        <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="feature-card">
+            <span class="feature-icon">✅</span>
+            <h4>Approved Submissions</h4>
+            <p>View contributions that have already been accepted and points assigned to them.</p>
+            <a href="approved_submissions.html" class="btn-wastewise">View Approved</a>
+        </div>
+        </div>
+        <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="feature-card">
+            <span class="feature-icon">✨</span>
+            <h4>Participant Points</h4>
+            <p>Check participant usernames and the total points they have accumulated.</p>
+            <a href="participant_points.html" class="btn-wastewise">Track Points</a>
+        </div>
+        </div>
+        <div class="col-md-6 col-xl-4" data-aos="fade-up">
+        <div class="feature-card">
+            <span class="feature-icon">🎁</span>
+            <h4>Monitor Rewards</h4>
+            <p>Track the rewards that participants redeemed and monitor their redemption status.</p>
+            <a href="monitor_rewards.html" class="btn-wastewise">Monitor Rewards</a>
+        </div>
+        </div>
+        <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="feature-card">
+            <span class="feature-icon">⚙️</span>
+            <h4>Manage Rewards</h4>
+            <p>Add, edit, and update available rewards and the points required to redeem them.</p>
+            <a href="manage_rewards.html" class="btn-wastewise">Manage Rewards</a>
+        </div>
+        </div>
+        <div class="col-md-6 col-xl-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="feature-card">
+            <span class="feature-icon">📊</span>
+            <h4>Program Overview</h4>
+            <p>Monitor overall recycling activity, totals, system performance, and environmental impact.</p>
+            <a href="program_overview.html" class="btn-wastewise">View Overview</a>
+        </div>
+        </div>
+    </section>
+
+    </main>
+
+{% endblock %}

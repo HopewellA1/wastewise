@@ -1,13 +1,14 @@
 import sys
-from main import create_app
+from main import create_app, db
 from waitress import serve
 from main.routes.auth import createsuperuser
 from main.routes.default import home
+from flask_migrate import Migrate
 
 
 
 app = create_app()
-
+migrate = Migrate(app, db)
     
 
 if __name__ == "__main__":

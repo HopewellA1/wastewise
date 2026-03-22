@@ -306,7 +306,7 @@
     <div class="card">
       <div class="card-head">
         <div class="card-title"><span class="ct-icon">📋</span> Recent Activity</div>
-        <a href="{{ url_for('/participant.history') }}" class="card-link">Full log →</a>
+        <a href="{{ url_for('/participant.history', user_id=current_user.id) }}" class="card-link">Full log →</a>
       </div>
       {% set icons = {'Bottles':'🥤','Paper':'📰','Glass':'🫙','Metal':'🥫'} %}
       {% for h in history %}
@@ -316,7 +316,7 @@
           <div class="act-label">{{ h.type }}</div>
           <div class="act-date">{{ h.date }}</div>
         </div>
-        <div class="act-pts">+{{ h.points }} pts</div>
+        <div class="act-pts">+{{ h.points }} pts</div> 
       </div>
       {% endfor %}
     </div>

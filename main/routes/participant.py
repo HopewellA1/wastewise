@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, request, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from main.models.participant import Contribution, Participant
+from main.models.participant import Contribution, Participant,Category, Product
 from main.models.auth import User
 from main import db
 
@@ -119,7 +119,7 @@ def update_participant(participant_id):
 @participant.route('/dashboard', methods=['GET'])
 def dashboard():
     return render_template("participant/dashboard.html",
-        user=get_user(),
+        user=get_user(current_user.id),
         leaderboard=get_leaderboard()[:3],
         challenges=[
             {"title": "Plastic Challenge", "progress": 70},
@@ -137,27 +137,38 @@ def dashboard():
 
 
 
-def get_user():
-    return {"name": "Mbali", "points": 720, "rank": 4}
+def get_user(user_id):
+    user = User.query.get(user_id)
+    participant = Participant.query.filter_by(user_id=user_id).first()
+    return {"name": user.first_name, "points": participant.points, "rank": getRenk(user_id)}
 
 
 def get_leaderboard():
-    return [
-        {"username": "Alice",  "points": 1200},
-        {"username": "Bob",    "points": 950},
-        {"username": "Carol",  "points": 800},
-        {"username": "Mbali",  "points": 720},
-        {"username": "David",  "points": 610},
-    ]
+    
+    leaderboard = []
+    
+    participants = Participant.query.order_by(Participant.points.desc()).all()
+    for participant in participants:
+        
+        user = User.query.get(participant.user_id)
+        leaderboard.append(
+            {"username": user.first_name,  "points": participant.points, "user_id": user.id}
+        )
+        
+    
+    return leaderboard
 
 
-
+def getRenk(user_id):
+    leaderboard = get_leaderboard()
+    index = next((i for i, item in enumerate(leaderboard) if item["user_id"] == user_id), None)
+    return index +1
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 
 @participant.route('/leaderboard')
 def leaderboard():
-    user = get_user()
+    user = get_user(current_user.id)
     return render_template("participant/leaderboard.html",
         leaderboard=get_leaderboard(),
         user_rank=user["rank"],
@@ -185,22 +196,44 @@ def challenges():
 
 # ── History ───────────────────────────────────────────────────────────────────
 
-@participant.route('/history')
-def history():
-    return render_template("participant/history.html",
-        history=[
-            {"type": "Plastic Bottles", "quantity": 5,  "date": "12 Mar 2026", "points": 50},
-            {"type": "Paper",           "quantity": 10, "date": "10 Mar 2026", "points": 30},
-            {"type": "Glass",           "quantity": 2,  "date": "8 Mar 2026",  "points": 20},
-            {"type": "Metal Cans",      "quantity": 3,  "date": "5 Mar 2026",  "points": 30},
-        ],
-    )
+@participant.route('/history/<int:user_id>')
+def history(user_id):
+    
+    user = User.query.get(user_id)
+    participant = Participant.query.filter_by(user_id=user.id).first()
+    contributions = Contribution.query.filter_by(Participant_Id=participant.Participant_Id)
+    history = []
+    categories = Category.query.all()
+    for contri in contributions:
+        history.append(
+            {"status":contri.status,"type": contri.item_type, "quantity": contri.quantity,  "date": contri.timestamp, "points": contri.points_awarded,  "contri":contri}
+        )
+    return render_template("participant/history.html",history=history, categories = categories )
 
+
+@participant.route('/detailed_recycle/<int:contri_id>', methods=['POST', 'GET'])
+@login_required
+def detailed_recycle(contri_id):
+    
+    contribution = Contribution.query.get(contri_id)
+    participant= Participant.query.get(contribution.Participant_Id)
+    Products = Product.query.filter_by(Contribution_Id=contribution.Contribution_Id)
+    
+    if request.method == 'GET':
+        
+        contri_Products = {
+            'contribution': contribution,
+            'category':Category.query.get(contribution.Category_id),
+            'Products':Products,
+           # 'numProds': len(Products),
+            'participant':participant
+        }
+        return render_template('participant/detailed_recycle.html',contri_Products=contri_Products )
 # ── Rewards ───────────────────────────────────────────────────────────────────
 
 @participant.route('/rewards')
 def rewards():
-    user = get_user()
+    user = get_user(current_user.id)
     return render_template("participant/rewards.html",
         user_points=user["points"],
         rewards=[
@@ -292,8 +325,22 @@ def referral():
 # ── Log item ──────────────────────────────────────────────────────────────────
 
 @participant.route('/log_item', methods=['POST'])
+@login_required
 def log_item():
-    item_type = request.form.get('item_type')
-    quantity  = request.form.get('quantity')
-    return redirect(url_for('history'))
+    participant = Participant.query.filter_by(user_id=current_user.id).first()
+    categ= Category.query.get(int(request.form.get("Category_id")))
+    contribution = Contribution(
+        Participant_Id = participant.Participant_Id,
+        user_id = current_user.id,
+        Category_id= int(request.form.get("Category_id")),
+        item_type = categ.Name,
+        quantity  = request.form.get('quantity'),
+        description  = request.form.get('description'),
+    )
+    
+    db.session.add(contribution)
+    
+    db.session.commit()
+    flash("Contribution logged susseccfully", "success")
+    return redirect(url_for('/participant.history', user_id=current_user.id))
 

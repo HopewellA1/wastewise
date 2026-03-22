@@ -9,7 +9,8 @@ class Participant(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     PhoneNumber = db.Column(db.String(15),nullable=False )
     PhysicalAddress= db.Column(db.String(250), nullable=False)
-    points = db.Column(db.Integer)
+    points = db.Column(db.Integer, default=int())
+    total_points_accumulated = db.Column(db.Integer, default=int())
     created_at = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
     
     def __init__(self, user_id, PhoneNumber, PhysicalAddress):
@@ -19,7 +20,7 @@ class Participant(db.Model):
         self.PhysicalAddress = PhysicalAddress
         
     def __repr__(self):
-        return f'<Participant({self.Participant_Id}) '
+        return f'<Participant({self.Participant_Id}) >'
         
     
     
@@ -38,16 +39,51 @@ class Reward(db.Model):
     
     def __repr__(self):
         return f'<Reward {self.attribute_name}>'
+
+class Category(db.Model):
+    Category_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #admin/superuser user
+    Name = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), default="Active")
+    created_at = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
     
+    def __init__(self, user_id,Name ):
+        
+        self.user_id = user_id
+        self.Name = Name
+    
+    def __repr__(self):
+        return f'<Category: {self.Name}({self.Category_id})'
+        
+    
+    
+
+
     
 class Contribution(db.Model):
     
     Contribution_Id = db.Column(db.Integer, primary_key=True)
     Participant_Id = db.Column(db.Integer, db.ForeignKey('participant.Participant_Id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Admin who reviews the contribution
-    attribute_name = db.Column(db.String(200)) 
-    points_awarded = db.Column(db.Integer, default=0)
+    Category_id = db.Column(
+        db.Integer,
+        db.ForeignKey('category.Category_id', name='fk_contribution_category'),
+        nullable=False
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Admin who reviews the contribution
+    quantity = db.Column(db.Integer, default=int())
+    points_awarded = db.Column(db.Integer, default=int())
+    item_type = db.Column(db.String(60),nullable= True )
     description = db.Column(db.Text)
+    status = db.Column(db.String(20), default="Draft")
+    
+    def __init__(self,Participant_Id, user_id,Category_id, item_type, quantity, description, status = "Daft"):
+        self.Participant_Id = Participant_Id
+        self.Category_id = Category_id
+        self.user_id = user_id
+        self.item_type = item_type
+        self.quantity = quantity
+        self.description =description
+        
     timestamp = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
     
     def __repr__(self):

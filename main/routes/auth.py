@@ -72,7 +72,7 @@ def login():
             
             login_user(user)
             if user.is_superuser:
-                pass
+                return redirect(url_for('/admin.dashboard'))
             else:
                 if checkProfile(user.id):
                     return redirect(url_for('/participant.dashboard'))
@@ -142,6 +142,7 @@ def account(id):
                 user_id= user.id,
                 PhoneNumber= request.form.get('PhoneNumber'),
                 PhysicalAddress= request.form.get('PhysicalAddress'),
+                
             )
             db.session.add(participant)
         else:
@@ -232,13 +233,13 @@ def confirm_otp(action):
             user.is_account_active = True
             db.session.commit()
             
-            
+            logout_user()
             if action == 'reset_password':
                 
                 return redirect(url_for('auth.reset_password'))
             elif action == 'verify_email':
                 flash("Email verified successfully. You may login", "success" )
-                return redirect(url_for('default.home'))
+                return redirect(url_for('auth.account'))
         else:
                     
             flash("OTP expired, we send a new one", "danger")
@@ -310,6 +311,8 @@ def createsuperuser():
             password= bcrypt.generate_password_hash(password).decode('utf-8'),
             is_staff = True,
             is_superuser = True,
+            is_terms_accepted = True,
+            is_account_active = True
             
         )
         

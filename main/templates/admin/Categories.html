@@ -1,0 +1,412 @@
+{% extends "admin/base.html" %}
+{% block page_title %}Categories{% endblock %}
+{% block content %}
+
+    <style>
+         .log-card {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .log-tab.active .tab-icon {
+            background: rgba(92, 219, 149, 0.25);
+        }
+
+        .log-tab.active {
+            color: var(--emerald);
+            background: rgba(92, 219, 149, 0.12);
+            border-bottom-color: var(--emerald);
+            font-weight: 700;
+        }
+        form{
+            border:solid 1px azure;
+            box-shadow: var(--shadow-sm);
+            padding: 0.7rem;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/signup.css') }}">
+
+    <main class="page">
+
+        <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+        <div class="page-header" data-aos="fade-up">
+            <h2>📝 Waste Categories</h2>
+            <p>Manage waste categories</p>
+        </div>
+        <div class="page-header" data-aos="fade-up">
+            <h2>📝 Waste Categories</h2>
+            <p>Manage waste categories</p>
+        </div>
+
+        <div style="margin-bottom:20px;" data-aos="fade-up">
+            <a id="btn_new_categ" onclick="formSwitch('panel-manual')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">New Category</a>
+        </div>
+        <div class="log-card" id="panel-manual" hidden >
+           
+            <div class="log-panel active" >
+               
+                <form  action="{{ url_for('/admin.new_category') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-row">
+                    <!-- <div class="form-group">
+                            <label class="form-label">Material Type</label>
+                            <select name="item_type" class="form-control">
+                            <option>🥤 Plastic Bottles</option>
+                            <option>📰 Paper</option>
+                            <option>🫙 Glass</option>
+                            <option>🥫 Metal Cans</option>
+                            <option>🔋 Electronics</option>
+                            <option>📦 Cardboard</option>
+                            <option>🧴 Plastic Containers</option>
+                            <option>📱 Mobile Phones</option>
+                            </select>
+                        </div>-->
+                    
+
+                        <div class="form-group">
+                            <label class="form-label">Category name</label>
+                            <input type="text" name="Name" placeholder="Example:🥤 Plastic Bottles" class="form-control" requird/>
+                        </div>
+                    
+                    
+                    </div>
+                    <br/>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            ♻️ Add Category
+                        </button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
+        </div>
+       
+      <hr/>
+        <div class="table-card" data-aos="fade-up" data-aos-delay="80">
+            
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>status</th>
+                        <th>added by</th>
+                        <th>Date added</th>
+                        
+                    
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td class="td-username">{{category.category.Name}}</td>
+                                <td><span class="waste-pill">{{category.category.status}}</span></td>
+                                <td class="td-qty">{{category.admin_user.first_name}}{{category.admin_user.last_name}}({{category.admin_user.email}})</td>
+                                <td class="td-date">{{category.category.created_at}}</td>
+                                
+                            
+                                <td>
+                                    <div class="actions-cell">
+                                        <a class="btn-approve btn" onclick="openModal({{category.category.Category_id}})">
+                                            ✏️ edit
+                                        </a>
+                                        <a style="text-decoration:none" class="btn-reject" onclick="openDeleteModal({{category.category.Category_id}})">
+                                            🗑️ Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <br/>
+                            <div class="modal-overlay" id="modal-{{category.category.Category_id}}">
+                                <div class="modal-box">
+                                    <div class="modal-header">
+                                    <h2>
+                                        
+                                       {{category.category.Name}}
+                                    </h2>
+                                    <button class="modal-close" onclick="closeModal({{category.category.Category_id}})">✕</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" action="{{url_for('/admin.edit_category', categ_id=category.category.Category_id)}}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <div class="form-group">
+                                                <label class="form-label" style="color:black">Category name</label>
+                                                <input style="color:black" type="text" name="Name" value="{{category.category.Name}}"  class="form-control" requird/>
+                                            </div>
+                                            <br/>
+                                            <button type="submit"  class="btn btn-primary" style="width:100%">Save</button>
+                                        </form>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <!--for delete-->
+                            <div class="modal-overlay" id="delete_modal-{{category.category.Category_id}}">
+                                <div class="modal-box">
+                                    <div class="modal-header">
+                                    <h2>
+                                        
+                                       {{category.category.Name}}
+                                    </h2>
+                                    <button class="modal-close" onclick="closeDeleteModal({{category.category.Category_id}})">✕</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" action="{{url_for('/admin.delete_category', categ_id=category.category.Category_id)}}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <div class="form-group">
+                                                <p>
+                                                    If you are sure you want to delete this category please click dele below.
+                                                </p>
+                                            </div>
+                                            <br/>
+                                            <button type="submit"  class="btn btn-danger" style="width:100%">Delete</button>
+                                        </form>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+
+
+
+    <script>
+
+        function openModal(categId) {
+            document.getElementById('modal-' + categId).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function openDeleteModal(categId) {
+            document.getElementById('delete_modal-' + categId).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal(categId) {
+            document.getElementById('modal-' + categId).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeDeleteModal(categId) {
+            document.getElementById('delete_modal-' + categId).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        // Close by clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            });
+        });
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.open').forEach(m => {
+                m.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+            }
+        });
+
+        function formSwitch(id){
+            form = document.getElementById(id)
+            btn_new_categ = document.getElementById("btn_new_categ")
+            if (form.hidden){
+                form.hidden = false;
+                btn_new_categ.innerHTML = 'Close form'
+
+            }
+            else{
+                form.hidden = true;
+                btn_new_categ.innerHTML = 'New Category'
+            }
+        }
+
+    </script>
+    <style>
+        .custom-table { margin: 0; color: #fff; }
+
+        .custom-table thead tr {
+        background: #085858 !important;
+        border-bottom: 2px solid rgba(255,255,255,.2) !important;
+        }
+        .custom-table thead th {
+        font-family: var(--font-body);
+        font-size: .68rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: #a8ffce !important; padding: 16px 20px;
+        border: none !important; white-space: nowrap;
+        background: #085858 !important;
+        }
+        .custom-table tbody tr {
+        background: #0d6e6e !important;
+        border-bottom: 1px solid rgba(255,255,255,.1) !important;
+        transition: background .18s;
+        }
+        .custom-table tbody tr:nth-child(even) { background: #0f7a7a !important; }
+        .custom-table tbody tr:last-child { border-bottom: none !important; }
+        .custom-table tbody tr:hover { background: #118f8f !important; }
+        .custom-table tbody td {
+        padding: 14px 20px; font-size: .85rem;
+        color: rgba(255,255,255,.9) !important;
+        border: none !important; vertical-align: middle;
+        background: inherit !important;
+        }
+
+        
+        /* action buttons */
+        .btn-approve {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+        border: none;
+        color: var(--btn-text);
+        padding: 7px 16px; border-radius: 99px;
+        font-size: .76rem; font-weight: 700; cursor: pointer;
+        transition: background .2s, color .2s;
+        white-space: nowrap;
+        }
+        .btn-approve:hover { transform: scale(1.04); box-shadow: 0 0 20px rgba(92,219,149,.35); color: var(--btn-text); }
+
+        .btn-reject {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: rgba(248,113,113,.12);
+        border: 1px solid rgba(248,113,113,.32);
+        color: #f87171;
+        padding: 7px 16px; border-radius: 99px;
+        font-size: .76rem; font-weight: 700; cursor: pointer;
+        transition: background .2s, color .2s;
+        white-space: nowrap;
+        }
+        .btn-reject:hover { background: rgba(248,113,113,.26); color: #fff; }
+
+        .actions-cell {
+            display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;flex-direction:row
+        }
+        .btn-view-img {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(92,219,149,.15);
+            border: 1px solid rgba(92,219,149,.35);
+            color: var(--emerald); padding: 6px 14px; border-radius: 99px;
+            font-size: .74rem; font-weight: 600; cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+        .btn-view-img:hover { background: rgba(92,219,149,.28); color: #fff; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .78rem; font-weight: 600; color: var(--emerald);
+            text-decoration: none; margin-bottom: 20px; opacity: .8;
+            transition: opacity .2s;
+        }
+        .back-link:hover { opacity: 1; color: var(--emerald); }
+
+        
+    
+        .page-header { margin-bottom: 32px; }
+        .page-header h2 { font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+        .page-header p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
+
+       
+
+        /* ── Shared form ── */
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            padding: 9px 12px;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.10);
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(92, 219, 149, 0.18);
+        }
+
+        .table-card {
+            background: #0d6e6e !important;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 20px;
+            overflow: hidden;
+           
+            box-shadow: 0 16px 56px rgba(0,0,0,.3);
+            padding:none;
+        }
+        .custom-table { margin: 0; color: #fff; }
+
+        .custom-table thead tr {
+        background: #085858 !important;
+        border-bottom: 2px solid rgba(255,255,255,.2) !important;
+        }
+        .custom-table thead th {
+        font-family: var(--font-body);
+        font-size: .68rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: #a8ffce !important; padding: 16px 20px;
+        border: none !important; white-space: nowrap;
+        background: #085858 !important;
+        }
+        .custom-table tbody tr {
+        background: #0d6e6e !important;
+        border-bottom: 1px solid rgba(255,255,255,.1) !important;
+        transition: background .18s;
+        }
+        .custom-table tbody tr:nth-child(even) { background: #0f7a7a !important; }
+        .custom-table tbody tr:last-child { border-bottom: none !important; }
+        .custom-table tbody tr:hover { background: #118f8f !important; }
+        .custom-table tbody td {
+        padding: 14px 20px; font-size: .85rem;
+        color: rgba(255,255,255,.9) !important;
+        border: none !important; vertical-align: middle;
+        background: inherit !important;
+        }
+
+
+    </style>
+
+    <!-- PRIVACY POLICY MODAL -->
+    
+{% endblock %}
