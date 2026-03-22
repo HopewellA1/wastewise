@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
 from getpass import getpass
 import random
+from datetime import datetime, timezone, timedelta
 auth = Blueprint("/auth", __name__, url_prefix="/auth")
 
 @auth.route("/signup", methods=['POST', 'GET'])
@@ -15,18 +16,31 @@ def signup():
         
     if  request.method == 'POST':
         try:
-            if validatePassword(request.form['password'], request.form['password2']):
+            if validatePassword(request.form.get('password'), request.form.get('password2')):
                 new_user = User(
-                    fname=request.form['first_name'],
-                    lname=request.form['last_name'],
-                    email=request.form['email'].lower(),
-                    
-                    password= bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+                    fname=request.form.get('first_name'),
+                    lname=request.form.get('last_name'),
+                    email=request.form.get('email').lower(),
+                    is_terms_accepted = "is_terms_accepted" in request.form,
+                    is_account_active = False,
+                    password= bcrypt.generate_password_hash(request.form.get('password')).decode('utf-8')
                 )
+                
                 db.session.add(new_user)
+                
                 db.session.commit()
-                flash(f'user({new_user.email}) account created successfully!', 'success')
-                return redirect(url_for('default.home'))
+                flash(f'Account created successfully!', 'success')
+                otp = OTP(new_user.id,generate_code(),'Pending')
+                db.session.add(otp)
+                db.session.commit()
+                if send_otp(new_user,otp):
+                    flash(f'OTP sent to "{new_user.email}" please visit your inbox', "success")
+                    return redirect(url_for('/auth.confirm_otp', action="verify_email"))
+                else:
+                    flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
+                    return redirect(url_for('/auth.confirm_otp'))
+                    
+                #return redirect(url_for('default.home'))
             else:
                 flash(f'Password do not match, try login.','danger')
                 return render_template("auth/signup.html", new_user=User(request.form['first_name'],request.form['last_name'],request.form['email'],''))
@@ -53,12 +67,24 @@ def login():
         
         user = User.query.filter_by(email=email).first()
         
-        if user and bcrypt.check_password_hash(user.password, password):
+        if user and bcrypt.check_password_hash(user.password, password) and user.is_account_active:
             
             login_user(user)
             print("user: ", user)
         
             return redirect(url_for('/participant.dashboard'))
+        elif user.is_account_active == False:
+            flash("You need to activate your account by confirming your email.", "danger")
+            otp = OTP(user.id,generate_code(),'Pending')
+            db.session.add(otp)
+            db.session.commit()
+            
+            if send_otp(user,otp):
+                flash(f'OTP sent to "{user.email}" please visit your inbox', "success")
+                return redirect(url_for('/auth.confirm_otp', action="verify_email"))
+            else:
+                flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
+                return redirect(url_for('/auth.confirm_otp'))
         else:
             
             flash("Invalid login details","danger" )
@@ -169,23 +195,43 @@ def confirm_otp(action):
     
     if request.method == 'GET':
         
-        return render_template('auth/confirm_otp.html')
+        return render_template('auth/confirm_otp.html', action=action)
     elif request.method == 'POST':
         
         otpcode = request.form.get('otpcode')
-        otp_obj = OTP.query.filter_by(code=otpcode, status="Pending")
+        otp_obj = OTP.query.filter_by(code=otpcode, status="Pending").first()
         
-        otp_obj.status = 'Expired'
-        
-        db.session.commit
-        flash("Email verified successfully.", "success")
-        
-        if action == 'reset_password':
+        if otp_obj.status == "Pending":
             
-            return redirect(url_for('auth.reset_password'))
-        elif action == 'verify_email':
+           
+                       
+    
+            user = User.query.get(otp_obj.user_id)
+            user.is_account_active = True
+            db.session.commit()
             
-            return redirect(url_for('/default.home'))
+            
+            if action == 'reset_password':
+                
+                return redirect(url_for('auth.reset_password'))
+            elif action == 'verify_email':
+                flash("Email verified successfully. You may login", "success" )
+                return redirect(url_for('default.home'))
+        else:
+                    
+            flash("OTP expired, we send a new one", "danger")
+            otp_obj.status = 'Expired'
+            otp = OTP(user.id,generate_code(),'Pending')
+            db.session.add(otp)
+            db.session.commit()
+            if send_otp(user, otp):
+                
+                flash(f"OTP sent to '{user.email}', please access your email inbox.", "success")
+                return redirect(url_for('/auth.confirm_otp',  action="reset_password"))
+                
+            else:
+                flash(f"Something went wrong while sending OTP sent to '{user.email}', Please try again", "danger")
+                return redirect(url_for('/auth.confirm_otp',  action="reset_password"))
         
 @auth.route('/reset_password/<int:user_id>', methods=['POST', 'GET'])
 def reset_password(user_id):

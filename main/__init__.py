@@ -6,6 +6,7 @@ from flask_wtf.csrf import CSRFProtect
 import os
 from flask_mail import Mail
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 
 
@@ -18,6 +19,7 @@ login_manager = LoginManager()
 login_manager.login_view = "/auth/login"
 mail = Mail()
 
+
 @login_manager.user_loader
 def load_user(id):
     from .models.auth import User
@@ -29,13 +31,18 @@ def create_app():
     csrf = CSRFProtect()
     app.config['SECRET_KEY'] = 'supersecrekjhgghjklkjhghjhseonkekenhfvbdkexdntkey'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-    
+    CORS(app)
     #Flask Extensions
     db.init_app(app)
     csrf.init_app(app)
     bcrypt.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    
+    #File uploading
+    UPLOAD_FOLDER = 'static/uploads'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     
     
     #Blueprints

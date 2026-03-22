@@ -1,7 +1,7 @@
 {% extends "participant/base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block page_icon %}🌿 {% endblock %}
-{% block page_title %}Good day, {{ user.name }}!{% endblock %}
+{% block page_title %}Good day, {{ current_user.first_name }}!{% endblock %}
 {% block page_sub %}Here's your recycling impact at a glance{% endblock %}
 
 {% block extra_head %}

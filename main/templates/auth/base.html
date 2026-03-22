@@ -9,9 +9,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
  <link rel="stylesheet" href="{{ url_for('static', filename='/default/css/new_base.css') }}">
-    
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
 </head>
 <body>
+  <!--Notification-->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert">
+          <div class="d-flex">
+              <div class="toast-body" id="toast-message">
+                  Hello, world!
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+      </div>
+  </div>
+  <!--Notification-->
 
 <!-- BACKGROUND LEAF SHAPES -->
 <div class="bg-leaves">
@@ -83,7 +95,7 @@
  
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   function scrollToHow() {
     document.getElementById('how').scrollIntoView({ behavior: 'smooth' });
@@ -134,7 +146,39 @@
     }
   }, { threshold: .3 });
   rwo.observe(document.getElementById('rewards'));
+  
+
+  function showToast(message, type="success") {
+    const toastEl = document.getElementById('liveToast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // Change color
+    toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+
+    // Set message
+    toastMessage.textContent = message;
+
+    // Show toast
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+  }
+
+
 </script>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+          
+    {% if messages %}
+      <div style="padding: 0.6rem">
+          {% for category, message in messages %}
+            <script>
+                showToast('{{message}}', '{{category}}')
+            </script>
+          {% endfor %}
+      </div>
+    {% endif %}
+    
+  {% endwith %}
 
 </body>
 </html>

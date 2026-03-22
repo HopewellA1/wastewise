@@ -13,7 +13,7 @@ default = Blueprint("default", __name__)
 @default.route("/")
 def home():
     
-    
+    #delete_all()
     # Gmail credentials
     receiver_email = "hopewellsitshaka@gmail.com"
     # app_password = "fvugjdhinugqhrna"
@@ -70,3 +70,16 @@ def send_email(receiver_email,subject,body):
         return False
         
         
+        
+def delete_all():
+    from main import db
+    from main.models.auth import User
+
+    try:
+        db.session.query(User).delete()
+        db.session.commit()
+
+        print( "All records deleted")
+    except Exception as e:
+        db.session.rollback()
+        return {"error": str(e)}, 500
