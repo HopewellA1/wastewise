@@ -19,7 +19,7 @@ class Participant(db.Model):
         self.PhysicalAddress = PhysicalAddress
         
     def __repr__(self):
-        return f'<Participant({self.ParticipantId}) '
+        return f'<Participant({self.Participant_Id}) '
         
     
     
@@ -51,7 +51,7 @@ class Contribution(db.Model):
     timestamp = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
     
     def __repr__(self):
-        return f'<Contribution {self.Contribution_Id}>'
+        return f'<Contribution: {self.Contribution_Id}>'
 
 
 class Product(db.Model):

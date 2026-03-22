@@ -2,64 +2,85 @@
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='default/css/auth.css') }}">
 
-    <section class="hero">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/login.css') }}">
+
+    <style>
+        .page {max-width: 620px;
+            width: 100;
+            margin: 0 auto;
+            padding: 2rem 1rem; 
+
+        }
+        .card{
+            max-width: 500px;
+            padding: 2.6rem 3rem;
+
+        }
+    </style>
 
 
-        <div class="card">
-            {% if current_user.is_superuser: %}
-                <div id="back101" style="display: flex; justify-content: start; padding:0.5rem">
-                    <a style="text-decoration: none;" href="{{url_for('/auth.users')}}"><<< users</a>
+
+    
+    <section>
+
+        <div class="page">
+            <!-- Brand -->
+            <div class="brand">
+            <div class="brand-logo">
+                <div class="brand-icon">♻</div>
+                <span class="brand-name">{{profile.user.first_name}} {{profile.user.last_name}}</span>
+            </div>
+            <div class="brand-tag">Local Recycling Initiative Tracker</div>
+            </div>
+
+            <!-- White card -->
+            <div class="card">
+                <!-- Centred heading like Image 1 -->
+                <div class="card-head">
+                    <div class="card-title">Wise Profile</div>
+                    <div class="card-sub"></div>
                 </div>
-            {% endif %}
-            <div class="card-header">
-                <h3>
-                    <b>
-                        User account
-                    </b>
-                </h1>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{url_for('/auth.account', id=user.id)}}" class="form">
+
+                <form  method="POST" action="{{url_for('/auth.account', id=profile.user.id)}}" >
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="field">
+                        <label class="flabel">Name(s)</label>
+                        <input type="text" name="first_name" value="{{profile.user.first_name}}" required/>
+                    </div>
 
-                    <div class="mb-3">
-                        <label >First Name</label>
-                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{user.first_name}}" required>
-                        
+                    <div class="field">
+                        <label class="flabel">Last Name </label>
+                        <input type="text"  name="last_name" class="form-control" placeholder="Last name" value="{{profile.user.last_name}}" required/>
                     </div>
-                    <div class="mb-3">
-                        <label>Last Name</label>
-                        <input type="text" name="last_name" class="form-control" placeholder="Last name" value="{{user.last_name}}" required>
+
+                    <div class="field">
+                        <label class="flabel">Last Name </label>
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{profile.user.email}}" required/>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{user.email}}" required>
+
+                    <div class="field">
+                        <label class="flabel">Phone Number</label>
+                        <input type="text"  name="PhoneNumber" class="form-control"  value="{{profile.participant.PhoneNumber}}" required/>
                     </div>
-                    {% if current_user.is_superuser %}
-                        <div >
-                        
-                           <!--
-                            <b>|</b> 
-                            <input type="checkbox" value="true" name="is_staff" {% if user.is_staff %} checked {% endif %}>Is staff 
-                            <b>|</b> -->
-                            <input type="checkbox" name="is_superuser" {% if user.is_superuser %} checked {% endif %}> Is super user
-                        </div>
-                        <br/>
-                    {% endif %}
+                    <div class="field">
+                        <label class="flabel">Physical Address</label>
+                        <input type="text"  name="PhysicalAddress" class="form-control" placeholder="" value="{{profile.participant.PhysicalAddress}}" required/>
+                    </div>
+                
+
                     
-                    <button class='btn btn-primary' type="submit">Save</button>
+
+                    <button type="submit" class="btn">Save</button>
                 </form>
-
-            </div>
-            <div class="card-footer">
-                To change password click <a href="{{url_for('/auth.change_password', id=user.id)}}"> <b> here</b></a>.
-
+                <div class="card-footer">
+                    To change the password, click <a href="{{url_for('/auth.change_password', id=profile.user.id)}}"> <b> here</b></a>.
+                </div>
+            
 
             </div>
         </div>
-
-        
     </section>
 
 
+   
 {% endblock %}

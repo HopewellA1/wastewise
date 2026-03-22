@@ -93,10 +93,11 @@
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">{{ user.name[:2].upper() if user else 'MB' }}</div>
-        <div>
+        <div onclick="to_account()">
           <div class="user-name">{{current_user.first_name}}</div>
           <div class="user-pts">{{ user.points if user else '720' }} pts · Rank #{{ user.rank if user else '4' }}</div>
         </div>
+        <a hidden id='btnToAccount' href="{{url_for('/auth.account', id=current_user.id) }}"></a>
       </div>
     </div>
   </aside>
@@ -158,7 +159,12 @@
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
     }
+    function to_account(){
+      document.getElementById("btnToAccount").click()
+    }
   </script>
+
+
   {% block extra_js %}{% endblock %}
 </body>
 

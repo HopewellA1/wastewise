@@ -61,7 +61,7 @@
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="m-close" id="menuClose">&#x2715;</button>
+  <button class="m-close" id="menuClose">☰</button>
   <a href="#home" onclick="closeMobile()">Home</a>
   <a href="#how" onclick="closeMobile()">How It Works</a>
   <a href="#rewards" onclick="closeMobile()">Rewards</a>
@@ -89,6 +89,13 @@
                     </li>
                 </ul>
               <li class="nav-item"></li>
+            {% else %}
+              <ul class="tb-links">
+                  <li>
+                      <a href="{{url_for('/participant.dashboard')}}">Dashboard</a>
+                  </li>
+              </ul>
+
             {% endif %}
             <ul class="tb-links">
                 <li><a href="{{url_for('/auth.account', id=current_user.id)}}">{{current_user.email}}</a></li>
@@ -240,7 +247,11 @@
     // Show toast
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
+
+
   }
+
+  
 </script>
   
   

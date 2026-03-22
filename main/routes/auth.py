@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, url_for, request, redirect, flash, flash
 from main.models.auth import User, OTP
+from main.models.participant import Participant
 from main.routes.default import send_email
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
@@ -70,9 +71,14 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password) and user.is_account_active:
             
             login_user(user)
-            print("user: ", user)
-        
-            return redirect(url_for('/participant.dashboard'))
+            if user.is_superuser:
+                pass
+            else:
+                if checkProfile(user.id):
+                    return redirect(url_for('/participant.dashboard'))
+                else:
+                    flash("Complete your profile.", "danger")
+                    return redirect(url_for('/auth.account', id=user.id))
         elif user.is_account_active == False:
             flash("You need to activate your account by confirming your email.", "danger")
             otp = OTP(user.id,generate_code(),'Pending')
@@ -111,21 +117,37 @@ def account(id):
         return redirect(url_for('default.home'))
     
     if request.method == 'GET':
-        
-        return render_template('auth/account.html', user=user)
+        profile ={
+            "participant": getParticipant(user.id),
+            "user":user
+        }
+         
+        return render_template('auth/account.html', profile=profile)
     elif request.method == 'POST':
         
         user.first_name = request.form["first_name"]
         user.last_name = request.form["last_name"]
         user.email = request.form["email"]
         
-        
-        
         try:
             user.is_staff  = "is_staff" in request.form
             user.is_superuser = "is_superuser" in request.form
         except:
              pass
+         
+         
+        participant = getParticipant(user.id)
+        if not participant:
+            participant = Participant(
+                user_id= user.id,
+                PhoneNumber= request.form.get('PhoneNumber'),
+                PhysicalAddress= request.form.get('PhysicalAddress'),
+            )
+            db.session.add(participant)
+        else:
+            participant.PhoneNumber= request.form["PhoneNumber"]
+            participant.PhysicalAddress= request.form["PhysicalAddress"]
+            
         db.session.commit()
         
         flash("Changes saved successfully!", 'success')
@@ -321,3 +343,19 @@ def validatePassword(password1,password2):
         return False
     else:
         return password1
+    
+    
+    
+def checkProfile(user_id):
+    
+    user = User.query.get(user_id)
+    if Participant.query.filter_by(user_id = user.id).first():
+        return True
+    else:
+        return False
+    
+def getParticipant(user_id):
+    user = User.query.get(user_id)
+    return Participant.query.filter_by(user_id = user.id).first()
+    
+    
