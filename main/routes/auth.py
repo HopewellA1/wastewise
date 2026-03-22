@@ -239,7 +239,7 @@ def confirm_otp(action):
                 return redirect(url_for('auth.reset_password'))
             elif action == 'verify_email':
                 flash("Email verified successfully. You may login", "success" )
-                return redirect(url_for('auth.account'))
+                return redirect(url_for('/auth.account'))
         else:
                     
             flash("OTP expired, we send a new one", "danger")
