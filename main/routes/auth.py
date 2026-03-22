@@ -39,7 +39,7 @@ def signup():
                     return redirect(url_for('/auth.confirm_otp', action="verify_email"))
                 else:
                     flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
-                    return redirect(url_for('/auth.confirm_otp'))
+                    return redirect(url_for('/auth.confirm_otp', action=""))
                     
                 #return redirect(url_for('default.home'))
             else:
