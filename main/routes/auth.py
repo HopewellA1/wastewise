@@ -68,32 +68,40 @@ def login():
         
         user = User.query.filter_by(email=email).first()
         
-        if user and bcrypt.check_password_hash(user.password, password) and user.is_account_active:
+        if user:
+            if bcrypt.check_password_hash(user.password, password) and user.is_account_active:
             
-            login_user(user)
-            if user.is_superuser:
-                return redirect(url_for('/admin.dashboard'))
-            else:
-                if checkProfile(user.id):
-                    return redirect(url_for('/participant.dashboard'))
-                else:
-                    flash("Complete your profile.", "danger")
-                    return redirect(url_for('/auth.account', id=user.id))
-        elif user.is_account_active == False:
-            flash("You need to activate your account by confirming your email.", "danger")
-            otp = OTP(user.id,generate_code(),'Pending')
-            db.session.add(otp)
-            db.session.commit()
+                if user.is_account_active == False:
+                    flash("You need to activate your account by confirming your email.", "danger")
+                    otp = OTP(user.id,generate_code(),'Pending')
+                    db.session.add(otp)
+                    db.session.commit()
+                    
+                    if send_otp(user,otp):
+                        flash(f'OTP sent to "{user.email}" please visit your inbox', "success")
+                        return redirect(url_for('/auth.confirm_otp', action="verify_email"))
+                    else:
+                        flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
+                        return redirect(url_for('/auth.confirm_otp'))
+                else:   
             
-            if send_otp(user,otp):
-                flash(f'OTP sent to "{user.email}" please visit your inbox', "success")
-                return redirect(url_for('/auth.confirm_otp', action="verify_email"))
+                    login_user(user)
+                    if user.is_superuser == True:
+                        return redirect(url_for('/admin.dashboard'))
+                    else:
+                        if checkProfile(user.id):
+                            return redirect(url_for('/participant.dashboard'))
+                        else:
+                            flash("Complete your profile.", "danger")
+                            return redirect(url_for('/auth.account', id=user.id))
+        
             else:
-                flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
-                return redirect(url_for('/auth.confirm_otp'))
+                
+                flash("Invalid login details","danger" )
+                return redirect(url_for("/auth.login"))
         else:
             
-            flash("Invalid login details","danger" )
+            flash(f"No user found matching email: {email}")
             return redirect(url_for("/auth.login"))
 
     
