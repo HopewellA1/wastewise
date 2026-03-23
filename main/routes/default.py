@@ -45,7 +45,6 @@ def send_email(receiver_email,subject,body):
     
     credentials = getEmailCreds()
     
-    print("credentials: ", credentials)
     sender_email = credentials["sender_email"]
    # receiver_email = "hopewellsitshaka@gmail.com"
     app_password = credentials["app_password"]
@@ -71,15 +70,14 @@ def send_email(receiver_email,subject,body):
         
         
         
-def delete_all():
-    from main import db
-    from main.models.auth import User
+# def delete_all():
+#     from main import db
+#     from main.models.auth import User
 
-    try:
-        db.session.query(User).delete()
-        db.session.commit()
+#     try:
+#         db.session.query(User).delete()
+#         db.session.commit()
 
-        print( "All records deleted")
-    except Exception as e:
-        db.session.rollback()
-        return {"error": str(e)}, 500
+#     except Exception as e:
+#         db.session.rollback()
+#         return {"error": str(e)}, 500

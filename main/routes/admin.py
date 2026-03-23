@@ -41,7 +41,7 @@ def Categories():
 @admin.route("/new_category", methods=['POST', 'GET'])
 @login_required
 def new_category():
-    print("new_category called!", request.method)
+ 
     if request.method == 'POST':
         
         categ = Category(

@@ -19,6 +19,7 @@ bcrypt= Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = "/auth/login"
 mail = Mail()
+migrate = Migrate()
 
 
 @login_manager.user_loader
@@ -30,8 +31,17 @@ def load_user(id):
 def create_app():
     app = Flask(__name__)
     csrf = CSRFProtect()
-    app.config['SECRET_KEY'] = 'supersecrekjhgghjklkjhghjhseonkekenhfvbdkexdntkey'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    
+    #mysql config
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{os.getenv('DB_USER')}:"
+        f"{os.getenv('DB_PASSWORD')}@"
+        f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/"
+        f"{os.getenv('DB_NAME')}"
+    )
+    
+    #secret key
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     CORS(app)
     #Flask Extensions
     db.init_app(app)
@@ -39,6 +49,7 @@ def create_app():
     bcrypt.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    migrate.init_app(app, db)
     
     
     
