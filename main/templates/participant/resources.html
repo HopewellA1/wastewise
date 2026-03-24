@@ -1,4 +1,4 @@
-{% extends "participant/base.html" %}
+{% extends "base.html" %}
 {% block title %}Resources{% endblock %}
 {% block page_icon %}📚 {% endblock %}
 {% block page_title %}Resources{% endblock %}
@@ -6,11 +6,9 @@
 
 {% block extra_head %}
 <!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  .resources-wrap {
-    max-width: 960px;
-  }
+  .resources-wrap { max-width: 960px; }
 
   /* ── Map Section ── */
   .map-section {
@@ -19,23 +17,19 @@
   }
 
   .section-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex; align-items: center; gap: 10px;
     margin-bottom: 16px;
     padding-bottom: 13px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    border-bottom: 1px solid rgba(255,255,255,0.09);
   }
 
   .section-head h2 {
-    font-size: 17px;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -0.02em;
+    font-size: 17px; font-weight: 800;
+    color: var(--text-main); letter-spacing: -0.02em;
   }
 
   .map-card {
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(255,255,255,0.10);
     border: 1px solid var(--card-border);
     border-radius: var(--radius);
     overflow: hidden;
@@ -43,113 +37,70 @@
   }
 
   .map-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     padding: 14px 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-    background: rgba(5, 30, 60, 0.40);
+    border-bottom: 1px solid rgba(255,255,255,0.09);
+    background: rgba(5,30,60,0.40);
   }
 
   .map-search-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0;
+    display: flex; align-items: center; gap: 0;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.10);
-    flex: 1;
-    min-width: 200px;
+    background: rgba(255,255,255,0.10);
+    flex: 1; min-width: 200px;
   }
 
   .map-search-wrap input {
-    border: none;
-    outline: none;
+    border: none; outline: none;
     padding: 8px 12px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text-main);
-    background: transparent;
-    flex: 1;
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    color: var(--text-main); background: transparent; flex: 1;
   }
 
   .map-search-wrap button {
     padding: 8px 14px;
-    background: var(--emerald);
-    border: none;
-    cursor: pointer;
+    background: var(--emerald); border: none; cursor: pointer;
     font-size: 14px;
     transition: background var(--transition);
   }
 
-  .map-search-wrap button:hover {
-    background: var(--green-mid);
-  }
+  .map-search-wrap button:hover { background: var(--green-mid); }
 
-  .filter-chips {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
+  .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 
   .filter-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display: flex; align-items: center; gap: 5px;
     padding: 5px 12px;
     border-radius: var(--radius-pill);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid var(--card-border);
-    background: var(--card-bg);
-    color: var(--text-muted);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--card-border);
+    background: var(--card-bg); color: var(--text-muted);
     transition: all var(--transition);
   }
 
-  .filter-chip:hover {
-    border-color: var(--green-light);
-    color: var(--emerald);
-    background: rgba(92, 219, 149, 0.10);
-  }
+  .filter-chip:hover { border-color: var(--green-light); color: var(--emerald); background: rgba(92,219,149,0.10); }
 
-  .filter-chip.active {
-    background: var(--emerald);
-    color: white;
-    border-color: var(--green);
-  }
+  .filter-chip.active { background: var(--emerald); color: white; border-color: var(--green); }
 
   #dropoffMap {
-    width: 100%;
-    height: 400px;
+    width: 100%; height: 400px;
   }
 
   .map-legend {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
     padding: 10px 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
-    background: rgba(5, 30, 60, 0.40);
-    font-size: 12px;
-    color: var(--text-muted);
+    border-top: 1px solid rgba(255,255,255,0.09);
+    background: rgba(5,30,60,0.40);
+    font-size: 12px; color: var(--text-muted);
   }
 
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-weight: 600; }
 
   .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid rgba(0, 0, 0, 0.15);
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.15);
   }
 
   /* ── Drop-off list panel ── */
@@ -161,13 +112,11 @@
   }
 
   .dropoff-card {
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(255,255,255,0.10);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     padding: 14px 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    display: flex; gap: 12px; align-items: flex-start;
     box-shadow: var(--shadow-sm);
     transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
     cursor: pointer;
@@ -180,163 +129,61 @@
   }
 
   .dropoff-pin {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
   }
 
-  .pin-green {
-    background: rgba(92, 219, 149, 0.10);
-    border: 1px solid var(--card-border);
-  }
+  .pin-green  { background: rgba(92,219,149,0.10);  border: 1px solid var(--card-border); }
+  .pin-blue   { background: rgba(59,130,246,0.12);  border: 1.5px solid rgba(59,130,246,0.25); }
+  .pin-amber  { background: rgba(251,191,36,0.12);  border: 1.5px solid rgba(251,191,36,0.25); }
 
-  .pin-blue {
-    background: #e8f4ff;
-    border: 1.5px solid #c8dcff;
-  }
-
-  .pin-amber {
-    background: rgba(251, 191, 36, 0.12);
-    border: 1.5px solid #ffe9a0;
-  }
-
-  .dc-name {
-    font-size: 13.5px;
-    font-weight: 700;
-    color: var(--text-main);
-  }
-
-  .dc-addr {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .dc-tags {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-top: 7px;
-  }
-
-  .dc-tag {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 99px;
-    background: rgba(92, 219, 149, 0.10);
-    color: var(--emerald);
-    border: 1px solid var(--border);
-  }
+  .dc-name    { font-size: 13.5px; font-weight: 700; color: var(--text-main); }
+  .dc-addr    { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .dc-tags    { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+  .dc-tag     { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+                background: rgba(92,219,149,0.10); color: var(--emerald); border: 1px solid var(--card-border); }
 
   /* ── Resource sections ── */
-  .res-section {
-    margin-bottom: 30px;
-    animation: fadeUp 0.4s ease both;
-  }
+  .res-section { margin-bottom: 30px; animation: fadeUp 0.4s ease both; }
 
   .res-section-title {
-    font-size: 17px;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -0.02em;
+    font-size: 17px; font-weight: 800;
+    color: var(--text-main); letter-spacing: -0.02em;
     margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    border-bottom: 1px solid rgba(255,255,255,0.09);
   }
 
-  .res-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-  }
+  .res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
 
   .res-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 18px 20px;
     box-shadow: var(--shadow-sm);
     transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    text-decoration: none; display: flex; flex-direction: column; gap: 8px;
   }
 
-  .res-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--green-light);
-  }
+  .res-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--green-light); }
 
-  .res-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  .res-card-top  { display: flex; align-items: center; justify-content: space-between; }
 
   .res-type-badge {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 3px 8px;
-    border-radius: var(--radius-pill);
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: var(--radius-pill);
   }
 
-  .type-guide {
-    background: rgba(92, 219, 149, 0.10);
-    color: var(--emerald);
-    border: 1px solid var(--border);
-  }
+  .type-guide   { background: rgba(92,219,149,0.10); color: var(--emerald); border: 1px solid var(--card-border); }
+  .type-article { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+  .type-video   { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+  .type-map     { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
 
-  .type-article {
-    background: rgba(251, 191, 36, 0.12);
-    color: #fbbf24;
-    border: 1px solid rgba(251, 191, 36, 0.25);
-  }
-
-  .type-video {
-    background: rgba(248, 113, 113, 0.12);
-    color: #f87171;
-    border: 1px solid rgba(248, 113, 113, 0.25);
-  }
-
-  .type-map {
-    background: rgba(96, 165, 250, 0.12);
-    color: #60a5fa;
-    border: 1px solid rgba(96, 165, 250, 0.25);
-  }
-
-  .res-title {
-    font-size: 14.5px;
-    font-weight: 700;
-    color: var(--text-main);
-    line-height: 1.3;
-  }
-
-  .res-desc {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    flex: 1;
-  }
-
-  .res-arrow {
-    font-size: 12px;
-    color: var(--emerald);
-    font-weight: 600;
-    align-self: flex-end;
-  }
+  .res-title { font-size: 14.5px; font-weight: 700; color: var(--text-main); line-height: 1.3; }
+  .res-desc  { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; flex: 1; }
+  .res-arrow { font-size: 12px; color: var(--emerald); font-weight: 600; align-self: flex-end; }
 
   /* Leaflet popup override */
   .leaflet-popup-content-wrapper {
@@ -345,46 +192,17 @@
     font-family: 'DM Sans', sans-serif !important;
   }
 
-  .leaflet-popup-content {
-    font-size: 13px !important;
-  }
+  .leaflet-popup-content { font-size: 13px !important; }
 
-  .popup-name {
-    font-weight: 800;
-    color: var(--text-main);
-    font-size: 14px;
-    margin-bottom: 4px;
-  }
+  .popup-name { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+  .popup-addr { font-size: 12px; color: #666; margin-bottom: 6px; }
+  .popup-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+  .popup-tag  { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 99px;
+                background: #e8f5ee; color: #1a7a45; border: 1px solid #c3e6d0; }
 
-  .popup-addr {
-    color: var(--text-muted);
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .popup-tags {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-
-  .popup-tag {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 99px;
-    background: #e8faf1;
-    color: var(--emerald);
-  }
-
-  @media (max-width: 600px) {
-    #dropoffMap {
-      height: 300px;
-    }
-
-    .dropoff-list {
-      grid-template-columns: 1fr;
-    }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
 {% endblock %}
@@ -404,7 +222,7 @@
       <!-- Toolbar -->
       <div class="map-toolbar">
         <div class="map-search-wrap">
-          <input type="text" id="mapSearchInput" placeholder="Search by suburb or area…" />
+          <input type="text" id="mapSearchInput" placeholder="Search by suburb or area…"/>
           <button onclick="mapSearch()">🔍</button>
         </div>
         <div class="filter-chips">
@@ -421,16 +239,10 @@
 
       <!-- Legend -->
       <div class="map-legend">
-        <span style="font-weight:700;color:var(--text-body);">Legend:</span>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:#5cdb95"></div> General Recycling
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:#3b82f6"></div> E-Waste
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:#f5a623"></div> Specialist
-        </div>
+        <span style="font-weight:700;">Legend:</span>
+        <div class="legend-item"><div class="legend-dot" style="background:#5cdb95"></div> General Recycling</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> E-Waste</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f5a623"></div> Specialist</div>
         <span style="margin-left:auto;font-size:11px;">Click a pin for details</span>
       </div>
     </div>
@@ -470,125 +282,125 @@
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  /* ── DROP-OFF DATA (Durban area) ───────────────────────────── */
-  const DROP_OFFS = [
-    { id: 1, name: 'Musgrave Recycling Centre', addr: 'Musgrave Rd, Berea, Durban', lat: -29.8638, lng: 31.0001, type: 'general', tags: ['Plastic', 'Paper', 'Glass', 'Metal'], color: '#5cdb95' },
-    { id: 2, name: 'Westville Bottle Store Drop-off', addr: 'Jan Hofmeyr Rd, Westville', lat: -29.8371, lng: 30.9362, type: 'glass', tags: ['Glass', 'Bottles'], color: '#f5a623' },
-    { id: 3, name: 'Pinetown E-Waste Depot', addr: 'Old Main Rd, Pinetown', lat: -29.8227, lng: 30.8610, type: 'electronics', tags: ['E-Waste', 'Batteries', 'Phones'], color: '#3b82f6' },
-    { id: 4, name: 'uShaka Eco Point', addr: 'uShaka Marine World, Point Rd', lat: -29.8701, lng: 31.0487, type: 'general', tags: ['Plastic', 'Cardboard', 'Cans'], color: '#5cdb95' },
-    { id: 5, name: 'Hillcrest Recycling Hub', addr: 'Kassier Rd, Hillcrest', lat: -29.7852, lng: 30.7734, type: 'general', tags: ['All Materials'], color: '#5cdb95' },
-    { id: 6, name: 'Morningside Paper Bank', addr: 'Windermere Rd, Morningside', lat: -29.8445, lng: 31.0152, type: 'paper', tags: ['Paper', 'Cardboard'], color: '#f5a623' },
-    { id: 7, name: 'Chatsworth Community Recycler', addr: 'Higginson Hwy, Chatsworth', lat: -29.9076, lng: 30.9406, type: 'general', tags: ['Mixed Recycling'], color: '#5cdb95' },
-    { id: 8, name: 'La Lucia E-Waste Collection', addr: 'La Lucia Mall, Umhlanga Rocks Dr', lat: -29.7562, lng: 31.0682, type: 'electronics', tags: ['E-Waste', 'Small Appliances'], color: '#3b82f6' },
-    { id: 9, name: 'Phoenix Industrial Scrap', addr: 'Partridge Rd, Phoenix', lat: -29.7289, lng: 31.0047, type: 'general', tags: ['Metal', 'Scrap', 'Aluminium'], color: '#5cdb95' },
-    { id: 10, name: 'Glenwood Glass Bank', addr: 'Glenwood, Durban South', lat: -29.8842, lng: 30.9980, type: 'glass', tags: ['Glass', 'Bottles', 'Jars'], color: '#f5a623' },
-  ];
+/* ── DROP-OFF DATA (Durban area) ───────────────────────────── */
+const DROP_OFFS = [
+  { id:1,  name:'Musgrave Recycling Centre',      addr:'Musgrave Rd, Berea, Durban',          lat:-29.8638, lng:31.0001, type:'general',     tags:['Plastic','Paper','Glass','Metal'],      color:'#5cdb95' },
+  { id:2,  name:'Westville Bottle Store Drop-off', addr:'Jan Hofmeyr Rd, Westville',           lat:-29.8371, lng:30.9362, type:'glass',        tags:['Glass','Bottles'],                     color:'#f5a623' },
+  { id:3,  name:'Pinetown E-Waste Depot',          addr:'Old Main Rd, Pinetown',               lat:-29.8227, lng:30.8610, type:'electronics',  tags:['E-Waste','Batteries','Phones'],         color:'#3b82f6' },
+  { id:4,  name:'uShaka Eco Point',                addr:'uShaka Marine World, Point Rd',       lat:-29.8701, lng:31.0487, type:'general',      tags:['Plastic','Cardboard','Cans'],           color:'#5cdb95' },
+  { id:5,  name:'Hillcrest Recycling Hub',         addr:'Kassier Rd, Hillcrest',               lat:-29.7852, lng:30.7734, type:'general',      tags:['All Materials'],                       color:'#5cdb95' },
+  { id:6,  name:'Morningside Paper Bank',           addr:'Windermere Rd, Morningside',          lat:-29.8445, lng:31.0152, type:'paper',        tags:['Paper','Cardboard'],                   color:'#f5a623' },
+  { id:7,  name:'Chatsworth Community Recycler',   addr:'Higginson Hwy, Chatsworth',           lat:-29.9076, lng:30.9406, type:'general',      tags:['Mixed Recycling'],                     color:'#5cdb95' },
+  { id:8,  name:'La Lucia E-Waste Collection',      addr:'La Lucia Mall, Umhlanga Rocks Dr',    lat:-29.7562, lng:31.0682, type:'electronics',  tags:['E-Waste','Small Appliances'],           color:'#3b82f6' },
+  { id:9,  name:'Phoenix Industrial Scrap',        addr:'Partridge Rd, Phoenix',               lat:-29.7289, lng:31.0047, type:'general',      tags:['Metal','Scrap','Aluminium'],            color:'#5cdb95' },
+  { id:10, name:'Glenwood Glass Bank',              addr:'Glenwood, Durban South',              lat:-29.8842, lng:30.9980, type:'glass',        tags:['Glass','Bottles','Jars'],              color:'#f5a623' },
+];
 
-  let map, markers = [], activeFilter = 'all';
+let map, markers = [], activeFilter = 'all';
 
-  /* ── INIT MAP ─────────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', () => {
-    map = L.map('dropoffMap', { zoomControl: true }).setView([-29.858, 30.98], 12);
+/* ── INIT MAP ─────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  map = L.map('dropoffMap', { zoomControl: true }).setView([-29.858, 30.98], 12);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-      maxZoom: 19
-    }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
 
-    // Try to get user location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const { latitude: lat, longitude: lng } = pos.coords;
-        L.circleMarker([lat, lng], {
-          radius: 8, color: '#1a9e58', fillColor: '#5cdb95', fillOpacity: 0.9, weight: 2
-        }).addTo(map).bindPopup('<b>📍 You are here</b>');
-        map.setView([lat, lng], 13);
-      }, () => { });
-    }
+  // Try to get user location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      L.circleMarker([lat, lng], {
+        radius: 8, color: '#1a9e58', fillColor: '#5cdb95', fillOpacity: 0.9, weight: 2
+      }).addTo(map).bindPopup('<b>📍 You are here</b>');
+      map.setView([lat, lng], 13);
+    }, () => {});
+  }
 
-    renderMarkers(DROP_OFFS);
-    renderList(DROP_OFFS);
-  });
+  renderMarkers(DROP_OFFS);
+  renderList(DROP_OFFS);
+});
 
-  function makeIcon(color) {
-    return L.divIcon({
-      html: `<div style="
+function makeIcon(color) {
+  return L.divIcon({
+    html: `<div style="
       width:32px;height:32px;border-radius:50% 50% 50% 0;
       background:${color};border:3px solid #fff;
       box-shadow:0 2px 8px rgba(0,0,0,0.25);
       transform:rotate(-45deg);
       display:flex;align-items:center;justify-content:center;
     "><div style="transform:rotate(45deg);font-size:13px">♻</div></div>`,
-      iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34],
-      className: ''
-    });
-  }
+    iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34],
+    className: ''
+  });
+}
 
-  function renderMarkers(data) {
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-    data.forEach(d => {
-      const m = L.marker([d.lat, d.lng], { icon: makeIcon(d.color) })
-        .addTo(map)
-        .bindPopup(`
+function renderMarkers(data) {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  data.forEach(d => {
+    const m = L.marker([d.lat, d.lng], { icon: makeIcon(d.color) })
+      .addTo(map)
+      .bindPopup(`
         <div class="popup-name">${d.name}</div>
         <div class="popup-addr">📍 ${d.addr}</div>
-        <div class="popup-tags">${d.tags.map(t => `<span class="popup-tag">${t}</span>`).join('')}</div>
+        <div class="popup-tags">${d.tags.map(t=>`<span class="popup-tag">${t}</span>`).join('')}</div>
       `);
-      markers.push(m);
-    });
-  }
+    markers.push(m);
+  });
+}
 
-  function renderList(data) {
-    const pinClass = { general: 'pin-green', electronics: 'pin-blue', glass: 'pin-amber', paper: 'pin-amber' };
-    const pinIcon = { general: '♻️', electronics: '🔋', glass: '🫙', paper: '📰' };
-    document.getElementById('dropoffList').innerHTML = data.map((d, i) => `
-    <div class="dropoff-card" onclick="flyTo(${d.lat},${d.lng},${i})" style="animation-delay:${i * 0.04}s">
-      <div class="dropoff-pin ${pinClass[d.type] || 'pin-green'}">${pinIcon[d.type] || '♻️'}</div>
+function renderList(data) {
+  const pinClass = {general:'pin-green', electronics:'pin-blue', glass:'pin-amber', paper:'pin-amber'};
+  const pinIcon  = {general:'♻️', electronics:'🔋', glass:'🫙', paper:'📰'};
+  document.getElementById('dropoffList').innerHTML = data.map((d, i) => `
+    <div class="dropoff-card" onclick="flyTo(${d.lat},${d.lng},${i})" style="animation-delay:${i*0.04}s">
+      <div class="dropoff-pin ${pinClass[d.type]||'pin-green'}">${pinIcon[d.type]||'♻️'}</div>
       <div>
         <div class="dc-name">${d.name}</div>
         <div class="dc-addr">📍 ${d.addr}</div>
-        <div class="dc-tags">${d.tags.slice(0, 3).map(t => `<span class="dc-tag">${t}</span>`).join('')}</div>
+        <div class="dc-tags">${d.tags.slice(0,3).map(t=>`<span class="dc-tag">${t}</span>`).join('')}</div>
       </div>
     </div>`).join('');
-  }
+}
 
-  function flyTo(lat, lng, idx) {
-    map.flyTo([lat, lng], 15, { duration: 1 });
-    setTimeout(() => markers[idx] && markers[idx].openPopup(), 1000);
-  }
+function flyTo(lat, lng, idx) {
+  map.flyTo([lat, lng], 15, { duration: 1 });
+  setTimeout(() => markers[idx] && markers[idx].openPopup(), 1000);
+}
 
-  function toggleFilter(chip, type) {
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeFilter = type;
-    const filtered = type === 'all' ? DROP_OFFS : DROP_OFFS.filter(d => d.type === type);
-    renderMarkers(filtered);
-    renderList(filtered);
-    if (filtered.length) {
-      const bounds = L.latLngBounds(filtered.map(d => [d.lat, d.lng]));
-      map.flyToBounds(bounds, { padding: [40, 40], duration: 1 });
-    }
+function toggleFilter(chip, type) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeFilter = type;
+  const filtered = type === 'all' ? DROP_OFFS : DROP_OFFS.filter(d => d.type === type);
+  renderMarkers(filtered);
+  renderList(filtered);
+  if (filtered.length) {
+    const bounds = L.latLngBounds(filtered.map(d => [d.lat, d.lng]));
+    map.flyToBounds(bounds, { padding: [40, 40], duration: 1 });
   }
+}
 
-  function mapSearch() {
-    const q = document.getElementById('mapSearchInput').value.toLowerCase().trim();
-    if (!q) { toggleFilter(document.querySelector('.filter-chip'), 'all'); return; }
-    const filtered = DROP_OFFS.filter(d =>
-      d.name.toLowerCase().includes(q) ||
-      d.addr.toLowerCase().includes(q) ||
-      d.tags.some(t => t.toLowerCase().includes(q))
-    );
-    renderMarkers(filtered);
-    renderList(filtered);
-    if (filtered.length) {
-      const bounds = L.latLngBounds(filtered.map(d => [d.lat, d.lng]));
-      map.flyToBounds(bounds, { padding: [40, 40], duration: 1 });
-    }
+function mapSearch() {
+  const q = document.getElementById('mapSearchInput').value.toLowerCase().trim();
+  if (!q) { toggleFilter(document.querySelector('.filter-chip'), 'all'); return; }
+  const filtered = DROP_OFFS.filter(d =>
+    d.name.toLowerCase().includes(q) ||
+    d.addr.toLowerCase().includes(q) ||
+    d.tags.some(t => t.toLowerCase().includes(q))
+  );
+  renderMarkers(filtered);
+  renderList(filtered);
+  if (filtered.length) {
+    const bounds = L.latLngBounds(filtered.map(d => [d.lat, d.lng]));
+    map.flyToBounds(bounds, { padding: [40,40], duration: 1 });
   }
+}
 
-  document.getElementById('mapSearchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') mapSearch();
-  });
+document.getElementById('mapSearchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') mapSearch();
+});
 </script>
 {% endblock %}

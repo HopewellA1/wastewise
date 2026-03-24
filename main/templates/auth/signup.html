@@ -6,8 +6,9 @@
 {% block content %}
   <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/login.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/signup.css') }}">
-
-
+  
+  <!-- Add reCAPTCHA script -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <section>
 
@@ -33,18 +34,18 @@
           <div class="name-grid">
             <div>
               <label class="flabel">Full Name(s)</label>
-              <input name="first_name" type="text" autocomplete="given-name" required/>
+              <input name="first_name" type="text" value="{{ new_user.fname }}" autocomplete="given-name" required/>
             </div>
             <div>
               <label class="flabel">Surname</label>
-              <input name="last_name" type="text" autocomplete="family-name" required/>
+              <input name="last_name" type="text" value="{{ new_user.lname }}" autocomplete="family-name" required/>
             </div>
           </div>
 
           <!-- Email -->
           <div class="field">
             <label class="flabel">Email Address</label>
-            <input name="email" type="email" autocomplete="email" required/>
+            <input name="email" type="email" value="{{ new_user.email }}" autocomplete="email" required/>
           </div>
 
           <!-- Password + strength -->
@@ -71,6 +72,12 @@
             <input oninput="checkMatch()" type="password" name="password2" id="cpw" autocomplete="new-password" required/>
             <div class="err-msg" id="mErr"></div>
           </div>
+          
+          <!-- Add reCAPTCHA widget -->
+          <div class="field">
+            <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+          </div>
+          
           <div class="chk">
             <input name="is_terms_accepted" type="checkbox" id="terms" required>
             <label class="chk-lbl" for="terms">
@@ -89,148 +96,205 @@
       </div>
     </div>
   </section>
-   <!-- TERMS OF SERVICE MODAL -->
-    <div class="modal-overlay" id="modal-tos">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h2><span class="m-icon">📋</span> Terms of Service</h2>
-          <button class="modal-close" onclick="closeModal('tos')">✕</button>
-        </div>
-        <div class="modal-body">
-          <h3>1. Acceptance of Terms</h3>
-          <p>By creating a WasteWise account you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
-          <h3>2. Use of the Platform</h3>
-          <p>WasteWise is a community recycling tracker. You agree to:</p>
-          <ul>
-            <li>Submit only accurate and truthful waste reports</li>
-            <li>Not misuse the points or rewards system</li>
-            <li>Not create multiple accounts to gain unfair advantages</li>
-            <li>Treat other community members with respect</li>
-          </ul>
-          <h3>3. Points and Rewards</h3>
-          <p>Points are awarded at the discretion of local admins following verification of submissions. WasteWise reserves the right to adjust, suspend or revoke points if misuse is detected.</p>
-          <h3>4. Account Responsibility</h3>
-          <p>You are responsible for maintaining the confidentiality of your login credentials. Notify us immediately if you suspect unauthorised access to your account.</p>
-          <h3>5. Termination</h3>
-          <p>WasteWise reserves the right to suspend or terminate accounts that violate these terms, engage in fraudulent activity, or abuse the platform.</p>
-          <h3>6. Changes to Terms</h3>
-          <p>We may update these terms from time to time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
-          <h3>7. Contact</h3>
-          <p>For any questions regarding these terms, please contact us through the Help Centre on the WasteWise platform.</p>
-        </div>
-        <div class="modal-footer">
-          <button onclick="closeModal('tos')">I Understand</button>
-        </div>
+  
+  <!-- TERMS OF SERVICE MODAL -->
+  <div class="modal-overlay" id="modal-tos">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2><span class="m-icon">📋</span> Terms of Service</h2>
+        <button class="modal-close" onclick="closeModal('tos')">✕</button>
+      </div>
+      <div class="modal-body">
+        <h3>1. Acceptance of Terms</h3>
+        <p>By creating a WasteWise account you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
+        <h3>2. Use of the Platform</h3>
+        <p>WasteWise is a community recycling tracker. You agree to:</p>
+        <ul>
+          <li>Submit only accurate and truthful waste reports</li>
+          <li>Not misuse the points or rewards system</li>
+          <li>Not create multiple accounts to gain unfair advantages</li>
+          <li>Treat other community members with respect</li>
+        </ul>
+        <h3>3. Points and Rewards</h3>
+        <p>Points are awarded at the discretion of local admins following verification of submissions. WasteWise reserves the right to adjust, suspend or revoke points if misuse is detected.</p>
+        <h3>4. Account Responsibility</h3>
+        <p>You are responsible for maintaining the confidentiality of your login credentials. Notify us immediately if you suspect unauthorised access to your account.</p>
+        <h3>5. Termination</h3>
+        <p>WasteWise reserves the right to suspend or terminate accounts that violate these terms, engage in fraudulent activity, or abuse the platform.</p>
+        <h3>6. Changes to Terms</h3>
+        <p>We may update these terms from time to time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+        <h3>7. Contact</h3>
+        <p>For any questions regarding these terms, please contact us through the Help Centre on the WasteWise platform.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('tos')">I Understand</button>
       </div>
     </div>
+  </div>
 
-<!-- PRIVACY POLICY MODAL -->
-<div class="modal-overlay" id="modal-pp">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h2><span class="m-icon">🔒</span> Privacy Policy</h2>
-      <button class="modal-close" onclick="closeModal('pp')">✕</button>
-    </div>
-    <div class="modal-body">
-      <h3>1. Information We Collect</h3>
-      <p>When you register and use WasteWise, we collect:</p>
-      <ul>
-        <li>Your name and email address</li>
-        <li>Waste submission data and recycling activity</li>
-        <li>Points earned and rewards redeemed</li>
-        <li>General location data tied to waste reports</li>
-      </ul>
-      <h3>2. How We Use Your Information</h3>
-      <p>Your information is used to:</p>
-      <ul>
-        <li>Operate and improve the WasteWise platform</li>
-        <li>Verify and approve your recycling submissions</li>
-        <li>Calculate and display your points and rewards</li>
-        <li>Show community impact statistics</li>
-        <li>Send important account notifications</li>
-      </ul>
-      <h3>3. Data Sharing</h3>
-      <p>We do not sell your personal data. Aggregated, anonymised community statistics may be shared publicly to demonstrate recycling impact.</p>
-      <h3>4. Data Security</h3>
-      <p>We implement industry-standard security measures including encrypted passwords, secure connections (HTTPS), and access controls.</p>
-      <h3>5. Your Rights</h3>
-      <p>You have the right to:</p>
-      <ul>
-        <li>Access the personal data we hold about you</li>
-        <li>Request correction of inaccurate data</li>
-        <li>Request deletion of your account and data</li>
-        <li>Withdraw consent at any time</li>
-      </ul>
-      <h3>6. Cookies</h3>
-      <p>WasteWise uses essential session cookies to keep you logged in. No third-party tracking cookies are used.</p>
-      <h3>7. Contact</h3>
-      <p>For privacy-related requests contact us through the Help Centre on the WasteWise platform.</p>
-    </div>
-    <div class="modal-footer">
-      <button onclick="closeModal('pp')">I Understand</button>
+  <!-- PRIVACY POLICY MODAL -->
+  <div class="modal-overlay" id="modal-pp">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2><span class="m-icon">🔒</span> Privacy Policy</h2>
+        <button class="modal-close" onclick="closeModal('pp')">✕</button>
+      </div>
+      <div class="modal-body">
+        <h3>1. Information We Collect</h3>
+        <p>When you register and use WasteWise, we collect:</p>
+        <ul>
+          <li>Your name and email address</li>
+          <li>Waste submission data and recycling activity</li>
+          <li>Points earned and rewards redeemed</li>
+          <li>General location data tied to waste reports</li>
+        </ul>
+        <h3>2. How We Use Your Information</h3>
+        <p>Your information is used to:</p>
+        <ul>
+          <li>Operate and improve the WasteWise platform</li>
+          <li>Verify and approve your recycling submissions</li>
+          <li>Calculate and display your points and rewards</li>
+          <li>Show community impact statistics</li>
+          <li>Send important account notifications</li>
+        </ul>
+        <h3>3. Data Sharing</h3>
+        <p>We do not sell your personal data. Aggregated, anonymised community statistics may be shared publicly to demonstrate recycling impact.</p>
+        <h3>4. Data Security</h3>
+        <p>We implement industry-standard security measures including encrypted passwords, secure connections (HTTPS), and access controls.</p>
+        <h3>5. Your Rights</h3>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access the personal data we hold about you</li>
+          <li>Request correction of inaccurate data</li>
+          <li>Request deletion of your account and data</li>
+          <li>Withdraw consent at any time</li>
+        </ul>
+        <h3>6. Cookies</h3>
+        <p>WasteWise uses essential session cookies to keep you logged in. No third-party tracking cookies are used.</p>
+        <h3>7. Contact</h3>
+        <p>For privacy-related requests contact us through the Help Centre on the WasteWise platform.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('pp')">I Understand</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  function openModal(type) {
-    document.getElementById('modal-' + type).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeModal(type) {
-    document.getElementById('modal-' + type).classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  // Close by clicking outside
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.remove('open');
-        document.body.style.overflow = '';
+  <style>
+    /* Additional styles for reCAPTCHA */
+    .field {
+      margin-bottom: 20px;
+    }
+    .g-recaptcha {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .err-msg {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+    .text-danger {
+      color: #dc3545;
+    }
+    .text-success {
+      color: #28a745;
+    }
+    .req-item.met .req-dot {
+      background-color: #28a745;
+    }
+    .req-item .req-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin-right: 8px;
+    }
+  </style>
+
+  <script>
+    function openModal(type) {
+      document.getElementById('modal-' + type).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(type) {
+      document.getElementById('modal-' + type).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    // Close by clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => {
+          m.classList.remove('open');
+          document.body.style.overflow = '';
+        });
       }
     });
-  });
-  // Close on Escape key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.open').forEach(m => {
-        m.classList.remove('open');
-        document.body.style.overflow = '';
+
+    // Password strength
+    const cols = { 1:'#d94f4f', 2:'#e8a020', 3:'#1a8a6e', 4:'#2db87a' };
+    function checkStr() {
+      const v = document.getElementById('pw').value;
+      const c = {
+        len: v.length >= 8,
+        up:  /[A-Z]/.test(v),
+        num: /[0-9]/.test(v),
+        sp:  /[^A-Za-z0-9]/.test(v)
+      };
+      ['r1','r2','r3','r4'].forEach((id, i) =>
+        document.getElementById(id).classList.toggle('met', Object.values(c)[i])
+      );
+      const sc = Object.values(c).filter(Boolean).length;
+      [1,2,3,4].forEach(n => {
+        document.getElementById('s'+n).style.background = sc >= n ? cols[sc] : '#dde8e8';
       });
     }
-  });
-
-  // Password strength
-  const cols = { 1:'#d94f4f', 2:'#e8a020', 3:'#1a8a6e', 4:'#2db87a' };
-  function checkStr() {
-    const v = document.getElementById('pw').value;
-    const c = {
-      len: v.length >= 8,
-      up:  /[A-Z]/.test(v),
-      num: /[0-9]/.test(v),
-      sp:  /[^A-Za-z0-9]/.test(v)
-    };
-    ['r1','r2','r3','r4'].forEach((id, i) =>
-      document.getElementById(id).classList.toggle('met', Object.values(c)[i])
-    );
-    const sc = Object.values(c).filter(Boolean).length;
-    [1,2,3,4].forEach(n => {
-      document.getElementById('s'+n).style.background = sc >= n ? cols[sc] : '#dde8e8';
+    function checkMatch(){
+      const v = document.getElementById('pw').value;
+      const cv = document.getElementById('cpw').value;
+      let mErr = document.getElementById('mErr');
+      if(v != cv){
+        mErr.innerHTML = '<i class="text-danger">Passwords do not match.</i>';
+        return false;
+      }
+      else{
+        mErr.innerHTML = '<i class="text-success">Passwords match.</i>';
+        return true;
+      }
+    }
+    
+    // Form validation before submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const recaptchaResponse = document.querySelector('.g-recaptcha textarea');
+      if (!recaptchaResponse || !recaptchaResponse.value) {
+        e.preventDefault();
+        alert('Please complete the reCAPTCHA verification.');
+        return false;
+      }
+      
+      if (!checkMatch()) {
+        e.preventDefault();
+        alert('Please make sure passwords match.');
+        return false;
+      }
+      
+      const termsCheckbox = document.getElementById('terms');
+      if (!termsCheckbox.checked) {
+        e.preventDefault();
+        alert('Please accept the Terms of Service and Privacy Policy.');
+        return false;
+      }
     });
-  }
-  function checkMatch(){
-    const v = document.getElementById('pw').value;
-    const cv = document.getElementById('cpw').value;
-    let mErr = document.getElementById('mErr');
-    if(v !=cv){
-      mErr.innerHTML = `<i class="text-danger">Passwords do not match.</i>`
-      return;
-    }
-    else{
-      mErr.innerHTML = `<i class="text-success">Passwords  match.</i>`
-    }
-  }
-</script>     
-
+  </script>     
 
 {% endblock %}

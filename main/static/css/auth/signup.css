@@ -120,3 +120,55 @@
     text-align: center; font-size: 0.9rem; color: #3a6060;
   }
   .foot a { color: #1a8a6e; font-weight: 700; text-decoration: none; }
+/* reCAPTCHA styling */
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Responsive reCAPTCHA */
+@media (max-width: 480px) {
+    .g-recaptcha {
+        transform: scale(0.85);
+        transform-origin: center;
+    }
+}
+
+/* Error message styling */
+.text-danger {
+    color: #dc3545;
+    font-size: 12px;
+}
+
+.text-success {
+    color: #28a745;
+    font-size: 12px;
+}
+
+/* Password requirement dots */
+.req-item .req-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.req-item.met .req-dot {
+    background-color: #28a745;
+}
+
+.req-item {
+    list-style: none;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.req-grid {
+    padding-left: 0;
+    margin-top: 10px;
+}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, request, redirect, flash, flash
+from flask import Blueprint, render_template, url_for, request, redirect, flash
 from main.models.auth import User, OTP
 from main.models.participant import Participant
 from main.routes.default import send_email
@@ -7,16 +7,46 @@ from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
 from getpass import getpass
 import random
+import requests
 from datetime import datetime, timezone, timedelta
+import os
+
 auth = Blueprint("/auth", __name__, url_prefix="/auth")
+
+# reCAPTCHA configuration
+RECAPTCHA_SECRET_KEY = "6LcGQ5UsAAAAAGL0rPj_gfpoLpmbI7GqtgNYuzjd"
+RECAPTCHA_SITE_KEY = "6LcGQ5UsAAAAAKtRoGICj5w881lDvDt7q9i7FUiL"
 
 @auth.route("/signup", methods=['POST', 'GET'])
 def signup():
     
-   
-        
-    if  request.method == 'POST':
+    if request.method == 'POST':
         try:
+            # Verify reCAPTCHA
+            recaptcha_response = request.form.get('g-recaptcha-response')
+            
+            if not recaptcha_response:
+                flash('Please complete the reCAPTCHA verification.', 'danger')
+                return render_template("auth/signup.html", new_user=User(request.form.get('first_name', ''), request.form.get('last_name', ''), request.form.get('email', ''), ''), recaptcha_site_key=RECAPTCHA_SITE_KEY)
+            
+            # Verify with Google
+            verification_data = {
+                'secret': RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            
+            try:
+                verification_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=verification_data, timeout=10)
+                verification_result = verification_response.json()
+                
+                if not verification_result.get('success', False):
+                    flash('reCAPTCHA verification failed. Please try again.', 'danger')
+                    return render_template("auth/signup.html", new_user=User(request.form.get('first_name', ''), request.form.get('last_name', ''), request.form.get('email', ''), ''), recaptcha_site_key=RECAPTCHA_SITE_KEY)
+                    
+            except requests.RequestException:
+                flash('Error verifying reCAPTCHA. Please try again.', 'danger')
+                return render_template("auth/signup.html", new_user=User(request.form.get('first_name', ''), request.form.get('last_name', ''), request.form.get('email', ''), ''), recaptcha_site_key=RECAPTCHA_SITE_KEY)
+            
             if validatePassword(request.form.get('password'), request.form.get('password2')):
                 new_user = User(
                     fname=request.form.get('first_name'),
@@ -31,28 +61,25 @@ def signup():
                 
                 db.session.commit()
                 flash(f'Account created successfully!', 'success')
-                otp = OTP(new_user.id,generate_code(),'Pending')
+                otp = OTP(new_user.id, generate_code(), 'Pending')
                 db.session.add(otp)
                 db.session.commit()
-                if send_otp(new_user,otp):
+                if send_otp(new_user, otp):
                     flash(f'OTP sent to "{new_user.email}" please visit your inbox', "success")
                     return redirect(url_for('/auth.confirm_otp', action="verify_email"))
                 else:
-                    flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
+                    flash(f"Something went wrong while sending OTP, please try again.", "danger")
                     return redirect(url_for('/auth.confirm_otp', action=""))
                     
-                #return redirect(url_for('default.home'))
             else:
                 flash(f'Password do not match, try login.','danger')
-                return render_template("auth/signup.html", new_user=User(request.form['first_name'],request.form['last_name'],request.form['email'],''))
+                return render_template("auth/signup.html", new_user=User(request.form.get('first_name', ''), request.form.get('last_name', ''), request.form.get('email', ''), ''), recaptcha_site_key=RECAPTCHA_SITE_KEY)
         
         except IntegrityError:
             flash(f'Username ({new_user.email}) already taken, try login.','danger')
-            return render_template("auth/signup.html", new_user=new_user)
+            return render_template("auth/signup.html", new_user=new_user, recaptcha_site_key=RECAPTCHA_SITE_KEY)
     else:
-        
-        
-        return render_template("auth/signup.html", new_user=User('','','',''))
+        return render_template("auth/signup.html", new_user=User('','','',''), recaptcha_site_key=RECAPTCHA_SITE_KEY)
         
   
 @auth.route("/login", methods=['GET', 'POST'])
@@ -73,15 +100,15 @@ def login():
             
                 if user.is_account_active == False:
                     flash("You need to activate your account by confirming your email.", "danger")
-                    otp = OTP(user.id,generate_code(),'Pending')
+                    otp = OTP(user.id, generate_code(), 'Pending')
                     db.session.add(otp)
                     db.session.commit()
                     
-                    if send_otp(user,otp):
+                    if send_otp(user, otp):
                         flash(f'OTP sent to "{user.email}" please visit your inbox', "success")
                         return redirect(url_for('/auth.confirm_otp', action="verify_email"))
                     else:
-                        flash(f"Somthing went wrong while sending OTP, please try again.", "danger")
+                        flash(f"Something went wrong while sending OTP, please try again.", "danger")
                         return redirect(url_for('/auth.confirm_otp'))
                 else:   
             
@@ -201,7 +228,7 @@ def reset_request():
         email = request.form.get("email").lower()
         user = User.query.filter_by(email=email).first()
         if user:
-            otp = OTP(user.id,generate_code(),'Pending')
+            otp = OTP(user.id, generate_code(), 'Pending')
             db.session.add(otp)
             db.session.commit()
             if send_otp(user, otp):
@@ -232,59 +259,63 @@ def confirm_otp(action):
         otpcode = request.form.get('otpcode')
         otp_obj = OTP.query.filter_by(code=otpcode, status="Pending").first()
         
-        if otp_obj.status == "Pending":
+        if otp_obj and otp_obj.status == "Pending":
             
-           
-                       
-    
+            # Check if OTP is expired (older than 10 minutes)
+            if otp_obj.created_at and datetime.now(timezone.utc) - otp_obj.created_at > timedelta(minutes=10):
+                flash("OTP expired. Please request a new one.", "danger")
+                otp_obj.status = 'Expired'
+                db.session.commit()
+                return redirect(url_for('/auth.reset_request'))
+            
             user = User.query.get(otp_obj.user_id)
             user.is_account_active = True
+            otp_obj.status = 'Used'
             db.session.commit()
             
             logout_user()
             if action == 'reset_password':
-                
-                return redirect(url_for('auth.reset_password'))
+                return redirect(url_for('auth.reset_password', user_id=user.id))
             elif action == 'verify_email':
                 flash("Email verified successfully. You may login", "success" )
-                return redirect(url_for('/auth.account', id=user.id))
+                return redirect(url_for('/auth.login'))
         else:
                     
-            flash("OTP expired, we send a new one", "danger")
-            otp_obj.status = 'Expired'
-            otp = OTP(user.id,generate_code(),'Pending')
-            db.session.add(otp)
-            db.session.commit()
-            if send_otp(user, otp):
-                
-                flash(f"OTP sent to '{user.email}', please access your email inbox.", "success")
-                return redirect(url_for('/auth.confirm_otp',  action="reset_password"))
-                
-            else:
-                flash(f"Something went wrong while sending OTP sent to '{user.email}', Please try again", "danger")
-                return redirect(url_for('/auth.confirm_otp',  action="reset_password"))
+            flash("Invalid or expired OTP. Please request a new one.", "danger")
+            return redirect(url_for('/auth.reset_request'))
         
 @auth.route('/reset_password/<int:user_id>', methods=['POST', 'GET'])
 def reset_password(user_id):
     
     if request.method == 'GET':
         
-        return render_template('auth/reset_password.html')
+        return render_template('auth/reset_password.html', user_id=user_id)
     elif request.method == 'POST':
-        pass
         
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
         
+        if password == password2:
+            user = User.query.get(user_id)
+            user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+            db.session.commit()
+            flash("Password has been reset successfully. You may now login.", "success")
+            return redirect(url_for('/auth.login'))
+        else:
+            flash("Passwords do not match.", "danger")
+            return redirect(url_for('auth.reset_password', user_id=user_id))
         
         
 def send_otp(user, otp):
     subject = 'OTP: Confirm email'
-    msg = f'Dear {user.first_name}\n'
-    msg+=f'Please use the code below to comfirm your email address.\n'
+    msg = f'Dear {user.fname}\n'
+    msg += f'Please use the code below to confirm your email address.\n'
     msg += f'OTP: {otp.code}\n'
     msg += f'\n'
-    msg += f'Kind regards,\nWastwise'
+    msg += f'This code will expire in 10 minutes.\n\n'
+    msg += f'Kind regards,\nWastewise'
     
-    return send_email(user.email,subject, msg)
+    return send_email(user.email, subject, msg)
     
    
 
@@ -348,12 +379,12 @@ def getValidatePassword():
         return password1
     
     
-def validatePassword(password1,password2):
+def validatePassword(password1, password2):
     
     if password1 != password2:
         return False
     else:
-        return password1
+        return True
     
     
     
@@ -368,5 +399,3 @@ def checkProfile(user_id):
 def getParticipant(user_id):
     user = User.query.get(user_id)
     return Participant.query.filter_by(user_id = user.id).first()
-    
-    
