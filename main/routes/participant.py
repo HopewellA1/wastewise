@@ -1,8 +1,11 @@
+import os
+import uuid
+from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, url_for, request, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from main.models.participant import Contribution, Participant,Category, Product
 from main.models.auth import User
-from main import db
+from main import db, allowed_file, UPLOAD_FOLDER
 
 
     
@@ -343,4 +346,50 @@ def log_item():
     db.session.commit()
     flash("Contribution logged susseccfully", "success")
     return redirect(url_for('/participant.history', user_id=current_user.id))
+
+
+
+@participant.route('/add_EvidenceProduct/<int:contri_id>', methods=['POST'])
+@login_required
+def add_EvidenceProduct(contri_id):
+
+    contribution= Contribution.query.get(contri_id)
+    file = request.files.get("image")
+    product = Product(
+        contri_id=contribution.Contribution_Id,
+        Product_Name = request.form.get('Product_Name'),
+        Image=upload_Evidence_Image(file),
+        decription= request.form.get("decription")
+    )
+    
+    db.session.add(product)
+    db.session.commit()
+    
+    flash("Prodcuct added successfully.", "success")
+    return redirect(url_for('/participant.detailed_recycle', contri_id=contri_id))
+    
+ 
+@participant.route('/edit_EvidenceProduct/<int:prod_id>', methods=['POST'])   
+@login_required
+def edit_EvidenceProduct(prod_id):
+    
+    
+    product = Product.query.get(prod_id)
+    product.Product_Name = request.form.get('Product_Name'),
+    product.Image=upload_Evidence_Image(request.files.get("image")),
+    product.decription= request.form.get("decription")
+    
+    
+def upload_Evidence_Image(file):
+
+    if not file or file.filename == "":
+        return None
+
+    if file and allowed_file(file.filename):
+
+        # Generate unique filename
+        filename = str(uuid.uuid4()) + "_" + secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        return filename
 

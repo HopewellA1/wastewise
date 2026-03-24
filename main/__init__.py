@@ -20,7 +20,8 @@ login_manager = LoginManager()
 login_manager.login_view = "/auth/login"
 mail = Mail()
 migrate = Migrate()
-
+UPLOAD_FOLDER = "main/static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 @login_manager.user_loader
 def load_user(id):
@@ -54,8 +55,7 @@ def create_app():
     
     
     #File uploading
-    UPLOAD_FOLDER = 'static/uploads'
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+   
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     
     
@@ -92,6 +92,8 @@ def create_app():
     return app
 
 
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def getEmailCreds():
 

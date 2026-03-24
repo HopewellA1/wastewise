@@ -96,9 +96,17 @@ class Product(db.Model):
     Contribution_Id = db.Column(db.Integer, db.ForeignKey('contribution.Contribution_Id'), nullable=False)
     Product_Name = db.Column(db.String(200), nullable=False)
     Image = db.Column(db.String(500)) 
+    decription = db.Column(db.String(5000), nullable=True)
+    
+    def __init__(self, contri_id, Product_Name,Image, decription):
+        self.Contribution_Id = contri_id
+        self.Product_Name = Product_Name
+        self.Image = Image
+        self.decription = decription
+        
     
     def __repr__(self):
-        return f'<Product {self.Product_Name}>'
+        return f'<Product {self.Product_Name}({self.ProductId})>'
     
 
 class ParticipantReward(db.Model):

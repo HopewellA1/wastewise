@@ -1,12 +1,13 @@
 {% extends "participant/base.html" %}
-{% block page_title %}Recyclable waste contribution{% endblock %}
+
 
 {% block content %}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-
+   
+    <link rel="stylesheet" href="{{ url_for('static', filename='/participant/css/detailed_recycle.css') }}">
+    
     <main class="page">
         <a href="{{url_for('/participant.history', user_id=contri_Products.participant.user_id)}}" class="back-link" data-aos="fade-right">← Recycle Log</a>
         <div class="page-header" data-aos="fade-up">
@@ -17,38 +18,60 @@
         <div style="margin-bottom:20px;" data-aos="fade-up">
             <a id="btn_new_categ" onclick="formSwitch('panel-manual')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">New Product</a>
         </div>
+        
+        <div class="log-panel active" id="panel-manual">
+            <form method="POST" action="{{url_for('/participant.add_EvidenceProduct', contri_id=contri_Products.contribution.Contribution_Id)}}" enctype="multipart/form-data">
 
-        <hr/>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-row">
+                   
+
+                    <div class="form-group" style="max-width:110px;">
+                        <label class="form-label">Product Image</label>
+                        <input  type="file" name="image"  class="form-control" Required/>
+                    </div>
+
+                    <div class="form-group" style="max-width:110px;">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" name="Product_Name" value="1" min="1" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Product decription</label>
+                        <textarea maxlength="500" class="form-control"  name="decription" required></textarea>
+                    </div>
+                
+                </div>
+                <div class="form-group">
+                <label class="form-label">description</label>
+                <textarea class="form-control"  name="description"></textarea>
+                </div>
+                <br/>
+                <div class="form-group"><button type="submit" class="btn btn-primary">Add Product</button></div>
+            </form>
+            </div>
 
         <div class="row g-4">
 
-            <!-- Eco Bottle -->
-            <div class="col-lg-4 col-md-6" data-aos="zoom-in">
-            <div class="reward-card">
-                <div class="reward-icon">🧴</div>
-                <h4 class="reward-title">Eco Bottle</h4>
-                <p class="reward-points">Points Required: <strong>50</strong></p>
-                <p class="reward-stock">Availability: <span class="badge-available">Available</span></p>
-                <div class="reward-actions">
-                <button class="btn-edit">✏️ Edit Reward</button>
-                <button class="btn-stock">📦 Update Stock</button>
+     
+            {% for product in contri_Products.Products %}
+                <div class="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay="80">
+                    <div class="reward-card">
+                        <div class="reward-icon">
+                            <img src="{{ url_for('static', filename='uploads/' + product.Image) }}" >
+                        </div>
+                        <h4 class="reward-title">{{product.Product_Name}}</h4>
+                        <p class="reward-points">Points Required: <strong>50</strong></p>
+                        <p class="reward-stock">Availability: <span class="badge-available">Available</span></p>
+                        <div class="reward-actions">
+                        <button class="btn-edit">✏️ Edit Reward</button>
+                        <button class="btn-stock">📦 Update Stock</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
 
-            <!-- Reusable Bag -->
-            <div class="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay="80">
-            <div class="reward-card">
-                <div class="reward-icon">🛍️</div>
-                <h4 class="reward-title">Reusable Bag</h4>
-                <p class="reward-points">Points Required: <strong>30</strong></p>
-                <p class="reward-stock">Availability: <span class="badge-available">Available</span></p>
-                <div class="reward-actions">
-                <button class="btn-edit">✏️ Edit Reward</button>
-                <button class="btn-stock">📦 Update Stock</button>
-                </div>
-            </div>
-            </div>
+            {% endfor %}
+
+            
         </div>
     </main>
     
