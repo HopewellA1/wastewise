@@ -84,36 +84,72 @@ def signup():
   
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
-    
+
     if request.method == 'GET':
-        
-        return render_template('auth/login.html')
+        # ✅ IMPORTANT: Pass site key to template
+        return render_template(
+            'auth/login.html',
+            recaptcha_site_key=RECAPTCHA_SITE_KEY
+        )
+
     elif request.method == 'POST':
-        
+
+        # ✅ STEP 1: Get reCAPTCHA response
+        recaptcha_response = request.form.get('g-recaptcha-response')
+
+        if not recaptcha_response:
+            flash('Please complete the reCAPTCHA verification.', 'danger')
+            return redirect(url_for("/auth.login"))
+
+        # ✅ STEP 2: Verify with Google
+        verification_data = {
+            'secret': RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+
+        try:
+            verification_response = requests.post(
+                'https://www.google.com/recaptcha/api/siteverify',
+                data=verification_data,
+                timeout=10
+            )
+            verification_result = verification_response.json()
+
+            if not verification_result.get('success'):
+                flash('reCAPTCHA verification failed. Please try again.', 'danger')
+                return redirect(url_for("/auth.login"))
+
+        except requests.RequestException:
+            flash('Error verifying reCAPTCHA. Please try again.', 'danger')
+            return redirect(url_for("/auth.login"))
+
+        # ✅ STEP 3: Continue login logic
         email = request.form.get('email').lower()
         password = request.form.get('password')
-        
+
         user = User.query.filter_by(email=email).first()
-        
+
         if user:
-            if bcrypt.check_password_hash(user.password, password) and user.is_account_active:
-            
+            if bcrypt.check_password_hash(user.password, password):
+
                 if user.is_account_active == False:
                     flash("You need to activate your account by confirming your email.", "danger")
+
                     otp = OTP(user.id, generate_code(), 'Pending')
                     db.session.add(otp)
                     db.session.commit()
-                    
+
                     if send_otp(user, otp):
                         flash(f'OTP sent to "{user.email}" please visit your inbox', "success")
                         return redirect(url_for('/auth.confirm_otp', action="verify_email"))
                     else:
-                        flash(f"Something went wrong while sending OTP, please try again.", "danger")
+                        flash("Something went wrong while sending OTP, please try again.", "danger")
                         return redirect(url_for('/auth.confirm_otp'))
-                else:   
-            
+
+                else:
                     login_user(user)
-                    if user.is_superuser == True:
+
+                    if user.is_superuser:
                         return redirect(url_for('/admin.dashboard'))
                     else:
                         if checkProfile(user.id):
@@ -121,14 +157,13 @@ def login():
                         else:
                             flash("Complete your profile.", "danger")
                             return redirect(url_for('/auth.account', id=user.id))
-        
+
             else:
-                
-                flash("Invalid login details","danger" )
+                flash("Invalid login details", "danger")
                 return redirect(url_for("/auth.login"))
+
         else:
-            
-            flash(f"No user found matching email: {email}")
+            flash(f"No user found matching email: {email}", "danger")
             return redirect(url_for("/auth.login"))
 
     
