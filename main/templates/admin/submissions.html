@@ -1,0 +1,143 @@
+{% extends "admin/base.html" %}
+{% block page_title %}Submissions{% endblock %}
+{% block content %}
+
+
+    <main class="page">
+
+    <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+
+    <div class="page-header" data-aos="fade-up">
+        <h2>📝 Participants Submissions</h2>
+        <p>Review pending recycling contributions and verify the uploaded evidence before approval.</p>
+    </div>
+
+    <div style="margin-bottom:20px;" data-aos="fade-up">
+        <a href="wastewise-approved.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;">✅ View Approved Submissions</a>
+    </div>
+    <div class="table-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="table-responsive">
+        <table class="table custom-table align-middle">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Waste Type</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Evidence</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for sub in subs%}
+                <tr>
+                    <td class="td-username">@{{sub.username}}_</td>
+                    <td><span class="waste-pill">{{sub.categ.Name}}</span></td>
+                    <td class="td-qty">{{sub.contri_.quantity}} kg</td>
+                    <td class="td-date">{{sub.contri_.created_at}}</td>
+                    <td>
+                    <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal1">🔍 View Image</button>
+                    <div class="modal fade" id="modal1" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content evidence-modal">
+                            <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                            <div class="modal-body text-center"><p>Image will display here.</p></div>
+                        </div>
+                        </div>
+                    </div>
+                    </td>
+                    <td><span class="badge-pending">Pending</span></td>
+                    <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <td class="td-username">@lerato_k</td>
+                <td><span class="waste-pill">📰 Paper</span></td>
+                <td class="td-qty">1.8 kg</td>
+                <td class="td-date">13 Mar 2026</td>
+                <td>
+                <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal2">🔍 View Image</button>
+                <div class="modal fade" id="modal2" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content evidence-modal">
+                        <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                        <div class="modal-body text-center"><p>Image will display here.</p></div>
+                    </div>
+                    </div>
+                </div>
+                </td>
+                <td><span class="badge-pending">Pending</span></td>
+                <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            </tr>
+
+            <tr>
+                <td class="td-username">@sipho_n</td>
+                <td><span class="waste-pill">🥫 Metal</span></td>
+                <td class="td-qty">3.1 kg</td>
+                <td class="td-date">13 Mar 2026</td>
+                <td>
+                <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal3">🔍 View Image</button>
+                <div class="modal fade" id="modal3" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content evidence-modal">
+                        <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                        <div class="modal-body text-center"><p>Image will display here.</p></div>
+                    </div>
+                    </div>
+                </div>
+                </td>
+                <td><span class="badge-pending">Pending</span></td>
+                <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            </tr>
+
+            <tr>
+                <td class="td-username">@amahle_d</td>
+                <td><span class="waste-pill">🍶 Glass</span></td>
+                <td class="td-qty">0.9 kg</td>
+                <td class="td-date">12 Mar 2026</td>
+                <td>
+                <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal4">🔍 View Image</button>
+                <div class="modal fade" id="modal4" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content evidence-modal">
+                        <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                        <div class="modal-body text-center"><p>Image will display here.</p></div>
+                    </div>
+                    </div>
+                </div>
+                </td>
+                <td><span class="badge-pending">Pending</span></td>
+                <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            </tr>
+
+            <tr>
+                <td class="td-username">@nkosi_z</td>
+                <td><span class="waste-pill">🔋 E-Waste</span></td>
+                <td class="td-qty">0.5 kg</td>
+                <td class="td-date">12 Mar 2026</td>
+                <td>
+                <button class="btn-view-img" data-bs-toggle="modal" data-bs-target="#modal5">🔍 View Image</button>
+                <div class="modal fade" id="modal5" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content evidence-modal">
+                        <div class="modal-header"><h5 class="modal-title">Evidence Preview</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                        <div class="modal-body text-center"><p>Image will display here.</p></div>
+                    </div>
+                    </div>
+                </div>
+                </td>
+                <td><span class="badge-pending">Pending</span></td>
+                <td><div class="actions-cell"><button class="btn-approve">✅ Approve</button><button class="btn-reject">❌ Reject</button></div></td>
+            </tr>
+
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    </main>
+
+
+{% endblock %}

@@ -41,6 +41,11 @@ def create_app():
         f"{os.getenv('DB_NAME')}"
     )
     
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "connect_args": {
+            "ssl": {"ssl": {}}
+        }
+    }
     #secret key
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     CORS(app)

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, request, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from main.models.participant import Category
+from main.models.participant import Category, Contribution, Participant
 from main.models.auth import User
 from main import db
 
@@ -76,6 +76,34 @@ def delete_category(categ_id):
     db.session.commit()
     flash("Categry delted!", "danger")
     return redirect(url_for('/admin.Categories'))
+
+
+@admin.route('/submitions/<filter>', methods=['GET', 'POST'])
+def submitions(filter):
+    
+    if filter== 'all':
+        contributions = Contribution.query.all()
+    else:
+        contributions = Contribution.query.filter(status=filter).all()
+        
+    subs = list()
+    
+    for contri_ in contributions:
+        
+        user = User.query.get(Participant.query.get(contri_.Participant_Id).user_id)
+        wastType = Category.query.get(contri_.Category_id)
+        subs.append(
+            {
+                'contri_': contri_,
+                "user": user,
+                "username": user.first_name +'_'+ user.last_name[0],
+                "categ": wastType
+            }
+            
+        )  
+        
+    return render_template('admin/submitions.html', subs=subs) 
+        
     
         
         

@@ -5,6 +5,8 @@ from flask import Blueprint, render_template, url_for, request, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from main.models.participant import Contribution, Participant,Category, Product
 from main.models.auth import User
+from datetime import date, datetime, timezone
+
 from main import db, allowed_file, UPLOAD_FOLDER
 
 
@@ -372,12 +374,32 @@ def add_EvidenceProduct(contri_id):
 @participant.route('/edit_EvidenceProduct/<int:prod_id>', methods=['POST'])   
 @login_required
 def edit_EvidenceProduct(prod_id):
-    
-    
     product = Product.query.get(prod_id)
-    product.Product_Name = request.form.get('Product_Name'),
-    product.Image=upload_Evidence_Image(request.files.get("image")),
+    file = request.files.get("image")
+    image = upload_Evidence_Image(file)
+    if image is not None:
+        product.Image=image
+        
     product.decription= request.form.get("decription")
+    product = Product.query.get(prod_id)
+    
+    product.Product_Name = request.form.get('Product_Name')
+    
+    db.session.commit()
+    flash("Changes saved successfully","success")
+    return redirect(url_for('/participant.detailed_recycle', contri_id=product.Contribution_Id))
+    
+   
+@participant.route('/delete_EvidenceProduct/<int:prod_id>', methods=['POST'])   
+@login_required
+def delete_EvidenceProduct(prod_id):
+    product = Product.query.get(prod_id)
+    contri_id=product.Contribution_Id
+    db.session.delete(product)
+    db.session.commit()
+    flash("Product deleted","danger")
+    return redirect(url_for('/participant.detailed_recycle', contri_id=contri_id))
+    
     
     
 def upload_Evidence_Image(file):
@@ -393,3 +415,63 @@ def upload_Evidence_Image(file):
         file.save(filepath)
         return filename
 
+
+
+@participant.route('/submit_contribution/<int:contri_id>',methods=['POST'] )
+@login_required
+def submit_contribution(contri_id):
+    
+    contri_ = Contribution.query.get(contri_id)
+    contri_.status = "Pending"
+    contri_.timestamp =  datetime.now(timezone.utc)
+    db.session.commit()
+    new_contri_AdminAlert(contri_id)
+    return redirect(url_for('/participant.history',user_id= current_user.id))
+    
+    #notify admins
+    
+def new_contri_AdminAlert(contri_id):
+    from main.routes.default import send_email
+    contri_ = Contribution.query.get(contri_id)
+    participant = Participant.query.get(contri_.Participant_Id)
+    partuser= User.query.get(participant.user_id)
+    superusers = User.query.filter_by(is_superuser=True).all()
+    numSent = int()
+    for user in superusers:
+        message = superuserEmailmessage(participant,user, contri_)
+        print("message:" ,message)
+        if send_email(user.email,message["Subject"],message["body"]):
+            numSent +=1
+            
+    if numSent > 0:
+        flash("Recycle contribution submitted successfully, admin has been notfied", "success")
+    else:
+        flash("Recycle contribution submitted successfully, Something went wrong while notifiying the admin", "onfo")
+            
+    
+        
+        
+        
+
+
+
+def superuserEmailmessage(participant, superuser, contri_):
+    
+    partUser = User.query.get(participant.user_id)
+
+    Subject =  'New Contribution Submitted for Approval'
+    
+    body = f'Dear {superuser.first_name},\n\nA new contribution has been submitted and is awaiting your review.\n'
+    body += f'Participant Details:\nNeme: {partUser.first_name}\nPhone Number: {participant.PhoneNumber}\n\n'
+    body += f'Contribution Details:\nDescription: {contri_.description}\nSubmitted at: {contri_.timestamp}\n'
+    body += 'Please log in to the system to review and approve or reject this contribution.\n\n'
+    body += 'Kind regards,\n'
+    body += 'WasteWise System'
+    
+    return {
+        'Subject': Subject,
+        "body": body
+    }
+    
+    
+    
