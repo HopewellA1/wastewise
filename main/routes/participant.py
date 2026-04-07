@@ -1,11 +1,21 @@
 import os
 import uuid
 from werkzeug.utils import secure_filename
-from flask import Blueprint, render_template, url_for, request, redirect, flash
+from flask import Blueprint, render_template, url_for, request, redirect, flash,jsonify,current_app
 from flask_login import login_user, logout_user, login_required, current_user
-from main.models.participant import Contribution, Participant,Category, Product
+from main.models.participant import Contribution, Participant,Category, Product, Reward, ParticipantReward
 from main.models.auth import User
 from datetime import date, datetime, timezone
+from main.routes.default import send_email
+import random
+import string
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+from email.message import EmailMessage
+import smtplib
+from main import mail, getEmailCreds
+import qrcode
+
 
 from main import db, allowed_file, UPLOAD_FOLDER
 
@@ -122,6 +132,7 @@ def update_participant(participant_id):
         return redirect(url_for('default.home'))
 
 @participant.route('/dashboard', methods=['GET'])
+@login_required
 def dashboard():
     return render_template("participant/dashboard.html",
         user=get_user(current_user.id),
@@ -237,25 +248,169 @@ def detailed_recycle(contri_id):
 # ── Rewards ───────────────────────────────────────────────────────────────────
 
 @participant.route('/rewards')
+@login_required
 def rewards():
-    user = get_user(current_user.id)
-    return render_template("participant/rewards.html",
-        user_points=user["points"],
-        rewards=[
-            {"id": 1, "name": "R50 Gift Card",   "description": "Redeemable at Pick n Pay.", "cost": 500, "icon": "🎁"},
-            {"id": 2, "name": "Eco Tote Bag",    "description": "Reusable branded bag.",       "cost": 300, "icon": "🛍️"},
-            {"id": 3, "name": "Tree Planted",    "description": "We plant a tree in your name.","cost": 200, "icon": "🌳"},
-            {"id": 4, "name": "R20 Airtime",     "description": "Any SA network.",              "cost": 250, "icon": "📱"},
-        ],
-        redeemed=[
-            {"name": "Eco Tote Bag", "date": "1 Mar 2026"},
-        ],
+    
+    
+    
+    user = current_user
+    participant = Participant.query.filter_by(user_id = user.id).first()
+    rewards = Reward.query.all()
+    print("rewards: ", rewards)
+    redeemed_rewards = getRedeemedRewards(participant.Participant_Id) #[{"name": "Eco Tote Bag", "date": "1 Mar 2026"},]
+    return render_template("participant/rewards.html",user_points=participant.points,rewards=rewards, redeemed=redeemed_rewards )
+    
+def getRedeemedRewards(part_id):
+    participant = Participant.query.get(part_id)
+    redeemed_rewards = ParticipantReward.query.filter_by(Participant_Id = participant.Participant_Id).all()
+    
+    rewards = list()
+    
+    for reward in redeemed_rewards:
+        rw = Reward.query.get(reward.Reward_Id)
+        rewards.append({
+            "name": rw.reward_name,
+            "date":reward.date_claimed.date(),
+            "points":reward.points_used
+        })
+    return rewards   
+# [
+#     {"id": 1, "name": "R50 Gift Card",   "description": "Redeemable at Pick n Pay.", "cost": 500, "icon": "🎁"},
+#     {"id": 2, "name": "Eco Tote Bag",    "description": "Reusable branded bag.",       "cost": 300, "icon": "🛍️"},
+#     {"id": 3, "name": "Tree Planted",    "description": "We plant a tree in your name.","cost": 200, "icon": "🌳"},
+#     {"id": 4, "name": "R20 Airtime",     "description": "Any SA network.",              "cost": 250, "icon": "📱"},
+# ],
+
+@participant.route('/redeem_reward/<int:reward_id>', methods=['POST'])
+def redeem_reward(reward_id):
+    reward = Reward.query.get(reward_id)
+    participant = Participant.query.filter_by(user_id=current_user.id).first()
+    participant.points -= reward.points_required
+    
+    partReward = ParticipantReward(
+        Reward_Id=reward.Reward_Id,
+        Participant_Id=participant.Participant_Id,
+        points_used=reward.points_required,
+        balancePoints=participant.points,
+    )
+    
+    db.session.add(partReward)
+    db.session.commit()
+    if reward.Reward_Category == 'Event':
+        #Sending tickets to event to the participent redeeming Event type reward
+        deliverReward(partReward.ParticipantReward_ID)
+    flash(f"Reward redeemed successfully, {reward.points_required} points used.","success")
+    
+    return redirect(url_for('/participant.rewards'))
+
+def deliverReward(partReward_id):
+    
+    partReward = ParticipantReward.query.get(partReward_id)
+    reward = Reward.query.get(partReward.Reward_Id)
+    participant = Participant.query.get(partReward.Participant_Id)
+    user = User.query.get(participant.user_id)
+    msg = EmailMessage()
+    msg['subject'] = 'Reward redeemed'
+    msg['From'] = getEmailCreds()["sender_email"]
+    msg['To'] = user.email
+    msg.set_content(generate_appreciation_message())
+    
+    ticket_buffer = generate_ticket_buffer(
+        reward.reward_name,
+        user.email,
+        generate_voucher_code(),
+        partReward.date_claimed.date(),
+        os.path.join(
+        current_app.root_path,
+        'static',
+        'uploads',
+        reward.Reward_Icone
+)
+    )
+    msg.add_attachment(
+        ticket_buffer.read(),
+        maintype='image',
+        subtype='png',
+        filename=f'{user.first_name}_{reward.reward_name}.png'
+    )
+    
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(f"{getEmailCreds()["sender_email"]}", f"{getEmailCreds()["app_password"]}")
+        smtp.send_message(msg)
+    
+    
+    
+def generate_ticket_buffer(event_name,user_name,ticket_code,event_date,image_path):
+    WIDTH = 400
+    HEIGHT = 550
+    TOP_HEIGHT = 280  
+    BOTTOM_HEIGHT = HEIGHT - TOP_HEIGHT
+
+   
+    poster = Image.open(image_path).convert("RGB")
+    poster = poster.resize((WIDTH, TOP_HEIGHT))
+
+    #clean white tictete creation
+    ticket = Image.new("RGB", (WIDTH, HEIGHT), "white")
+
+    # Paste poster at top of the ticket above
+    ticket.paste(poster, (0, 0))
+
+    draw = ImageDraw.Draw(ticket)
+
+    # Draw divider (dashed line )
+    for x in range(0, WIDTH, 20):
+        draw.line([(x, TOP_HEIGHT), (x + 10, TOP_HEIGHT)], fill=(150, 150, 150), width=2)
+
+    # Load fonts
+    try:
+        title_font = ImageFont.truetype("arial.ttf", 28)
+        text_font = ImageFont.truetype("arial.ttf", 20)
+    except:
+        title_font = ImageFont.load_default()
+        text_font = ImageFont.load_default()
+
+    # Bottom section text (clean layout)
+    y_start = TOP_HEIGHT + 20
+
+    draw.text((30, y_start), event_name, font=title_font, fill=(0, 0, 0))
+    draw.text((30, y_start + 50), f"Email: {user_name}", font=text_font, fill=(50, 50, 50))
+    draw.text((30, y_start + 90), f"Issue Date: {event_date}", font=text_font, fill=(50, 50, 50))
+
+    #QR code adding
+    qr = qrcode.make(ticket_code)
+    qr = qr.resize((120, 120))
+
+    qr_x = WIDTH - 150
+    qr_y = HEIGHT - 160
+
+    ticket.paste(qr, (qr_x, qr_y))
+
+    #Tictet code 
+    draw.text(
+        (qr_x, qr_y + 125),
+        ticket_code,
+        font=text_font,
+        fill=(0, 120, 80)
     )
 
-@participant.route('/redeem_reward', methods=['POST'])
-def redeem_reward():
-    reward_id = request.form.get('reward_id')
-    return redirect(url_for('rewards'))
+
+    # Border (subtle)
+    draw.rectangle([(0, 0), (WIDTH-1, HEIGHT-1)], outline=(200, 200, 200), width=2)
+
+    # Saving to buffer
+    buffer = BytesIO()
+    ticket.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return buffer
+
+ 
+    
+def generate_voucher_code(length=10):
+    chars = string.ascii_uppercase + string.digits
+    return ''.join(random.choice(chars) for _ in range(length))
+    
 
 # ── Resources ─────────────────────────────────────────────────────────────────
 
@@ -347,9 +502,9 @@ def log_item():
     
     db.session.commit()
     flash("Contribution logged susseccfully", "success")
-    return redirect(url_for('/participant.history', user_id=current_user.id))
+    return redirect(url_for('/participant.detailed_recycle', contri_id=contribution.Contribution_Id))
 
-
+#detailed_recycle(contri_id)
 
 @participant.route('/add_EvidenceProduct/<int:contri_id>', methods=['POST'])
 @login_required
@@ -414,6 +569,7 @@ def upload_Evidence_Image(file):
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
         return filename
+    flash("File type not allowed", "danger")
 
 
 
@@ -429,7 +585,20 @@ def submit_contribution(contri_id):
     return redirect(url_for('/participant.history',user_id= current_user.id))
     
     #notify admins
+@participant.route('/cancel_submission/<int:contri_id>',methods=['POST'] )
+@login_required
+def cancel_submission(contri_id):
     
+    contribution = Contribution.query.get(contri_id)
+    contribution.status = "Cenceled"
+    contribution.is_history = True
+    participant = Participant.query.get(contribution.Participant_Id)
+    db.session.commit()
+    flash("submision canceled successfully", "success")
+    return redirect(url_for('/participant.history',user_id= current_user.id))
+    
+        
+
 def new_contri_AdminAlert(contri_id):
     from main.routes.default import send_email
     contri_ = Contribution.query.get(contri_id)
@@ -446,7 +615,7 @@ def new_contri_AdminAlert(contri_id):
     if numSent > 0:
         flash("Recycle contribution submitted successfully, admin has been notfied", "success")
     else:
-        flash("Recycle contribution submitted successfully, Something went wrong while notifiying the admin", "onfo")
+        flash("Recycle contribution submitted successfully, Something went wrong while notifiying the admin", "info")
             
     
         
@@ -474,4 +643,81 @@ def superuserEmailmessage(participant, superuser, contri_):
     }
     
     
+    
+    
+@participant.route('/api/get-points/<int:user_id>', methods=['GET'])
+@login_required
+def get_points(user_id):
+    
+    participant = Participant.query.filter_by(user_id = user_id).first()
+    
+    return jsonify({
+        "points":participant.points
+    })
+
+
+
+
+
+
+
+def generate_appreciation_message():
+        
+    APPRECIATION_MESSAGES = [
+        "Thank you for making a difference and contributing to a cleaner future 🌍",
+        "Your effort today helps build a better tomorrow. Keep going!",
+        "We appreciate your commitment to keeping the environment clean 💚",
+        "Every piece of waste you collect brings us closer to a greener world",
+        "Your contribution truly matters — thank you for stepping up!",
+        "You are part of the solution. Thank you for caring!",
+        "Together we can create a sustainable future — thank you!",
+        "Your actions inspire positive change in the community",
+        "Thank you for protecting our planet through your efforts",
+        "Cleaner streets, brighter future — thanks to you!",
+        
+        "Your dedication to recycling is making a real impact",
+        "Thank you for turning waste into opportunity ♻️",
+        "Small actions like yours lead to big environmental change",
+        "We see your effort and we appreciate you!",
+        "You are helping create a healthier environment for all",
+        "Thank you for choosing to make a difference today",
+        "Your contribution is a step toward sustainability",
+        "You are helping reduce waste and protect nature 🌱",
+        "Every contribution counts — and yours matters!",
+        "Thank you for being environmentally responsible",
+        
+        "You are a champion for a cleaner planet!",
+        "Your effort is helping build a waste-free future",
+        "We appreciate your positive impact on the environment",
+        "Thank you for doing your part in recycling and sustainability",
+        "You are helping transform waste into valuable resources",
+        "Your commitment does not go unnoticed — thank you!",
+        "Together we are making the world a better place",
+        "Thank you for being part of the recycling movement",
+        "Your actions today will benefit future generations",
+        "Keep up the great work — we appreciate you!",
+        
+        "Thank you for contributing to a greener tomorrow",
+        "Your effort is inspiring change in your community",
+        "You are helping reduce pollution — thank you!",
+        "Your contribution helps keep our environment safe",
+        "We value your commitment to sustainability",
+        "Thank you for helping us build a cleaner world",
+        "You are making a real difference — thank you!",
+        "Your recycling effort is powerful and meaningful",
+        "We appreciate your dedication to environmental care",
+        "Thank you for taking action for the planet 🌍",
+        
+        "Your work helps turn waste into something useful",
+        "Thank you for being part of the solution",
+        "Your contribution brings us closer to a sustainable future",
+        "We are grateful for your environmental efforts",
+        "Thank you for helping reduce environmental impact",
+        "Your actions support a cleaner and greener community",
+        "You are making sustainability a reality",
+        "Thank you for your valuable contribution today",
+        "Your effort helps protect our natural resources",
+        "Together we are building a better tomorrow"
+    ]
+    return random.choice(APPRECIATION_MESSAGES)
     

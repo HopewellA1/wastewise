@@ -27,81 +27,81 @@
   </div>
   <!--Notification-->
   <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
-
-  <!-- ── SIDEBAR ── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-logo">♻️</div>
-      <div class="brand-name">Waste<em>Wise</em></div>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Main</div>
-      <ul class="nav-list">
-        <li><a href="{{ url_for('/participant.dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">
-            <span class="ni">🏠</span> Dashboard
-          </a></li>
-        <li><a href="{{ url_for('/participant.history', user_id=current_user.id) }}" class="{{ 'active' if request.endpoint == 'history' }}">
-            <span class="ni">📋</span> Recycle Log
-          </a></li>
-        <li><a href="{{ url_for('/participant.challenges') }}"
-            class="{{ 'active' if request.endpoint == '/participant/challenges' }}">
-            <span class="ni">🎯</span> Challenges
-          </a></li>
-      </ul>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Community</div>
-      <ul class="nav-list">
-        <li><a href="{{ url_for('/participant.leaderboard') }}"
-            class="{{ 'active' if request.endpoint == '/participant.leaderboard' }}">
-            <span class="ni">🏆</span> Leaderboard
-          </a></li>
-        <li><a href="{{ url_for('/participant.rewards') }}" class="{{ 'active' if request.endpoint == 'rewards' }}">
-            <span class="ni">🎁</span> Rewards
-          </a></li>
-        <li><a href="{{ url_for('/participant.referral') }}" class="{{ 'active' if request.endpoint == 'referral' }}">
-            <span class="ni">👥</span> Referrals
-          </a></li>
-      </ul>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Explore</div>
-      <ul class="nav-list">
-        <li><a href="{{ url_for('/participant.resources') }}" class="{{ 'active' if request.endpoint == 'resources' }}">
-            <span class="ni">📚</span> Resources
-          </a></li>
-        <li><a href="{{ url_for('/participant.updates') }}" class="{{ 'active' if request.endpoint == 'updates' }}">
-            <span class="ni">📣</span> Updates
-          </a></li>
-      </ul>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Accout</div>
-      <ul class="nav-list">
-        <li>
-          <a href="{{url_for('/auth.logout')}}" class="{{ 'active' if request.endpoint == 'resources' }}">
-             Logout
-          </a>
-        </li>
-        
-      </ul>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-card">
-        <div class="user-avatar">{{ user.name[:2].upper() if user else 'MB' }}</div>
-        <div onclick="to_account()">
-          <div class="user-name">{{current_user.first_name}}</div>
-          <div class="user-pts">{{ user.points if user else '720' }} pts · Rank #{{ user.rank if user else '4' }}</div>
-        </div>
-        <a hidden id='btnToAccount' href="{{url_for('/auth.account', id=current_user.id) }}"></a>
+  {% if current_user.is_superuser == False %}
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">♻️</div>
+        <div class="brand-name">Waste<em>Wise</em></div>
       </div>
-    </div>
-  </aside>
 
+      <div class="nav-section">
+        <div class="nav-label">Main</div>
+        <ul class="nav-list">
+          <li><a href="{{ url_for('/participant.dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">
+              <span class="ni">🏠</span> Dashboard
+            </a></li>
+          <li><a href="{{ url_for('/participant.history', user_id=current_user.id) }}" class="{{ 'active' if request.endpoint == 'history' }}">
+              <span class="ni">📋</span> Recycle Log
+            </a></li>
+          <li><a href="{{ url_for('/participant.challenges') }}"
+              class="{{ 'active' if request.endpoint == '/participant/challenges' }}">
+              <span class="ni">🎯</span> Challenges
+            </a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Community</div>
+        <ul class="nav-list">
+          <li><a href="{{ url_for('/participant.leaderboard') }}"
+              class="{{ 'active' if request.endpoint == '/participant.leaderboard' }}">
+              <span class="ni">🏆</span> Leaderboard
+            </a></li>
+          <li><a href="{{ url_for('/participant.rewards') }}" class="{{ 'active' if request.endpoint == 'rewards' }}">
+              <span class="ni">🎁</span> Rewards
+            </a></li>
+          <li><a href="{{ url_for('/participant.referral') }}" class="{{ 'active' if request.endpoint == 'referral' }}">
+              <span class="ni">👥</span> Referrals
+            </a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Explore</div>
+        <ul class="nav-list">
+          <li><a href="{{ url_for('/participant.resources') }}" class="{{ 'active' if request.endpoint == 'resources' }}">
+              <span class="ni">📚</span> Resources
+            </a></li>
+          <li><a href="{{ url_for('/participant.updates') }}" class="{{ 'active' if request.endpoint == 'updates' }}">
+              <span class="ni">📣</span> Updates
+            </a></li>
+        </ul>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Accout</div>
+        <ul class="nav-list">
+          <li>
+            <a href="{{url_for('/auth.logout')}}" class="{{ 'active' if request.endpoint == 'resources' }}">
+              Logout
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">{{ user.name[:2].upper() if user else 'MB' }}</div>
+          <div onclick="to_account()">
+            <div class="user-name">{{current_user.first_name}}</div>
+            <div class="user-pts">{{ user.points if user else '720' }} pts · Rank #{{ user.rank if user else '4' }}</div>
+          </div>
+          <a hidden id='btnToAccount' href="{{url_for('/auth.account', id=current_user.id) }}"></a>
+        </div>
+      </div>
+    </aside>
+  
   <!-- ── MAIN ── -->
   <div class="main-wrap">
 
@@ -111,13 +111,13 @@
         <div class="topbar-sub">{% block page_sub %}{% endblock %}</div>
       </div>
       <div class="topbar-right">
-        <div class="tb-pts">⭐ {{ user.points if user else '720' }} pts</div>
+        <div class="tb-pts">⭐ <b id="points_html"></b> pts</div>
         <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
       </div>
     </header>
-
+    {% endif %}
     <main class="page-content">
       {% block content %}{% endblock %}
     </main>
@@ -126,6 +126,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('open');
@@ -162,6 +163,28 @@
     function to_account(){
       document.getElementById("btnToAccount").click()
     }
+
+
+
+    function getPoints(){
+      points_html = document.getElementById("points_html")
+      let host =window.location.host;
+      let proto = window.location.protocol;
+      url = proto+'//'+host+'/participant/api/get-points/{{current_user.id}}'
+/*      console.log("host: ", host) 
+      console.log("proto", proto) 
+      console.log("url", url) 
+      */
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("data: ",  data)
+            console.log("points_html: ",  points_html)
+            points_html.innerHTML = '<i>'+data.points+'</i>';
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+    getPoints()
   </script>
 
   {% with messages = get_flashed_messages(with_categories=true) %}

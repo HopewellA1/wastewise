@@ -29,16 +29,53 @@ class Reward(db.Model):
     
     Reward_Id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    attribute_name = db.Column(db.String(200))  
+    reward_name = db.Column(db.String(200))  
     points_required = db.Column(db.Integer, default=0)
     description = db.Column(db.Text)
     is_available = db.Column(db.Boolean, default=True)
+    quantity = db.Column(db.Integer, default=1)
+    Reward_Icone = db.Column(db.String(500)) 
+    Reward_Category = db.Column(db.String(50), nullable=True)
     
     # Relationships
     participant_rewards = db.relationship('ParticipantReward', backref='reward', lazy=True)
     
+    
+    def __init__(self,reward_name, points_required , description, quantity, Reward_Icone, user_id, Reward_Category):
+        
+        self.reward_name = reward_name
+        self.points_required = points_required
+        self.description = description
+        self.quantity = quantity
+        self.Reward_Icone = Reward_Icone
+        self.user_id = user_id
+        self.Reward_Category =Reward_Category
+            
     def __repr__(self):
-        return f'<Reward {self.attribute_name}>'
+        return f'<Reward {self.reward_name}>'
+
+class ParticipantReward(db.Model):
+    
+    ParticipantReward_ID = db.Column(db.Integer, primary_key=True)
+    Reward_Id = db.Column(db.Integer, db.ForeignKey('reward.Reward_Id'), nullable=False)
+    Participant_Id = db.Column(db.Integer, db.ForeignKey('participant.Participant_Id'), nullable=False)
+    date_claimed = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
+    points_used = db.Column(db.Integer)  
+    balancePoints = db.Column(db.Integer)
+    status = db.Column(db.String(30), default="Redeemed")
+    
+    
+    def __init__(self,Reward_Id, Participant_Id, points_used, balancePoints, status='Redeemed'):
+        
+        self.Reward_Id = Reward_Id
+        self.Participant_Id = Participant_Id
+        self.point_used = points_used
+        self.balancePoints= balancePoints
+        self.status = status
+        
+    def __repr__(self):
+        return f'<Participant_Reward ({self.ParticipantReward_ID})>'
+
 
 class Category(db.Model):
     Category_id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +112,7 @@ class Contribution(db.Model):
     item_type = db.Column(db.String(60),nullable= True )
     description = db.Column(db.Text)
     status = db.Column(db.String(20), default="Draft")
+    is_history = db.Column(db.Boolean, default=False)
     
     def __init__(self,Participant_Id, user_id,Category_id, item_type, quantity, description, status = "Daft"):
         self.Participant_Id = Participant_Id
@@ -109,13 +147,3 @@ class Product(db.Model):
         return f'<Product {self.Product_Name}({self.ProductId})>'
     
 
-class ParticipantReward(db.Model):
-    
-    ParticipantReward_ID = db.Column(db.Integer, primary_key=True)
-    Reward_Id = db.Column(db.Integer, db.ForeignKey('reward.Reward_Id'), nullable=False)
-    Participant_Id = db.Column(db.Integer, db.ForeignKey('participant.Participant_Id'), nullable=False)
-    date_claimed = db.Column(db.DateTime, default=lambda:datetime.now(timezone.utc))
-    points_used = db.Column(db.Integer)  
-    balancePoints = db.Column(db.Integer)
-    def __repr__(self):
-        return f'<ParticipantReward {self.ParticipantReward_ID}>'

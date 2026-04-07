@@ -1,0 +1,292 @@
+{% extends "admin/base.html" %}
+
+
+{% block content %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/css/rewards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/auth/signup.css') }}">
+    <main class="page">
+
+        <a href="admin_dashboard.html" class="back-link" data-aos="fade-right">← Back to Dashboard</a>
+
+        <div class="page-header" data-aos="fade-up">
+            <h2>⚙️ Manage Rewards</h2>
+            <p>View and update available reward options.</p>
+        </div>
+
+        <div style="margin-bottom:24px;" data-aos="fade-up">
+            <a onclick="openNewRewardModal()" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none; cursor:pointer">
+                New Reward to offer 
+            </a>
+        </div>
+
+        <!-- new reward -->
+
+
+        <div class="modal-overlay" id="NewRewardModal">
+
+            <div class="modal-box">
+                <div style="display; flex; flex-direction:column" class="modal-header">
+                    <button  class="modal-close" onclick="closeNewRewardModal()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{url_for('/admin.New_reward' )}}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="">
+            
+
+                            <div class="form-group" >
+                                <label   style="color:green" class="form-label">Reward Icon</label>
+                                <input style="color:black; border: solid 1px green"  type="file" name="Reward_Icone"  class="form-control" required/>
+                            </div>
+
+                            <div class="form-group" >
+                                <label class="form-label"  style="color:green">Reward Name</label>
+                                <input style="color:black; border: solid 1px green" type="text"  name="reward_name"  class="form-control" required required/>
+                            </div>
+                            <div class="form-group" >
+                                <label class="form-label"  style="color:green">Reward quantity</label>
+                                <input style="color:black; border: solid 1px green" type="number" name="quantity"  class="form-control" required required/>
+                            </div>
+                            <div class="form-group" >
+                                <label class="form-label"  style="color:green">Reward points required</label>
+                                <input style="color:black; border: solid 1px green" type="number"  name="points_required"  class="form-control" required required/>
+                            </div>
+                             <div class="form-group" >
+                                <label class="form-label"  style="color:green">Reward category</label>
+                                <select style="color:black; border: solid 1px green"   name="Reward_Category"  class="form-control" required required>
+
+                                    <option value="Voucher">
+                                        Voucher
+                                    </option>
+                                    <option value="Event">
+                                        Event
+                                    </option>
+                                    
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label "  style="color:green">Product decription</label>
+                                <textarea style="color:black; border: solid 1px green" maxlength="500" class="form-control"   name="description" required></textarea>
+                            </div>
+                        
+                        </div>
+                        
+                        <br/>
+                        <button type="submit"  class="btn btn-primary" style="width:100%">Submit</button>
+                    </form>
+                    
+                </div>
+                
+            </div>
+        </div>
+        <!-- end new reward-->
+
+        {% if totalRewards > 0 %}
+            <div class="row g-4">
+
+                {% for reward in rewards %}
+
+                    <!-- Eco Bottle -->
+                    <div class="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div class="reward-card">
+                            <div class="reward-icon" style="display:flex; justify-content:center">
+                                <img style="max-width:300px;max-height: 350px; background:none" src="{{ url_for('static', filename='uploads/' + reward.Reward_Icone) }}" />
+                            </div>
+                            <h4 class="reward-title">{{reward.reward_name}}</h4>
+                            <p class="reward-points">Points Required: <strong>{{reward.points_required}}</strong></p>
+                            <p class="reward-stock">Availability: <span class="badge-available">{% if reward.is_available%} Available{% else %}Not Available {% endif %}</span></p>
+                           
+                            <div class="reward-actions">
+                                <button onclick="openModal('{{reward.Reward_Id}}')" class="btn-edit">✏️ Edit Reward</button>
+                                <button class="btn-stock"   onclick="openDeleteModal('{{reward.Reward_Id}}')">🗑️ Delete Reward</button>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+
+                    <!-- edit reward -->
+
+
+                    <div class="modal-overlay" id="modal-{{reward.Reward_Id}}">
+
+                        <div class="modal-box">
+                            <div style="display; flex; flex-direction:column" class="modal-header">
+                                <button  class="modal-close" onclick="closeModal('{{reward.Reward_Id}}')">✕</button>
+                                <br/>
+                               
+                                <h2>
+                                    
+                                    Edit {{reward.reward_name}}
+                                </h2>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{{url_for('/admin.edit_reward', reward_id=reward.Reward_Id )}}" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <div class="">
+                        
+
+                                        <div class="form-group" >
+                                            <label   style="color:green" class="form-label">Reward Icon</label>
+                                            <input 
+                                                style="color:black; border: solid 1px green"
+                                                type="file"  accept=".png, .jpg, .jpeg, .gif"
+                                                title="Accepted: .png, .jpg, .jpeg, .gif"
+                                                name="Reward_Icone"
+                                                valid="{{ url_for('static', filename='uploads/' +  reward.Reward_Icone ) }}"
+
+                                                class="form-control" 
+                                            />
+                                        </div>
+
+                                        <div class="form-group" >
+                                            <label class="form-label"  style="color:green">Reward Name</label>
+                                            <input style="color:black; border: solid 1px green" type="text" value="{{reward.reward_name}}" name="reward_name"  class="form-control" required/>
+                                        </div>
+                                        <div class="form-group" >
+                                            <label class="form-label"  style="color:green">Reward quantity</label>
+                                            <input style="color:black; border: solid 1px green" type="number" value="{{reward.quantity}}" name="quantity"  class="form-control" required/>
+                                        </div>
+                                        <div class="form-group" >
+                                            <label class="form-label"  style="color:green">Reward points required</label>
+                                            <input style="color:black; border: solid 1px green" type="number" value="{{reward.points_required}}" name="points_required"  class="form-control" required/>
+                                        </div>
+                                        <div class="form-group" >
+                                            <label class="form-label"  style="color:green">Reward category</label>
+                                            <select style="color:black; border: solid 1px green"   name="Reward_Category"  class="form-control" required required>
+                                                <option value="{{reward.Reward_Category}}">
+                                                    {{reward.Reward_Category}}
+                                                </option>
+
+                                                <option value="Voucher">
+                                                    Voucher
+                                                </option>
+                                                <option value="Event">
+                                                    Event
+                                                </option>
+                                                
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label "  style="color:green">Product description</label>
+                                            <textarea style="color:black; border: solid 1px green" maxlength="500" class="form-control"   name="description" required>{{reward.description}}</textarea>
+                                        </div>
+                                    
+                                    </div>
+                                    
+                                    <br/>
+                                    <button type="submit"  class="btn btn-primary" style="width:100%">Save</button>
+                                </form>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <!-- end edit reward-->
+
+
+                    <!--for delete-->
+                    <div class="modal-overlay" id="delete_modal-{{reward.Reward_Id}}">
+                        <div class="modal-box">
+                            <div  style="display; flex; flex-direction:column" class="modal-header">
+                                <button class="modal-close" onclick="closeDeleteModal('{{reward.Reward_Id}}')">✕</button>
+                                <br/>
+                                <h2>
+                                    {{reward.reward_name}}
+                                </h2>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{{url_for('/admin.delete_reward', reward_id=reward.Reward_Id )}}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <div class="form-group">
+                                        <p>
+                                            If you are sure you want to delete this reward, please click dele below.
+                                        </p>
+                                    </div>
+                                    <br/>
+                                    <button type="submit"  class="btn btn-danger" style="width:100%">Delete reward</button>
+                                </form>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <!-- end for delete-->
+
+
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div>
+                <div class='card text-center'>
+
+                    <p class='text-danger'>
+                       <b> No rewards found on database please add new by clicking "New reward" above.</b>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+
+
+
+    <script>
+
+        function openModal(reward_id) {
+            let model = document.getElementById('modal-' + reward_id)
+            model.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function openNewRewardModal() {
+            let model = document.getElementById('NewRewardModal')
+            console.log("model: ", model)
+            model.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(reward_id) {
+            document.getElementById('modal-' + reward_id).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeNewRewardModal(){
+            document.getElementById('NewRewardModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function openDeleteModal(prodId) {
+            document.getElementById('delete_modal-' + prodId).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal(prodId) {
+            document.getElementById('delete_modal-' + prodId).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        // Close by clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            });
+        });
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.open').forEach(m => {
+                m.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+            }
+        });
+    </script>
+
+
+{% endblock %}

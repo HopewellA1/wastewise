@@ -364,9 +364,9 @@
   </a>
   <nav class="topbar-nav">
     <a href="admin_dashhboard.html" class="active">Dashboard</a>
-    <a href="participant_submission.html">Submissions</a>
+    <a href="{{url_for('/admin.submissions', filter="Pending")}}">Submissions</a>
     <a href="participant_points.html">Participants</a>
-    <a href="monitor_rewards.html">Rewards</a>
+    <a href="{{url_for('/admin.rewards')}}">Rewards</a>
     <a href="program_overview.html">Overview</a>
     <a href="{{url_for('/admin.Categories')}}"> Categories</a>
   </nav>

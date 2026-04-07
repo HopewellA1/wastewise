@@ -22,25 +22,57 @@
                         submit Contrubution
                     </button>
                 </form>
+            {% elif contri_Products.contribution.status =='Pending'%}
+      
 
+                <div style="" data-aos="fade-up">
+                    <div class="subIten_holder">
+                       
+
+                        <a class="btn-success" id="btn_new_prod" onclick="openCancelModel()" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">
+                            Cancel Submission
+                        </a>
+                    </div>
+                    
+                </div>
                 
             {% endif %}
         </div>
-        <a href="{{url_for('/participant.history', user_id=contri_Products.participant.user_id)}}" class="back-link" data-aos="fade-right">← Recycle Log</a>
+        {% if current_user.is_superuser %}
+            <a href="{{url_for('/admin.submissions', filter=contri_Products.contribution.status )}}" class="back-link" data-aos="fade-right">← Submissions</a>
+        {% else %}
+            <a href="{{url_for('/participant.history', user_id=contri_Products.participant.user_id)}}" class="back-link" data-aos="fade-right">← Recycle Log</a>
+        {% endif %}
         <div class="page-header" data-aos="fade-up">
             <h2> {{contri_Products.category.Name}}({{contri_Products.contribution.status}})</h2>
             <p>Submissions will be valid for contributions with at least on produce</p>
         </div>
+        {% if current_user.is_superuser %}
+            {% if contri_Products.contribution.status == "Pending" %}
+                <div style="" data-aos="fade-up">
+                    <div class="subIten_holder">
+                        <a class="btn-success" id="btn_new_prod" onclick="openApproveModel()" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">
+                            Approve Submission
+                        </a>
 
-        <div style="" data-aos="fade-up">
-            <div class="subIten_holder">
-                <a id="btn_new_prod" onclick="formSwitch('panel-manual')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">
-                    New Product
-                </a>
-            <div>
-            
-        </div>
-        
+                        <a class="btn-success" id="btn_new_prod" onclick="openDeclineModel()" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">
+                            Decline Submission
+                        </a>
+                    <div>
+                    
+                </div>
+            {% endif %}
+        {% else %}
+            <div style="" data-aos="fade-up">
+                <div class="subIten_holder">
+                    <a id="btn_new_prod" onclick="formSwitch('panel-manual')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(92,219,149,.13);border:1px solid rgba(29,233,182,.3);color:#5cdb95;padding:8px 18px;border-radius:99px;font-size:.78rem;font-weight:600;text-decoration:none;cursor:pointer">
+                        New Product
+                    </a>
+                <div>
+                
+            </div>
+        {% endif %}
+        <!--Form for adding new product of submisssion-->
         <div class="log-panel active" id="panel-manual" hidden >
             <form method="POST" action="{{url_for('/participant.add_EvidenceProduct', contri_id=contri_Products.contribution.Contribution_Id)}}" enctype="multipart/form-data">
 
@@ -83,9 +115,14 @@
                         <p class="reward-points">{{product.decription}}</p>
                         
                         <div class="reward-actions">
-                        <button class="btn-edit"  onclick="openModal({{product.ProductId}})">✏️ Edit Product</button>
-                        <button class="btn-stock"   onclick="openDeleteModal({{product.ProductId}})">🗑️ Delete Product</button>
-                        </div>
+                            {% if current_user.is_superuser %}
+                                <button class="btn-edit"  onclick="openFullScreenModal('{{product.ProductId}}')">Full screen</button>
+
+                            {% else %}
+                                <button class="btn-edit"  onclick="openModal('{{product.ProductId}}')">✏️ Edit Product</button>
+                                <button class="btn-stock"   onclick="openDeleteModal('{{product.ProductId}}')">🗑️ Delete Product</button>
+                            {% endif %}
+                            </div>
                     </div>
                 </div>
 
@@ -98,7 +135,7 @@
 
                     <div class="modal-box">
                         <div style="display; flex; flex-direction:column" class="modal-header">
-                            <button  class="modal-close" onclick="closeModal({{product.ProductId}})">✕</button>
+                            <button  class="modal-close" onclick="closeModal('{{product.ProductId}}')">✕</button>
                             <br/>
                             <div class="reward-icon">
                                 <img style='width:100%' src="{{ url_for('static', filename='uploads/' + product.Image) }}" >
@@ -143,7 +180,7 @@
                 <div class="modal-overlay" id="delete_modal-{{product.ProductId}}">
                     <div class="modal-box">
                         <div  style="display; flex; flex-direction:column" class="modal-header">
-                            <button class="modal-close" onclick="closeDeleteModal({{product.ProductId}})">✕</button>
+                            <button class="modal-close" onclick="closeDeleteModal('{{product.ProductId}}')">✕</button>
                             <br/>
                             <div class="reward-icon">
                                 <img style='width:100%' src="{{ url_for('static', filename='uploads/' + product.Image) }}" >
@@ -170,6 +207,21 @@
                         
                     </div>
                 </div>
+                <!-- end for delete-->
+
+                <!--for full screen-->
+                <div class="modal-overlay" id="FullScreenmodal-{{product.ProductId}}">
+                    <div  style='width:100%; height:100%' >
+                       <button class="modal-close" onclick="closeFullScreenModal('{{product.ProductId}}')">✕</button>
+                        
+                        <img class="modal-box"  src="{{ url_for('static', filename='uploads/' + product.Image) }}" >
+                        
+                        
+                    </div>
+                </div>
+                <!-- end for full screen-->
+
+
 
             {% endfor %}
 
@@ -197,6 +249,122 @@
     {% endif %}
 
 
+    
+    <!--model for admin approval.-->
+
+    <div class="modal-overlay" id="ApproveModel">
+        <div class="modal-box">
+            <div  style="display; flex; flex-direction:column" class="modal-header">
+                <button class="modal-close" onclick="closeApproveModal()">✕</button>
+                <br/>
+                
+                <h2>
+                    {{contri_Products.category.Name}}
+                </h2>
+                
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{url_for('/admin.approve_submission', contri_id=contri_Products.contribution.Contribution_Id )}}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group">
+                        <p>
+                            If you are sure you want to approve this Submission, please fill in information below.
+                        </p>
+                    </div>
+                    <hr/>
+
+                    <div class="form-group">
+                        <label style="color:black" class="form-label">
+                            Points
+                        </lable>
+                        <input class="form-control" type="number" name="points" placeholder="Allocate points" required/>
+                    </div>
+                    <br/>
+                    <button type="submit"  class="btn btn-success" style="width:100%">Approve</button>
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- end admin approval. -->
+
+
+        
+    <!--model for admin Decline.-->
+
+    <div class="modal-overlay" id="DeclineModel">
+        <div class="modal-box">
+            <div  style="display; flex; flex-direction:column" class="modal-header">
+                <button class="modal-close" onclick="closeDeclineModal()">✕</button>
+                <br/>
+                
+                <h2>
+                    {{contri_Products.category.Name}}
+                </h2>
+                
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{url_for('/admin.decline_submission', contri_id=contri_Products.contribution.Contribution_Id )}}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group">
+                        <p>
+                            If you are sure you want to decline this Submission, please fill in information below.
+                        </p>
+                    </div>
+                    <hr/>
+
+                    <div class="form-group">
+                        <label style="color:black" class="form-label">
+                            Reason
+                        </lable>
+                        <textarea class="form-control" type="text" name="DeclineReason" placeholder="Why Declie submisssion?" required></textarea>
+                    </div>
+                    <br/>
+                    <button type="submit"  class="btn btn-danger" style="width:100%">Decline</button>
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- end admin Declin. -->
+
+
+    <!--model for Participant cancel-->
+
+    <div class="modal-overlay" id="CancelModel">
+        <div class="modal-box">
+            <div  style="display; flex; flex-direction:column" class="modal-header">
+                <button class="modal-close" onclick="closeCancelModal()">✕</button>
+                <br/>
+                
+                <h2>
+                    {{contri_Products.category.Name}}
+                </h2>
+                
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{url_for('/participant.cancel_submission', contri_id=contri_Products.contribution.Contribution_Id )}}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group">
+                        <p>
+                            If you are sure you want to cencel this Submission, please click "Confirm Cancel" below.
+                        </p>
+                    </div>
+                    <hr/>
+                    <br/>
+                    <button type="submit"  class="btn btn-danger" style="width:100%">Confirm Cancel</button>
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- end Participant cancel -->
 
     <script>
 
@@ -214,7 +382,25 @@
             }
         }
         function openModal(prodId) {
-            document.getElementById('modal-' + prodId).classList.add('open');
+            let model = document.getElementById('modal-' + prodId)
+            model.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function openFullScreenModal(prodId){
+            let model = document.getElementById('FullScreenmodal-' + prodId)
+            model.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function openApproveModel(){
+            document.getElementById('ApproveModel').classList.add('open')
+            document.body.style.overflow = 'hidden';
+        }
+        function openCancelModel(){
+            document.getElementById('CancelModel').classList.add('open')
+            document.body.style.overflow = 'hidden';
+        }
+        function openDeclineModel(){
+            document.getElementById('DeclineModel').classList.add('open')
             document.body.style.overflow = 'hidden';
         }
         function openDeleteModal(prodId) {
@@ -223,6 +409,22 @@
         }
         function closeModal(prodId) {
             document.getElementById('modal-' + prodId).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeApproveModal() {
+            document.getElementById('ApproveModel').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeCancelModal() {
+            document.getElementById('CancelModel').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeDeclineModal() {
+            document.getElementById('DeclineModel').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeFullScreenModal(prodId) {
+            document.getElementById('FullScreenmodal-' + prodId).classList.remove('open');
             document.body.style.overflow = '';
         }
         function closeDeleteModal(prodId) {
