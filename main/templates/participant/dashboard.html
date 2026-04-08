@@ -241,46 +241,15 @@
     <div class="sc-val">{{ user.points }}<sub>pts</sub></div>
     <div class="sc-label">Total Eco Points</div>
   </div>
-  <div class="stat-card">
-    <div class="sc-trend">↑ 8%</div>
-    <div class="sc-icon">♻️</div>
-    <div class="sc-val">{{ history|length if history else 2 }}<sub>logs</sub></div>
-    <div class="sc-label">Items Recycled</div>
-  </div>
-  <div class="stat-card">
-    <div class="sc-trend">🎯</div>
-    <div class="sc-icon">📈</div>
-    <div class="sc-val">{{ challenges|length if challenges else 2 }}<sub>active</sub></div>
-    <div class="sc-label">Challenges On</div>
-  </div>
-  <div class="stat-card">
-    <div class="sc-trend">#{{ user.rank }}</div>
-    <div class="sc-icon">🏆</div>
-    <div class="sc-val">{{ referral.count if referral else 5 }}<sub>friends</sub></div>
-    <div class="sc-label">Referrals Made</div>
-  </div>
+ 
+ 
+ 
 </div>
 
 <!-- CHALLENGES + LEADERBOARD -->
 <div class="dash-grid">
 
-  <div class="card">
-    <div class="card-head">
-      <div class="card-title"><span class="ct-icon">🎯</span> Active Challenges</div>
-      <a href="{{ url_for('/participant.challenges') }}" class="card-link">View all →</a>
-    </div>
-    {% for c in challenges %}
-    <div class="prog-item">
-      <div class="prog-meta">
-        <span>{{ c.title }}</span>
-        <span class="prog-pct">{{ c.progress }}%</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-fill" style="width:{{ c.progress }}%"></div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
+
 
   <div class="card">
     <div class="card-head">
@@ -305,8 +274,8 @@
 
     <div class="card">
       <div class="card-head">
-        <div class="card-title"><span class="ct-icon">📋</span> Recent Activity</div>
-        <a href="{{ url_for('/participant.history', user_id=current_user.id) }}" class="card-link">Full log →</a>
+        <div class="card-title"><span class="ct-icon">📋</span> Recent Redmption</div>
+        <a href="{{ url_for('/participant.rewards') }}" class="card-link">Full log →</a>
       </div>
       {% set icons = {'Bottles':'🥤','Paper':'📰','Glass':'🫙','Metal':'🥫'} %}
       {% for h in history %}
@@ -328,40 +297,22 @@
           <div class="card-title"><span class="ct-icon">➕</span> Log Item</div>
         </div>
         <form action="{{ url_for('/participant.log_item') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <div class="log-form-row">
             <div class="form-group">
-              <label class="form-label">Type</label>
-              <select name="item_type" class="form-control">
-                <option>Plastic Bottles</option>
-                <option>Paper</option>
-                <option>Glass</option>
-                <option>Metal Cans</option>
-                <option>Electronics</option>
-              </select>
+              <label class="form-label">Types</label>
+              <p> Plastic Bottles, Paper, Glass, Metal Cans, Electronics
+              
             </div>
-            <div class="form-group" style="max-width:90px;">
-              <label class="form-label">Qty</label>
-              <input type="number" name="quantity" value="1" min="1" class="form-control" />
-            </div>
+           
           </div>
-          <button type="submit" class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;">
+          <a href="{{ url_for('/participant.history', user_id=current_user.id) }}" type="submit" class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;">
             ♻️ Log It
-          </button>
+          </a>
         </form>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title"><span class="ct-icon">📣</span> Updates</div>
-          <a href="{{ url_for('/participant.updates') }}" class="card-link">All →</a>
-        </div>
-        {% for u in updates[:2] %}
-        <div class="upd-item">
-          <div class="upd-meta"><span class="badge badge-green">New</span></div>
-          <div class="upd-title">{{ u }}</div>
-        </div>
-        {% endfor %}
-      </div>
+     
 
     </div>
   </div>

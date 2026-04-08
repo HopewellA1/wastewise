@@ -17,7 +17,7 @@
             <span class="l2">Recycle Today for a Greener Tomorrow</span>
           </h1>
           <p class="hero-p">WasteWise connects communities to a smarter recycling loop — submit waste, earn verified points, and redeem real rewards while making your neighbourhood cleaner.</p>
-          <button class="btn-hero" onclick="scrollToHow()">Get Started <span class="arr">&#8594;</span></button>
+          <a href="{{url_for('/auth.signup')}}" class="btn-hero" >Get Started <span class="arr">&#8594;</span></a>
           <div class="hero-proof">
             <div class="avs"><span>AK</span><span>TN</span><span>RM</span><span>+</span></div>
             <div class="proof-txt">Joined by <b>350+</b> active recyclers<br>across communities</div>
@@ -115,89 +115,6 @@
     </div>
   </section>
 
-  <!-- REWARDS -->
-  <section id="rewards">
-    <div class="c">
-      <div class="rew-grid">
-        <div class="rv">
-          <div class="s-pill"><span class="dp"></span> Rewards</div>
-          <h2 class="s-title" style="text-align:left">Your Efforts <em>Pay Off</em></h2>
-          <p class="s-sub" style="text-align:left;margin:0 0 28px">Turn recycling into tangible rewards. The more you contribute, the more you earn.</p>
-          <div class="rew-items">
-            <div class="gc rew-row">
-              <div class="rew-ico">🛍</div>
-              <div>
-                <h4>Shopping Vouchers</h4>
-                <p>Redeem points for discounts at partner stores and online shops.</p>
-              </div>
-            </div>
-            <div class="gc rew-row">
-              <div class="rew-ico">🌱</div>
-              <div>
-                <h4>Eco Products</h4>
-                <p>Claim reusable bottles, tote bags, and green lifestyle items.</p>
-              </div>
-            </div>
-            <div class="gc rew-row">
-              <div class="rew-ico">🌟</div>
-              <div>
-                <h4>Community Recognition</h4>
-                <p>Top recyclers featured on the community leaderboard.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="rew-vis rv">
-          <div class="pts-card">
-            <div class="pts-n" id="pts-cnt">0</div>
-            <p>Average points earned per active user</p>
-          </div>
-          <div class="gc prog-card">
-            <h4>Reward Progress Example</h4>
-            <div class="pb">
-              <div class="pb-r"><span>Shopping Voucher</span><span>80%</span></div>
-              <div class="pb-t"><div class="pb-f" data-w="80%" style="width:0"></div></div>
-            </div>
-            <div class="pb">
-              <div class="pb-r"><span>Eco Kit</span><span>55%</span></div>
-              <div class="pb-t"><div class="pb-f" data-w="55%" style="width:0"></div></div>
-            </div>
-            <div class="pb">
-              <div class="pb-r"><span>Community Badge</span><span>92%</span></div>
-              <div class="pb-t"><div class="pb-f" data-w="92%" style="width:0"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+ 
 
-  <!-- COMMUNITY IMPACT -->
-  <section id="impact">
-    <div class="c">
-      <div class="s-head rv">
-        <div class="s-pill"><span class="dp"></span> Community Impact</div>
-        <h2 class="s-title">Together We Make a <em>Difference</em></h2>
-        <p class="s-sub">Small daily actions compound into massive community-wide environmental change.</p>
-      </div>
-      <div class="imp-grid">
-        <div class="gc imp-card rv">
-          <span class="imp-ico">♻️</span>
-          <div class="imp-num" id="iw">0</div>
-          <p>Kilograms of waste recycled</p>
-        </div>
-        <div class="gc imp-card rv">
-          <span class="imp-ico">👥</span>
-          <div class="imp-num" id="iu">0</div>
-          <p>Active community members</p>
-        </div>
-        <div class="gc imp-card rv">
-          <span class="imp-ico">⭐</span>
-          <div class="imp-num" id="ip">0</div>
-          <p>Total reward points earned</p>
-        </div>
-      </div>
-    </div>
-  </section>
-    
 {% endblock  %}

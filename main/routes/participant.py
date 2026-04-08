@@ -141,17 +141,27 @@ def dashboard():
             {"title": "Plastic Challenge", "progress": 70},
             {"title": "Weekly Goal",        "progress": 50},
         ],
-        history=[
-            {"type": "Bottles", "date": "Yesterday", "points": 50},
-            {"type": "Paper",   "date": "3 days ago", "points": 30},
-        ],
+        history=gethistory(current_user.id)
         referral={"link": "http://eco.com/ref/mbali", "count": 5, "points": 250},
         rewards=[{"name": "Gift Card", "description": "R50 voucher"}],
         resources=[{"title": "Eco Tips", "url": "http://eco.com/tips"}],
         updates=["New Recycling Initiative Launched!", "Tips for Reducing Waste at Home"],
     )
 
-
+def gethistory(userId):
+    
+    participant = Participant.query.get(user_id =userId )
+    contires = Contribution.query.filter_by(Participant_Id = participant.Participant_Id).all()
+    partReward = ParticipantReward.query.filter_by(Participant_Id = participant.Participant_Id).all()
+    hist = []
+    for contri in partReward:
+        reward = Reward.query.get(contri.Reward_Id)
+        hist.append({
+            "type":reward.reward_name,
+            "date":contri.date_claimed.date(),
+            "points":contri.points_required
+            
+        })
 
 def get_user(user_id):
     user = User.query.get(user_id)

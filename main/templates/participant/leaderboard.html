@@ -148,18 +148,18 @@
 
   {% set medals = ['🥇','🥈','🥉'] %}
   {% for p in leaderboard %}
-  <div class="lb-row {{ 'is-you' if p.username == 'Mbali' }}" style="animation-delay:{{ loop.index0 * 0.05 }}s">
-    <div class="lb-pos">{{ medals[loop.index0] if loop.index0 < 3 else loop.index }}</div>
-        <div class="lb-av-lg">{{ p.username[:2].upper() }}</div>
-        <div>
-          <div class="lb-info-name">
-            {{ p.username }}
-            {% if p.username == 'Mbali' %}<span class="badge badge-green" style="margin-left:6px;">You</span>{% endif %}
+    <div class="lb-row" style="animation-delay:{{ loop.index0 * 0.05 }}s">
+      <div class="lb-pos">{{ medals[loop.index0] if loop.index0 < 3 else loop.index }}</div>
+          <div class="lb-av-lg">{{ p.username[:2].upper() }}</div>
+          <div>
+            <div class="lb-info-name">
+              {{ p.username }}
+             
+            </div>
+            <div class="lb-info-sub">Eco Recycler</div>
           </div>
-          <div class="lb-info-sub">Eco Recycler</div>
-        </div>
-        <div class="lb-pts-lg">{{ p.points }} pts</div>
-    </div>
+          <div class="lb-pts-lg">{{ p.points }} pts</div>
+      </div>
     {% endfor %}
 
   </div>
