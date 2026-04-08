@@ -171,7 +171,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('/default.home'))
+    return redirect(url_for('default.home'))
     
     
 @auth.route("/account/<int:id>", methods=['GET', 'POST'])
@@ -184,7 +184,7 @@ def account(id):
         user = current_user
     else:
         flash("User account not found!", "danger")
-        return redirect(url_for('/default.home'))
+        return redirect(url_for('default.home'))
     
     if request.method == 'GET':
         profile ={
@@ -340,7 +340,7 @@ def reset_password(user_id):
             return redirect(url_for('/auth.login'))
         else:
             flash("Passwords do not match.", "danger")
-            return redirect(url_for('/auth.reset_password', user_id=user_id))
+            return redirect(url_for('auth.reset_password', user_id=user_id))
         
         
 def send_otp(user, otp):

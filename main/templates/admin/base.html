@@ -363,15 +363,15 @@
     <span class="brand-name">WasteWise</span>
   </a>
   <nav class="topbar-nav">
-    <a href="admin_dashhboard.html" class="active">Dashboard</a>
+   
     <a href="{{url_for('/admin.submissions', filter="Pending")}}">Submissions</a>
-    <a href="participant_points.html">Participants</a>
+   <a href="{{url_for('/auth.users')}}">Users</a>
     <a href="{{url_for('/admin.rewards')}}">Rewards</a>
     <a href="program_overview.html">Overview</a>
     <a href="{{url_for('/admin.Categories')}}"> Categories</a>
   </nav>
-  <span class="admin-pill">Admin</span>
-  <a href="wastewise-admin.html" class="btn-exit">🔒 Exit Admin</a>
+  
+  <a href="{{url_for('/auth.logout')}}" class="btn-exit">🔒 Exit Admin</a>
 </header>
 
 <!-- PAGE -->
