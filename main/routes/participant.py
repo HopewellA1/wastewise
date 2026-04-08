@@ -159,7 +159,7 @@ def gethistory(userId):
         hist.append({
             "type":reward.reward_name,
             "date":contri.date_claimed.date(),
-            "points":contri.points_required
+            "points":reward.points_required
             
         })
 
