@@ -141,7 +141,7 @@ def dashboard():
             {"title": "Plastic Challenge", "progress": 70},
             {"title": "Weekly Goal",        "progress": 50},
         ],
-        history=gethistory(current_user.id)
+        history=gethistory(current_user.id),
         referral={"link": "http://eco.com/ref/mbali", "count": 5, "points": 250},
         rewards=[{"name": "Gift Card", "description": "R50 voucher"}],
         resources=[{"title": "Eco Tips", "url": "http://eco.com/tips"}],
