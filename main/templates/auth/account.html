@@ -37,9 +37,15 @@
             <div class="card">
                 <!-- Centred heading like Image 1 -->
                 <div class="card-head">
-                    <div>
-                    <a href="{{url_for('/participant.dashboard')}}"><<< Dashboard</a>
-                </div>
+                    {% if current_user.is_superuser %}
+                        <div>
+                            <a href="{{url_for('/admin.dashboard')}}"><<< Dashboard</a>
+                        </div>
+                    {% else %}
+                        <div>
+                            <a href="{{url_for('/participant.dashboard')}}"><<< Dashboard</a>
+                        </div>
+                    {% endif %}
                     <div class="card-title">Wise Profile</div>
                     <div class="card-sub"></div>
                 </div>
