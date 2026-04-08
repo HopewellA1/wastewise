@@ -162,6 +162,7 @@ def gethistory(userId):
             "points":reward.points_required
             
         })
+    return hist
 
 def get_user(user_id):
     user = User.query.get(user_id)
