@@ -10,7 +10,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 
-
+app = Flask(__name__)
 
 load_dotenv()
 
@@ -20,7 +20,8 @@ login_manager = LoginManager()
 login_manager.login_view = "/auth/login"
 mail = Mail()
 migrate = Migrate()
-UPLOAD_FOLDER = "main/static/uploads"
+    
+UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 @login_manager.user_loader
@@ -30,7 +31,7 @@ def load_user(id):
 
 
 def create_app():
-    app = Flask(__name__)
+    
     csrf = CSRFProtect()
     
     #mysql config
@@ -64,11 +65,9 @@ def create_app():
     migrate.init_app(app, db)
     
     
-    
+
     #File uploading
-   
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    
     
     #Blueprints
     from .routes.default import default
