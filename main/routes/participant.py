@@ -607,6 +607,11 @@ def upload_Evidence_Image(file):
 def submit_contribution(contri_id):
     
     contri_ = Contribution.query.get(contri_id)
+    prods = Product.query.filter_by(Contribution_Id= contri_.Contribution_Id)
+    
+    if count(prods) <= 0:
+        flash("Add Evidence of recycle.", "danger")
+        return redirect(url_for('/participant.detailed_recycle', contri_id=contri_.Contribution_Id))
     contri_.status = "Pending"
     contri_.timestamp =  datetime.now(timezone.utc)
     db.session.commit()
@@ -614,6 +619,13 @@ def submit_contribution(contri_id):
     return redirect(url_for('/participant.history',user_id= current_user.id))
     
     #notify admins
+    
+    
+def count(listItems):
+    num =int()
+    for item in list(listItems):
+        num+=1
+    return num
 @participant.route('/cancel_submission/<int:contri_id>',methods=['POST'] )
 @login_required
 def cancel_submission(contri_id):
