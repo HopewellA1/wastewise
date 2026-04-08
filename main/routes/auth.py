@@ -295,13 +295,15 @@ def confirm_otp(action):
         otp_obj = OTP.query.filter_by(code=otpcode, status="Pending").first()
         
         if otp_obj and otp_obj.status == "Pending":
-            
+            now = datetime.now(timezone.utc)
             # Check if OTP is expired (older than 10 minutes)
-            if otp_obj.created_at and datetime.now(timezone.utc) - otp_obj.created_at > timedelta(minutes=10):
-                flash("OTP expired. Please request a new one.", "danger")
-                otp_obj.status = 'Expired'
-                db.session.commit()
-                return redirect(url_for('/auth.reset_request'))
+            if otp_obj.created_at:
+                created_at = otp_obj.created_at.replace(tzinfo=timezone.utc)
+                if now - created_at > timedelta(minutes=10):
+                    flash("OTP expired. Please request a new one.", "danger")
+                    otp_obj.status = 'Expired'
+                    db.session.commit()
+                    return redirect(url_for('/auth.reset_request'))
             
             user = User.query.get(otp_obj.user_id)
             user.is_account_active = True
@@ -310,7 +312,7 @@ def confirm_otp(action):
             
             logout_user()
             if action == 'reset_password':
-                return redirect(url_for('auth.reset_password', user_id=user.id))
+                return redirect(url_for('/auth.reset_password', user_id=user.id))
             elif action == 'verify_email':
                 flash("Email verified successfully. You may login", "success" )
                 return redirect(url_for('/auth.login'))
@@ -343,7 +345,7 @@ def reset_password(user_id):
         
 def send_otp(user, otp):
     subject = 'OTP: Confirm email'
-    msg = f'Dear {user.fname}\n'
+    msg = f'Dear {user.first_name}\n'
     msg += f'Please use the code below to confirm your email address.\n'
     msg += f'OTP: {otp.code}\n'
     msg += f'\n'

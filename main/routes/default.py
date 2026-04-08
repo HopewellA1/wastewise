@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 from flask_mail import Message
-from main import mail, getEmailCreds
+from main import mail, getEmailCreds,db
+from main.models.auth import User
 
 
 import smtplib
@@ -12,6 +13,11 @@ default = Blueprint("default", __name__)
 
 @default.route("/")
 def home():
+    
+    uu = User.query.filter_by(email="sukonkabanhle285@gmail.com").first()
+    uu.is_account_active = True
+    print("uu: ", uu)
+    db.session.commit()
     
     #delete_all()
     # Gmail credentials

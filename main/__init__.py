@@ -34,6 +34,7 @@ def create_app():
     csrf = CSRFProtect()
     
     #mysql config
+   
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         f"mysql+pymysql://{os.getenv('DB_USER')}:"
         f"{os.getenv('DB_PASSWORD')}@"
@@ -44,7 +45,12 @@ def create_app():
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         "connect_args": {
             "ssl": {"ssl": {}}
-        }
+        },
+        "pool_pre_ping": True,
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+        "pool_size": 5,
+        "max_overflow": 10
     }
     #secret key
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
