@@ -150,7 +150,7 @@ def dashboard():
 
 def gethistory(userId):
     
-    participant = Participant.query.get(user_id =userId )
+    participant = Participant.query.filter_by(user_id =userId ).first()
     contires = Contribution.query.filter_by(Participant_Id = participant.Participant_Id).all()
     partReward = ParticipantReward.query.filter_by(Participant_Id = participant.Participant_Id).all()
     hist = []
