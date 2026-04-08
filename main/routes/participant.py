@@ -300,7 +300,7 @@ def redeem_reward(reward_id):
         #Sending tickets to event to the participent redeeming Event type reward
         deliverReward(partReward.ParticipantReward_ID) #for event
     elif reward.Reward_Category =='Voucher':
-        pass
+        deliverVoucherReward(partReward.ParticipantReward_ID)
              
     
     flash(f"Reward redeemed successfully, {reward.points_required} points used.","success")
