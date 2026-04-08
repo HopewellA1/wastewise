@@ -271,7 +271,7 @@ def getRedeemedRewards(part_id):
         rewards.append({
             "name": rw.reward_name,
             "date":reward.date_claimed.date(),
-            "points":reward.points_used
+            "points":rw.points_required
         })
     return rewards   
 # [
@@ -297,9 +297,10 @@ def redeem_reward(reward_id):
     db.session.add(partReward)
     db.session.commit()
     if reward.Reward_Category == 'Event':
-        #Sending tickets to event to the participent redeeming Event type reward
         deliverReward(partReward.ParticipantReward_ID) #for event
     elif reward.Reward_Category =='Voucher':
+        
+        print("on deliver")
         deliverVoucherReward(partReward.ParticipantReward_ID)
              
     
@@ -348,11 +349,11 @@ def deliverVoucherReward(partReward_id):
     participant = Participant.query.get(partReward.Participant_Id)
     user= User.query.get(participant.user_id)
     Subject = f'Your {reward.reward_name} Has Been Issued!'
-    body = f'Hi {user.first_name},\n Well done! 👏\n\nYou’ve redeemed your {reward.reward_name} successfully.'
+    body = f'Hi {user.first_name},\n Well done! \n\nYou have redeemed your {reward.reward_name} successfully.'
     body +=f'\nReward: {reward.reward_name}'
-    body +=f'\nPoints Used: {partReward.points_used}'
-    body +=f'\nVoucher Code: {generate_voucher_code()}'
-    body +=f'\n\n{generate_appreciation_message()}'
+    body +=f'\nPoints Used: {reward.points_required}'
+    body +=f'\nVoucher Code: {str(generate_voucher_code())}'
+    #body +=f'\n\n{generate_appreciation_message()}'
     body += '\n\nKind regards,\nWasteWise'
     
     send_email(user.email, Subject,body)

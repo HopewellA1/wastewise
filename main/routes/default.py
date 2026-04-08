@@ -57,7 +57,7 @@ def send_email(receiver_email,subject,body):
     
     
     
-    msg = MIMEText(body)
+    msg = MIMEText(body, 'plain', 'utf-8')
     msg["Subject"] = subject
     msg["From"] = sender_email
     msg["To"] = receiver_email
@@ -66,7 +66,7 @@ def send_email(receiver_email,subject,body):
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()  # enable TLS
         server.login(sender_email, app_password)
-        server.sendmail(sender_email, receiver_email, msg.as_string())
+        server.sendmail(sender_email, receiver_email, msg.as_string()).encode('utf-8')
         server.quit()
         return True
     except Exception as e:
