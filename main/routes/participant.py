@@ -623,6 +623,7 @@ def new_contri_AdminAlert(contri_id):
     participant = Participant.query.get(contri_.Participant_Id)
     partuser= User.query.get(participant.user_id)
     superusers = User.query.filter_by(is_superuser=True).all()
+  
     numSent = int()
     for user in superusers:
         message = superuserEmailmessage(participant,user, contri_)

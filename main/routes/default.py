@@ -66,7 +66,7 @@ def send_email(receiver_email,subject,body):
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()  # enable TLS
         server.login(sender_email, app_password)
-        server.sendmail(sender_email, receiver_email, msg.as_string()).encode('utf-8')
+        server.sendmail(sender_email, receiver_email, msg.as_string())
         server.quit()
         return True
     except Exception as e:
