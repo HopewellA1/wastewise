@@ -81,9 +81,13 @@ def delete_category(categ_id):
     
     category = Category.query.get(categ_id)
     category.Name = request.form.get("Name")
-    db.session.delete(category)
-    db.session.commit()
-    flash("Categry delted!", "danger")
+    try:
+        
+        db.session.delete(category)
+        db.session.commit()
+        flash("Categry delted!", "danger")
+    except:
+        flash("This categiry has been contrubuted on, for data Integrity the action has been aborted!", "danger")
     return redirect(url_for('/admin.Categories'))
 
 

@@ -249,7 +249,7 @@ def change_password(id):
                 flash(f'new password do not match, try login.','danger')
                 return redirect(url_for('/auth.change_password', id=id))
         else:
-            flash(f'Old password invalid, try login.','danger')
+            flash(f'Old password invalid, please try again.','danger')
             return redirect(url_for('/auth.change_password', id=id))
     else:
         return render_template('auth/change_password.html', user=user)
