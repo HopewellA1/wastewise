@@ -24,7 +24,7 @@
                 </form>
             {% elif contri_Products.contribution.status =='Pending'%}
       
-
+                {% if current_user.is_superuser == False %}
                 <div style="" data-aos="fade-up">
                     <div class="subIten_holder">
                        
@@ -35,6 +35,7 @@
                     </div>
                     
                 </div>
+                {% endif %}
                 
             {% endif %}
         </div>

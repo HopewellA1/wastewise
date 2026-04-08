@@ -63,7 +63,6 @@ def new_category():
         
         return redirect(url_for('/admin.Categories'))
     
-    
 @admin.route('/edit_category/<int:categ_id>', methods=["POST"])
 @login_required
 def edit_category(categ_id):
@@ -73,7 +72,6 @@ def edit_category(categ_id):
     db.session.commit()
     flash("Changes saved successfully.", "success")
     return redirect(url_for('/admin.Categories'))
-
 
 @admin.route('/delete_category/<int:categ_id>', methods=["POST"])
 @login_required
@@ -96,11 +94,11 @@ def delete_category(categ_id):
 def submissions(filter):
     
     if filter== 'all':
-        contributions = Contribution.query.all()
+        contributions = Contribution.query.all().order_by(Contribution.Contribution_Id.desc()).all()
     elif filter == 'history':
-        contributions = Contribution.query.filter_by(is_history =True).all()
+        contributions = Contribution.query.filter_by(is_history =True).order_by(Contribution.Contribution_Id.desc()).all()
     else:
-        contributions = Contribution.query.filter_by(status =filter).all()   
+        contributions = Contribution.query.filter_by(status =filter).order_by(Contribution.Contribution_Id.desc()).all()   
     subs = list()
     
     for contri_ in contributions:

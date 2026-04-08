@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from flask_mail import Message
 from main import mail, getEmailCreds,db
 from main.models.auth import User
+from flask_login import current_user
 
 
 import smtplib
@@ -14,6 +15,11 @@ default = Blueprint("default", __name__)
 @default.route("/")
 def home():
     
+    if current_user.is_authenticated:
+        if current_user.is_superuser:
+            return redirect(url_for('/admin.dashboard'))
+        
+        
     uu = User.query.filter_by(email="sukonkabanhle285@gmail.com").first()
     uu.is_account_active = True
     print("uu: ", uu)

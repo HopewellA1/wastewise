@@ -200,7 +200,7 @@ def account(id):
         user.email = request.form["email"]
         
         try:
-            user.is_staff  = "is_staff" in request.form
+            user.is_staff  = "is_superuser" in request.form
             user.is_superuser = "is_superuser" in request.form
         except:
              pass
