@@ -298,7 +298,11 @@ def redeem_reward(reward_id):
     db.session.commit()
     if reward.Reward_Category == 'Event':
         #Sending tickets to event to the participent redeeming Event type reward
-        deliverReward(partReward.ParticipantReward_ID)
+        deliverReward(partReward.ParticipantReward_ID) #for event
+    elif reward.Reward_Category =='Voucher':
+        pass
+             
+    
     flash(f"Reward redeemed successfully, {reward.points_required} points used.","success")
     
     return redirect(url_for('/participant.rewards'))
@@ -338,7 +342,21 @@ def deliverReward(partReward_id):
         smtp.login(f"{getEmailCreds()["sender_email"]}", f"{getEmailCreds()["app_password"]}")
         smtp.send_message(msg)
     
+def deliverVoucherReward(partReward_id):
+    partReward = ParticipantReward.query.get(partReward_id)
+    reward = Reward.query.get(partReward.Reward_Id)
+    participant = Participant.query.get(partReward.Participant_Id)
+    user= User.query.get(participant.user_id)
+    Subject = f'Your {reward.reward_name} Has Been Issued!'
+    body = f'Hi {user.first_name},\n Well done! 👏\n\nYou’ve redeemed your {reward.reward_name} successfully.'
+    body +=f'\nReward: {reward.reward_name}'
+    body +=f'\nPoints Used: {partReward.points_used}'
+    body +=f'\nVoucher Code: {generate_voucher_code()}'
+    body +=f'\n\n{generate_appreciation_message()}'
+    body += '\n\nKind regards,\nWasteWise'
     
+    send_email(user.email, Subject,body)
+     
     
 def generate_ticket_buffer(event_name,user_name,ticket_code,event_date,image_path):
     WIDTH = 400
@@ -408,8 +426,7 @@ def generate_ticket_buffer(event_name,user_name,ticket_code,event_date,image_pat
  
     
 def generate_voucher_code(length=10):
-    chars = string.ascii_uppercase + string.digits
-    return ''.join(random.choice(chars) for _ in range(length))
+    return ''.join(random.choice(string.digits) for _ in range(length))
     
 
 # ── Resources ─────────────────────────────────────────────────────────────────
