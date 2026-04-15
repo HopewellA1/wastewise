@@ -286,6 +286,21 @@
                         </lable>
                         <input class="form-control" type="number" name="points" placeholder="Allocate points" required/>
                     </div>
+                    <div class="form-group">
+                        <label style="color:black" class="form-label">
+                                Rating
+                        </lable>
+                        <div class="stars form-control" id="stars">
+                            
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+                    </div>
+
+                    <input type="number" hidden name="rating" id="txtRating" />
                     <br/>
                     <button type="submit"  class="btn btn-success" style="width:100%">Approve</button>
                 </form>
@@ -456,6 +471,45 @@
             });
             }
         });
+
+
+
+        const stars = document.querySelectorAll('.star');
+     
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', () => {
+            const value = star.getAttribute('data-value');
+            highlightStars(value);
+            });
+
+            // Remove hover
+            star.addEventListener('mouseout', () => {
+            highlightStars(selectedRating);
+            });
+
+            // Click to select
+            star.addEventListener('click', () => {
+                selectedRating = star.getAttribute('data-value');
+               
+                console.log("selectedRating: ", selectedRating)
+                
+                txtrate = document.getElementById("txtRating")
+                console.log("txtrate: ", txtrate)
+                txtrate.value = selectedRating
+            });
+        });
+
+        function highlightStars(rating) {
+            stars.forEach(star => {
+            star.classList.remove('hover', 'selected');
+            if (star.getAttribute('data-value') <= rating) {
+                star.classList.add('selected');
+            }
+            });
+        }
     </script>
     <style>
 
@@ -671,7 +725,26 @@
 
     .reward-stock { font-size: .84rem; color: var(--text-muted); margin: 0; }
 
+            .stars {
+        display: inline-flex;
+        cursor: pointer;
+    }
 
+    .star {
+        font-size: 40px;
+        color: #ccc;
+        transition: color 0.2s;
+    }
+
+    .star.hover,
+    .star.selected {
+        color: gold;
+    }
+
+    #rating-value {
+        margin-top: 15px;
+        font-size: 18px;
+    }
 
     </style>
 

@@ -113,6 +113,7 @@ class Contribution(db.Model):
     description = db.Column(db.Text)
     status = db.Column(db.String(20), default="Draft")
     is_history = db.Column(db.Boolean, default=False)
+    rating =  db.Column(db.Integer,default=int())
     
     def __init__(self,Participant_Id, user_id,Category_id, item_type, quantity, description, status = "Daft"):
         self.Participant_Id = Participant_Id

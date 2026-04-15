@@ -129,7 +129,7 @@ def approve_submission(contri_id):
     contribution.status = "Approved"
     contribution.is_history = True
     contribution.points_awarded = int(request.form.get('points'))
-    
+    contribution.rating = int(request.form.get("rating"))
     participant = Participant.query.get(contribution.Participant_Id)
     participant.total_points_accumulated +=  int(request.form.get('points'))
     participant.points += int(request.form.get('points'))
